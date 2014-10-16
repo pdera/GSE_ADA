@@ -106,8 +106,8 @@ common selections, selecting_status, select, excl, unselect, addpeak, mask, mask
       parinfo[7].limited(1) = 1
       parinfo[7].limits(0)  = 0.
       parinfo[7].limits(1)  = 1.
-      XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
-      yy=yinvec([bs[0]*2+1,bs[1]*2+1])
+   ;   XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
+   ;   yy=yinvec([bs[0]*2+1,bs[1]*2+1])
 retry: pic=oimage->get_zoomin(XY, bs, maskarr)
        cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
        c=where(cc eq 1)
