@@ -1,0 +1,1420 @@
+
+function Laue_class_list
+
+return,['-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m']
+end
+
+
+;------------------------------------------------
+
+function interval_nodes ,x , y, nstep
+; nstep - number of interval steps = number of nodes
+  n=n_elements(x)
+  s=sort(X)
+  X1=X[S]
+  y1=y[S]
+  nodesX=fltarr(nstep)
+  nodesY=fltarr(nstep)
+  int=long(n/nstep)
+  int=int[0]
+  for i=0,nstep-2 do $
+  begin
+    nodesX[i]=mean(x1[i*int:(i+1)*int-1])
+    nodesY[i]=mean(y1[i*int:(i+1)*int-1])
+  end
+    nodesX[0]=x1[0]
+    nodesX[nstep-1]=x1[n-1]
+    nodesY[nstep-1]=mean(y1[(nstep-1)*int:n-1])
+  return, [[nodesx],[nodesy]]
+end
+
+;------------------------------------------------
+
+
+function equiv, hkl1, hkl2, system
+
+  case system of
+  '1':$ ; monoclinic b-unique 2/m
+  begin
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) $
+
+       then return, 1 else return, 0
+  end
+  '2':$ ; orthorhombic
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $ ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $   ;hkl=-hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $;   hkl=h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) $
+
+       then return, 1 else return, 0
+
+  end
+  '3':$ ; tetragonal 4/m
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2]))  $
+
+       then return, 1 else return, 0
+
+  end
+
+  '4':$ ; tetragonal 4/mmm
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) $
+
+
+       then return, 1 else return, 0
+
+  end
+  '5':$ ; trigonal -3
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=h-kl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=h-k-l
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) $
+
+       then return, 1 else return, 0
+
+  end
+  '6':$ ; trigonal -3m
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=h-kl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=h-k-l
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=h-kl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=h-k-l
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) $
+
+       then return, 1 else return, 0
+
+  end
+   '7':$ ; hexagonal 6/m
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=h-kl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) $
+
+       then return, 1 else return, 0
+
+  end
+
+   '8':$ ; hexagonal 6/mmm
+  begin
+
+   if ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq -hkl2[0]-hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[0]+hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]-hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]+hkl2[1]) and $  ; hkl=-hk-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) $
+
+
+       then return, 1 else return, 0
+
+  end
+
+  '9':$ ; cubic m-3
+  begin
+
+  if  ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) $
+
+       then return, 1 else return, 0
+  end
+
+'10':$ ; cubic m-3m
+  begin
+
+  if  ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-k-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hk-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-kl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+
+;--
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hkl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-k-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-kl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hk-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-hkl
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=h-k-l
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq  hkl2[0]) and $  ; hkl=hk-l
+       (hkl1[1] eq  hkl2[2]) and $
+       (hkl1[2] eq -hkl2[1])) or $
+
+      ((hkl1[0] eq -hkl2[0]) and $  ; hkl=-h-kl
+       (hkl1[1] eq -hkl2[2]) and $
+       (hkl1[2] eq  hkl2[1])) or $
+
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq  hkl2[1]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[0]) and $
+       (hkl1[2] eq -hkl2[2])) or $
+
+      ((hkl1[0] eq -hkl2[1]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[0]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+
+
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=khl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-h-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-hl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-kh-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-khl
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=k-h-l
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq  hkl2[2]) and $  ; hkl=kh-l
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq -hkl2[0])) or $
+
+      ((hkl1[0] eq -hkl2[2]) and $  ; hkl=-k-hl
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq  hkl2[0])) $
+
+
+
+       then return, 1 else return, 0
+  end
+
+  else:$ ; triclinic or erronious
+  begin
+   if ((hkl1[0] eq  hkl2[0]) and $
+       (hkl1[1] eq  hkl2[1]) and $
+       (hkl1[2] eq  hkl2[2])) or $
+      ((hkl1[0] eq -hkl2[0]) and $
+       (hkl1[1] eq -hkl2[1]) and $
+       (hkl1[2] eq -hkl2[2])) then return, 1 else return, 0
+  end
+  endcase
+
+
+
+end
+
+;-------------------
+
+pro Select_worst_Rint, system, opt, th, wid_draw
+axis=5
+pt=opt->get_object()
+
+m=max(pt.peaks[*].intad[0])
+;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified (value is class number)
+morethan2=intarr(pt.peakno)
+means=fltarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+;    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    if equiv(pt.peaks[i].hkl, pt.peaks[classes[j,0]].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+; calculate class averages
+ri=0.0
+rit=0.0
+ap=intarr(pt.peakno)
+ap[*]=1
+nus=0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+    if nn gt 2 then morethan2[peaks]=1
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    std=STDDEV(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    means[peaks]=avg
+    ri=ri+total(sump)
+    rit=rit+sum
+
+    ff1=where((pt.peaks[peaks].IntAD[0]-avg)/avg gt th[0])
+    ff2=where((pt.peaks[peaks].IntAD[0]-avg)/avg lt th[1])
+
+    if ff1[0] ne -1 then $
+    begin
+      pt.peaks[peaks[ff1]].Selected[0]=1
+    endif
+    if ff2[0] ne -1 then $
+    begin
+      pt.peaks[peaks[ff2]].Selected[0]=1
+    endif
+
+    if nus eq 0 then $
+    begin
+      x=pt.peaks[peaks].gonio[axis]
+      y=(pt.peaks[peaks].IntAD[0]-avg)/avg
+      nus=nus+nn
+    endif else $
+    begin
+      x=[x,pt.peaks[peaks].gonio[axis]]
+      y=[y,(pt.peaks[peaks].IntAD[0]-avg)/avg]
+      nus=nus+nn
+    endelse
+  end
+end
+ds=fltarr(pt.peakno)
+for i=0,pt.peakno-1 do $
+begin
+  ds[i]=1./vlength(pt.peaks[i].xyz)
+  ds[i]=pt.peaks[i].gonio[axis]
+end
+
+
+wset, wid_draw
+device, decomposed=1
+
+
+plot, x, y,  thick=0, symsize=0.5, psym=6, background='FFFFFF'xl, color='000000'xl
+w1=where(y gt th[0])
+if w1[0] ne -1 then oplot, x[w1], y[w1],  color='FF00FF'XL, thick=0, symsize=0.5, psym=6
+
+w2=where(y lt th[1])
+if w2[0] ne -1 then oplot, x[w2], y[w2],  color='FF00FF'XL, thick=0, symsize=0.5, psym=6
+opt->set_object, pt
+result = POLY_FIT(X, Y, 3, SIGMA=sigma)
+s=sort(x)
+x1=x[s]
+yc=result[0]+result[1]*x1+result[2]*x1*x1
+oplot, x1, yc,  thick=1
+
+end
+
+;----------------
+;-------------------
+
+function Scale_with_Rint, system, opt, draw
+axis=5
+
+; added axis to distinguish between omega and ph
+
+pt=opt->get_object()
+
+m=max(pt.peaks[*].intad[0])
+;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified (value is class number)
+morethan2=intarr(pt.peakno)
+means=fltarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+;    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    if equiv(pt.peaks[i].hkl, pt.peaks[classes[j,0]].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+; calculate class averages
+ri=0.0
+rit=0.0
+ap=intarr(pt.peakno)
+ap[*]=1
+nus=0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+    if nn gt 2 then morethan2[peaks]=1
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    std=STDDEV(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    means[peaks]=avg
+    ri=ri+total(sump)
+    rit=rit+sum
+    if nus eq 0 then $
+    begin
+      x=pt.peaks[peaks].gonio[axis]
+      y=(pt.peaks[peaks].IntAD[0]-avg)/avg
+      nus=nus+nn
+    endif else $
+    begin
+      x=[x,pt.peaks[peaks].gonio[axis]]
+      y=[y,(pt.peaks[peaks].IntAD[0]-avg)/avg]
+      nus=nus+nn
+    endelse
+  end
+end
+ds=fltarr(pt.peakno)
+for i=0,pt.peakno-1 do $
+begin
+  ds[i]=1./vlength(pt.peaks[i].xyz)
+  ds[i]=pt.peaks[i].gonio[axis]
+end
+;w=where(morethan2 eq 1)
+;xd=(pt.peaks[*].IntAD[0]-means[*])/means[*]
+;plot, ds[w], xd[w], thick=0, symsize=0.5, psym=6
+
+wset, draw
+device, decomposed=1
+
+plot, x, y,  thick=0, symsize=0.5, psym=6, color='000000'xl, background='FFFFFF'xl
+result = POLY_FIT(X, Y, scale_poly(), SIGMA=sigma)
+print_scale_poly, result
+s=sort(x)
+x1=x[s]
+yc=result[0]+result[1]*x1+result[2]*x1*x1
+
+oplot, x1, yc,  thick=2, color='00ff00'xl
+
+return, ri/rit
+
+end
+
+;----------------
+
+;-------------------
+
+function Scale_with_Rint_spline, system, opt, draw, np
+axis=5
+pt=opt->get_object()
+
+m=max(pt.peaks[*].intad[0])
+;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified (value is class number)
+morethan2=intarr(pt.peakno)
+means=fltarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+;    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    if equiv(pt.peaks[i].hkl, pt.peaks[classes[j,0]].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+; calculate class averages
+ri=0.0
+rit=0.0
+ap=intarr(pt.peakno)
+ap[*]=1
+nus=0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+    if nn gt 2 then morethan2[peaks]=1
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    std=STDDEV(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    means[peaks]=avg
+    ri=ri+total(sump)
+    rit=rit+sum
+    if nus eq 0 then $
+    begin
+      x=pt.peaks[peaks].gonio[axis]
+      y=(pt.peaks[peaks].IntAD[0]-avg)/avg
+      nus=nus+nn
+    endif else $
+    begin
+      x=[x,pt.peaks[peaks].gonio[axis]]
+      y=[y,(pt.peaks[peaks].IntAD[0]-avg)/avg]
+      nus=nus+nn
+    endelse
+  end
+end
+ds=fltarr(pt.peakno)
+for i=0,pt.peakno-1 do $
+begin
+  ds[i]=1./vlength(pt.peaks[i].xyz)
+  ds[i]=pt.peaks[i].gonio[axis]
+end
+
+wset, draw
+device, decomposed=1
+
+plot, x, y,  thick=0, symsize=0.5, psym=6, color='000000'xl, background='FFFFFF'xl
+
+a=interval_nodes(x , y, np)
+s=sort(x)
+x1=x[s]
+b = SPLINE( a[*,0], a[*,1], x1)
+
+oplot, x1, b, color='00FF00'xl, thick=2
+
+
+return, ri/rit
+
+end
+
+;----------------
+
+pro apply_Scale_with_Rint_spline, system, opt, draw, np
+axis=5
+pt=opt->get_object()
+
+m=max(pt.peaks[*].intad[0])
+;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified (value is class number)
+morethan2=intarr(pt.peakno)
+means=fltarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+;    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    if equiv(pt.peaks[i].hkl, pt.peaks[classes[j,0]].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+; calculate class averages
+ri=0.0
+rit=0.0
+ap=intarr(pt.peakno)
+ap[*]=1
+nus=0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+    if nn gt 2 then morethan2[peaks]=1
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    std=STDDEV(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    means[peaks]=avg
+    ri=ri+total(sump)
+    rit=rit+sum
+    if nus eq 0 then $
+    begin
+      x=pt.peaks[peaks].gonio[axis]
+      y=(pt.peaks[peaks].IntAD[0]-avg)/avg
+      nus=nus+nn
+    endif else $
+    begin
+      x=[x,pt.peaks[peaks].gonio[axis]]
+      y=[y,(pt.peaks[peaks].IntAD[0]-avg)/avg]
+      nus=nus+nn
+    endelse
+  end
+end
+ds=fltarr(pt.peakno)
+for i=0,pt.peakno-1 do $
+begin
+  ds[i]=1./vlength(pt.peaks[i].xyz)
+  ds[i]=pt.peaks[i].gonio[axis]
+end
+
+a=interval_nodes(x , y, np)
+s=sort(x)
+
+xa=pt.peaks[*].gonio[axis]
+s=sort(xa)
+x1=xa[s]
+
+b = SPLINE( a[*,0], a[*,1], x1)
+
+for i=0, pt.peakno-1 do $
+begin
+  pt.peaks[s[i]].IntAD[0]=pt.peaks[s[i]].IntAD[0]*(1.0-b[i])
+  pt.peaks[s[i]].IntAD[1]=pt.peaks[s[i]].IntAD[1]*(1.0-b[i])
+endfor
+opt->set_object, pt
+
+end
+
+;----------------
+
+
+
+;------------------------------------------------
+
+function Rint, system, opt
+
+pt=opt->get_object()
+
+m=max(pt.peaks[*].intad[0])
+;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified
+morethan2=intarr(pt.peakno)
+means=fltarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+;    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    if equiv(pt.peaks[i].hkl, pt.peaks[classes[j,0]].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+; calculate class averages
+ri=0.0
+rit=0.0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+;    sum=total(pt.peaks[peaks].IntAD[0]*pt.peaks[peaks].IntAD[0])
+;    avg=mean(pt.peaks[peaks].IntAD[0]*pt.peaks[peaks].IntAD[0], /double)
+;    sump=abs(pt.peaks[peaks].IntAD[0]*pt.peaks[peaks].IntAD[0]-avg)
+    if nn gt 2 then morethan2[peaks]=1
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    std=STDDEV(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    means[peaks]=avg
+    ri=ri+total(sump)
+    rit=rit+sum
+  end
+end
+ds=fltarr(pt.peakno)
+for i=0,pt.peakno-1 do $
+begin
+  ds[i]=1./vlength(pt.peaks[i].xyz)
+  ;ds[i]=pt.peaks[i].gonio[axis]
+end
+;w=where(morethan2 eq 1)
+;xd=(pt.peaks[*].IntAD[0]-means[*])/means[*]
+;plot, ds[w], xd[w], thick=0, symsize=0.5, psym=6
+
+return, ri/rit
+
+end
+
+;----------------
+
+function ind_Rint, system, opt
+
+; calculates individual Rints for every peak
+; results are arranged in an array
+; for a peak with no equivalents 0 is returned
+
+pt=opt->get_object()
+
+used=intarr(pt.peakno) ; table of peaks that have already been classified
+classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
+classno=0L ; number of unique classes
+
+; make first peak a new class
+used[0]=1 ; class numbers start at 1, not at 0
+classes[0,0]=0
+classes[0,1]=1
+classno=1
+
+for i=1, pt.peakno-1 do $
+begin
+  ; -- check existing classes
+  j=0
+  while ((j lt classno) and (used[i] eq 0)) do $
+  begin
+    if equiv(pt.peaks[i].hkl, pt.peaks[j].hkl, system) eq 1 then $
+    begin
+      used[i]=j+1
+      classes[j,1]=classes[j,1]+1
+    endif
+    j=j+1
+  endwhile
+  if used[i] eq 0 then $ ; this peak is a new class
+  begin
+    used[i]=classno+1 ; class numbers start at 1, not at 0
+    classes[classno,0]=i
+    classes[classno,1]=1
+    classno=classno+1
+  end
+endfor
+
+; calculate class averages
+ri=0.0
+rit=0.0
+for i=1, classno do $
+begin
+  peaks=where(used eq i)
+  nn=n_elements(peaks)
+  if nn gt 1 then $
+  begin
+    sum=total(pt.peaks[peaks].IntAD[0])
+    avg=mean(pt.peaks[peaks].IntAD[0], /double)
+    sump=abs(pt.peaks[peaks].IntAD[0]-avg)
+    ri=ri+total(sump)
+    rit=rit+sum
+  end
+end
+
+return, ri/rit
+
+end
+
+
+;---------------------
+function match_fcf, pt, fcf
+
+  s=n_elements(fcf)/4
+  nn=where(not(pt.peaks[0:pt.peakno-1].hkl[0] eq 0 and pt.peaks[0:pt.peakno-1].hkl[1] eq 0 $
+      and pt.peaks[0:pt.peakno-1].hkl[2] eq 0)) ; indices of peaks with non-all-zeros hkls
+  nns=n_elements(nn)
+  ff=fltarr(pt.peakno)
+  aa=intarr(3,pt.peakno)
+  if nns gt 1 then $
+  begin
+    ptsub=pt.peaks[nn].hkl
+    for i=0, s-1 do $
+    begin
+       for s=0, pt.peakno-1 do aa[0:2,s]=fcf[0:2,i]
+       bb=(ptsub-aa)
+	   cc=where(bb[0,*] eq 0 and bb[1,*] eq 0 and bb[2,*] eq 0 ) ; equal hkls
+	   if cc[0] ne -1 then $
+	   ff[nn[cc]]=fcf[3,i]
+    end
+  endif
+  return, ff
+end
+
+;---------------------
+
+function reaf_fcf4, filename
+on_ioerror, err
+ valid=0
+ free_lun, 5
+ openr, 5, filename
+ a=''
+ fcf=fltarr(4)
+  ;for i=0, 33 do readf, lu, a ; number of lines to skip depends on SYMM
+  ;i=0
+ b=''
+ while not eof(5) and b ne ' _refln_observed' do $
+ begin
+  readf, 5, a ; number of lines to skip depends on SYMM
+  b=strmid(a,0,16)
+ endwhile
+ i=0
+ while not eof(5) do $
+ begin
+    readf, 5, a
+    b=STRCOMPRESS(a, /REMOVE_ALL)
+    if strlen(b) eq 0 then $
+    begin
+       close, 5
+       valid=1
+       return, fcf
+    endif
+    h=Long(strmid(a,0,4))
+    k=Long(strmid(a,4,4))
+    l=Long(strmid(a,8,4))
+    Fcalc=float(strmid(a,12,12))
+    if i eq 0 then fcf=[h,k,l,Fcalc] else $
+    fcf=[[fcf],[h,k,l,Fcalc]]
+    i=i+1
+ endwhile
+ close, 5
+ return, fcf
+ valid=1
+ err: if not valid eq 1 then re=dialog_message('Improper file format')
+
+end
+
+;---------------------

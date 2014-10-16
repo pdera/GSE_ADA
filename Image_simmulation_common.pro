@@ -1,0 +1,40 @@
+COMMON WID_Image_simulation_elements, $
+   WID_TEXT_0, $
+   WID_TEXT_1, $
+   WID_TEXT_2, $
+   WID_TEXT_3, $
+   WID_TEXT_4, $
+   WID_TEXT_5, $
+   WID_TEXT_6, $
+   WID_TEXT_7, $
+   WID_TEXT_8, $
+   WID_TEXT_9, $
+   WID_TEXT_10, $
+   WID_TEXT_11, $
+   WID_TEXT_12, $
+   WID_TEXT_13, $
+   WID_TEXT_14, $
+   WID_BUTTON_0, $
+   WID_BUTTON_1, $
+   WID_BUTTON_2, $
+   WID_BUTTON_3, $
+   WID_BUTTON_4, $
+   WID_BUTTON_5, $
+   WID_BUTTON_6, $
+   WID_BUTTON_7, $
+   WID_BUTTON_8, $
+   WID_BUTTON_9, $
+   WID_BUTTON_10, $
+   WID_BUTTON_11, $
+   WID_BUTTON_12, $
+   WID_BUTTON_13, $
+   WID_BUTTON_14, $
+   WID_BUTTON_15, $
+   WID_BUTTON_16, $
+   WID_BUTTON_17, $
+   WID_BUTTON_18, $
+   WID_BUTTON_19, $
+   WID_LIST_0,$
+   WID_DROPLIST_0, $
+   WID_DROPLIST_1
+
