@@ -1502,7 +1502,6 @@ begin
     opt->calculate_all_xyz_from_pix, oadetector, wv
     bx=read_box_size(wid_text_37,wid_text_37)
     opt->set_zero_peak_box_size, bx ; ????
-    plot_image, oimage
     plot_peaks, draw0, opt, arr1, arr2
     print_peak_list, opt, wid_list_3
     update_peakno, opt->peakno()

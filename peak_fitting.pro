@@ -1,3 +1,90 @@
+
+;--------------
+function grow_peak, arr, bkg, x,y, mins, xmax, ymax
+;-- up
+if y lt ymax-1 then $
+begin
+yu=y+1
+while (arr[x,yu] gt bkg[x,y]+mins) and (yu lt ymax-1) do yu=yu+1
+endif else yu=y
+;-- down
+if y gt 0 then $
+begin
+yd=y-1
+while (arr[x,yd] gt bkg[x,y]+mins) and (yd gt 0) do yd=yd-1
+endif else yd=y
+;-- left
+if x gt 0 then $
+begin
+xl=x-1
+while (max(arr[xl,yd:yu]) gt bkg[x,y]+mins) and (xl gt 0) do xl=xl-1
+endif else xl=x
+;-- right
+if x lt xmax-1 then $
+begin
+xr=x+1
+while (max(arr[xr,yd:yu]) gt bkg[x,y]+mins) and (xr lt xmax-1) do xr=xr+1
+endif else xr=x
+;print, 'peak: ', x,y
+;print, 'grow results:', xl,xr, yd,yu
+;----------- max intensity
+bb=arr[xl:xr,yd:yu]
+m=max(bb,ll)
+XY=ARRAY_INDICES([xr-xl+1,yu-yd+1], ll, /DIMENSIONS)
+return, [xl,xr, yd,yu, xl+xy[0],yd+xy[1]]
+;----------- geometric center
+;XY=[(xr+xl)/2.,(yu+yd)/2.]
+;return, [xl,xr, yd,yu, xy[0],xy[1]]
+end
+;--------------
+
+;----------------------------------
+
+function one2two, x
+ sz=n_elements(x)
+ sz1=long(sqrt(sz))
+ if sz1*sz1 eq sz then $
+ begin
+   b=fltarr(sz1,sz1)
+   for i=0,sz1-1 do b[0:sz1-1,i]=x[i*sz1:(i+1)*sz1-1]
+   return, b
+ endif else return, 0
+end
+
+;----------------------------------
+
+function two2one,x
+ sz=size(x)
+ if n_elements(x) gt 0 then $
+ begin
+ b=fltarr(sz[1]*sz[1])
+ b=x[0:sz[1]-1,0]
+ for i=1,sz[1]-1 do b=[b,x[0:sz[1]-1,i]]
+ return, b
+ endif else return, 0
+end
+
+;----------------------------------
+function Xinvec, siz
+ XX=fltarr(siz[0],siz[1])
+ for i=0, siz[1]-1 do $
+ begin
+  X=replicate(i-(siz[1]-1)/2.,siz[0])
+  XX[*,i]=X
+ endfor
+ return, two2one(XX)
+end
+;----------------------------------
+function Yinvec, siz
+ XX=fltarr(siz[0],siz[1])
+ for i=0, siz[1]-1 do $
+ begin
+  X=replicate(i-(siz[0]-1)/2.,siz[1])
+  XX[i,*]=X
+ endfor
+ return, two2one(XX)
+end
+;--------------------------------------
 function pixel_outside_circle, xy, rad
   n=n_elements(xy)/2
   if n gt 1 then $
@@ -291,52 +378,6 @@ function evaluate_fit_quality, pic, pic2
     return, res
 end
 
-;----------------------------------
-
-function one2two, x
- sz=n_elements(x)
- sz1=long(sqrt(sz))
- if sz1*sz1 eq sz then $
- begin
-   b=fltarr(sz1,sz1)
-   for i=0,sz1-1 do b[0:sz1-1,i]=x[i*sz1:(i+1)*sz1-1]
-   return, b
- endif else return, 0
-end
-
-;----------------------------------
-
-function two2one,x
- sz=size(x)
- if n_elements(x) gt 0 then $
- begin
- b=fltarr(sz[1]*sz[1])
- b=x[0:sz[1]-1,0]
- for i=1,sz[1]-1 do b=[b,x[0:sz[1]-1,i]]
- return, b
- endif else return, 0
-end
-
-;----------------------------------
-function Xinvec, siz
- XX=fltarr(siz[0],siz[1])
- for i=0, siz[1]-1 do $
- begin
-  X=replicate(i-(siz[1]-1)/2.,siz[0])
-  XX[*,i]=X
- endfor
- return, two2one(XX)
-end
-;----------------------------------
-function Yinvec, siz
- XX=fltarr(siz[0],siz[1])
- for i=0, siz[1]-1 do $
- begin
-  X=replicate(i-(siz[0]-1)/2.,siz[1])
-  XX[i,*]=X
- endfor
- return, two2one(XX)
-end
 
 ;-----------------------------
 
@@ -401,6 +442,13 @@ function Voigt2dwt, X, Y, P
 end
 
 ;-----------------------------
+;-----------------------------
+function profile_function, X, Y, P
+
+COMMON WID_MAR345_elements
+ s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
+ if s eq 1 then return, Voigt2dwt(X,Y,P) else return, Gaussian2dwt(X,Y,P)
+end
 
 
 

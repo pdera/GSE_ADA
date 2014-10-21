@@ -25,7 +25,7 @@ endif
 
   WID_MAR345 = Widget_Base( GROUP_LEADER=wGroup, UNAME='WID_MAR345'  $
       ,XOFFSET=5 ,YOFFSET=5 ,SCR_XSIZE=1189 ,SCR_YSIZE=708  $
-      ,TITLE='GSE_ADA ver 1.8, October 21, 2014' ,SPACE=3 ,XPAD=3 ,YPAD=3)
+      ,TITLE='GSE_ADA ver 1.7, August 5, 2014' ,SPACE=3 ,XPAD=3 ,YPAD=3)
 
 
   WID_BUTTON_0 = Widget_Button(WID_MAR345, UNAME='WID_BUTTON_0'  $

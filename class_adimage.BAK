@@ -349,7 +349,7 @@ pro adimage_CLASS::load_image, fname, oadetector, sett
           READ_mar345,fname, image1, header
        end
     4: begin ; TIFF
-          image1 = READ_tiff (fname, /verbose)
+          image1 = READ_tiff (fname, /verbose, as.is=TRUE)
        end
     1: begin
 

@@ -1802,7 +1802,7 @@ begin
     if w[0] ne -1 then $
     begin
      di=[[di],transpose([0,i])]
-     w=[w,n_elements(di2)/2]
+     w=[w,n_elements(di/2)]
      m=max(self.peaks[di[w,1]].intAD[0],kk)
      self->select_peaks, di[w,1]
      self->unselect_peak, di[w[kk],1]

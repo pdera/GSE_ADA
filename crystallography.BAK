@@ -424,7 +424,7 @@ function AA, x, x1,A
  return, -A[1,0]*x[0]*x1[0]-A[1,1]*x[1]*x1[0]-A[1,2]*x[2]*x1[0]+A[0,0]*x[0]*x1[1]+A[0,1]*x[1]*x1[1]+A[0,2]*x[2]*x1[1]
 end
 ;---
-function BB1, x, x1,A
+function BB, x, x1,A
  return,  A[0,0]*x[0]*x1[0]+A[0,1]*x[1]*x1[0]+A[0,2]*x[2]*x1[0]+A[1,0]*x[0]*x1[1]+A[1,1]*x[1]*x1[1]+A[1,2]*x[2]*x1[1]
 end
 ;---
@@ -447,7 +447,7 @@ function general_axis, A, vec, en
  ttheta=tth_from_en_and_d(en,d)
  xyz=Vec*d
  xyz1=A#[1.0,0.0,0.0]
- return, sincos(AA(xyz,xyz1,A),BB1(xyz,xyz1,A),CC(xyz,xyz1,A)-cos((90.0+ttheta/2.0)/!radeg))
+ return, sincos(AA(xyz,xyz1,A),BB(xyz,xyz1,A),CC(xyz,xyz1,A)-cos((90.0+ttheta/2.0)/!radeg))
 end
 
 ;--------------------------------------------------------------------

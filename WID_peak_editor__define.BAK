@@ -294,7 +294,7 @@ end
 ;--------------------------
 
 pro WID_Peak_editor::update_peak
-  common local_pt,pt, pn
+  common local_pt
   COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
 
   pt=self.pt

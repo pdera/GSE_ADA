@@ -354,7 +354,7 @@ COMMON WID_MAR345_elements
  s=widget_info(WID_BUTTON_52ab, /button_set) ;
  return, s
 end
-;-------------------------------------
+
 function profile_function_name
 COMMON WID_MAR345_elements
  s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
@@ -362,6 +362,13 @@ COMMON WID_MAR345_elements
 end
 
 
+;-----------------------------
+function profile_function, X, Y, P
+
+COMMON WID_MAR345_elements
+ s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
+ if s eq 1 then return, Voigt2dwt(X,Y,P) else return, Gaussian2dwt(X,Y,P)
+end
 
 
 
