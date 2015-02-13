@@ -107,44 +107,7 @@ wset, draw0
  end
 end
 
-;--------------
-function grow_peak, arr, bkg, x,y, mins, xmax, ymax
-;-- up
-if y lt ymax-1 then $
-begin
-yu=y+1
-while (arr[x,yu] gt bkg[x,y]+mins) and (yu lt ymax-1) do yu=yu+1
-endif else yu=y
-;-- down
-if y gt 0 then $
-begin
-yd=y-1
-while (arr[x,yd] gt bkg[x,y]+mins) and (yd gt 0) do yd=yd-1
-endif else yd=y
-;-- left
-if x gt 0 then $
-begin
-xl=x-1
-while (max(arr[xl,yd:yu]) gt bkg[x,y]+mins) and (xl gt 0) do xl=xl-1
-endif else xl=x
-;-- right
-if x lt xmax-1 then $
-begin
-xr=x+1
-while (max(arr[xr,yd:yu]) gt bkg[x,y]+mins) and (xr lt xmax-1) do xr=xr+1
-endif else xr=x
-;print, 'peak: ', x,y
-;print, 'grow results:', xl,xr, yd,yu
-;----------- max intensity
-bb=arr[xl:xr,yd:yu]
-m=max(bb,ll)
-XY=ARRAY_INDICES([xr-xl+1,yu-yd+1], ll, /DIMENSIONS)
-return, [xl,xr, yd,yu, xl+xy[0],yd+xy[1]]
-;----------- geometric center
-;XY=[(xr+xl)/2.,(yu+yd)/2.]
-;return, [xl,xr, yd,yu, xy[0],xy[1]]
-end
-;--------------
+
 
 
 ;========================================================================================
@@ -173,10 +136,12 @@ pro peaksearch_CLASS::execute, oimage, oad, excl, butt,  SHOW_PROGRESS_BAR=show_
  ;h=histogram(img1, locations=xs, min=20, max=50000, nbins=1000)
  ;m=max(h,kk)
  ;print, 'histogram max: ', xs[kk]
- print, 'median: ', median(img1[ff])
+;print, 'median: ', median(img1[ff])
 ; window
 ; plot, xs, h, xrange=[0,1000]
 
+if ff[0] ne -1 then $
+begin
  bg=estimate_local_background(num_of_segments[0], num_of_segments[1], img1,  median(img1[ff]), 1.0)
  w=where(img1-bg gt 100.)
  paint_peaks, w, 1000, 1000
@@ -216,6 +181,7 @@ pro peaksearch_CLASS::execute, oimage, oad, excl, butt,  SHOW_PROGRESS_BAR=show_
     if show_progress_bar then cgProgressBar -> Update, 100.0-(n_elements(w)/float(w0))*100.0
 
     goto,oo
+    endif
  end
  ptc=pt->get_object()
  self.peaktable=ptc

@@ -307,6 +307,53 @@ retry: pic=oimage->get_zoomin(XY, bs, maskarr)
 
 
 
+
+;----------------------------------
+
+pro fit_all_peak_PD1, lbcgr, pt
+@COMMON_DATAS
+COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
+common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
+
+     for pn=0, pt.peakno-1 do $
+     begin
+
+     bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+     XY=pt.peaks[pn].detxy
+     if not(XY[0]-bs[0] le 0 or $
+           arr1 - XY[0] le bs[0] or $
+           XY[1]-bs[1] le 0 or $
+           arr2 - XY[1] le bs[1]) then $
+     begin
+      XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
+      yy=yinvec([bs[0]*2+1,bs[1]*2+1])
+
+         pic=oimage->get_zoomin(XY, bs, maskarr)
+
+         p0=fltarr(7)
+         p0[1]=max(pic)
+         p0[2]=1
+         p0[3]=1
+		 p0[4]=bs[0]
+         p0[5]=bs[1]
+
+         Gauss = GAUSS2DFIT( pic, P0, /TILT)
+
+         ; aply position shift only if new center is still within the box
+         if p0[4] gt 0 and p0[4] lt bs[0]*2. and  $
+         p0[5] gt 0 and p0[5] lt bs[0]*2. then $
+         begin
+            xy[0]= (P0[4]-bs[0])+XY[0]
+            xy[1]= (P0[5]-bs[1])+XY[1]
+         endif
+        pt.peaks[pn].detXY=XY
+        endif
+       endfor
+
+ end
+
+
+
 ;----------------------------------
 function determine_optimal_profile, pic, pic2, minsiz
 

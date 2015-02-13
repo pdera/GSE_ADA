@@ -235,7 +235,8 @@ COMMON WID_MAR345_elements,$
  WID_TEXT_opening, $
  WID_BUTTON_refine_calt_p, $
  WID_BUTTON_refine_calt_s, $
- WID_BUTTON_5s ; - peak search series
+ WID_BUTTON_5s, $ ; - peak search series
+ WID_BUTTON_51M
 
 
 

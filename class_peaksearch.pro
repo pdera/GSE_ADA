@@ -136,10 +136,12 @@ pro peaksearch_CLASS::execute, oimage, oad, excl, butt,  SHOW_PROGRESS_BAR=show_
  ;h=histogram(img1, locations=xs, min=20, max=50000, nbins=1000)
  ;m=max(h,kk)
  ;print, 'histogram max: ', xs[kk]
- print, 'median: ', median(img1[ff])
+;print, 'median: ', median(img1[ff])
 ; window
 ; plot, xs, h, xrange=[0,1000]
 
+if ff[0] ne -1 then $
+begin
  bg=estimate_local_background(num_of_segments[0], num_of_segments[1], img1,  median(img1[ff]), 1.0)
  w=where(img1-bg gt 100.)
  paint_peaks, w, 1000, 1000
@@ -179,13 +181,14 @@ pro peaksearch_CLASS::execute, oimage, oad, excl, butt,  SHOW_PROGRESS_BAR=show_
     if show_progress_bar then cgProgressBar -> Update, 100.0-(n_elements(w)/float(w0))*100.0
 
     goto,oo
+    endif
  end
  ptc=pt->get_object()
  self.peaktable=ptc
  obj_destroy, pt
  if show_progress_bar then $
  cgProgressBar -> Destroy
- print, 'Initial number of points:',w0
+ ;print, 'Initial number of points:',w0
  print, 'Computation time: ',systime(/seconds)-t0
 end
 

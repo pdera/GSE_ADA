@@ -1438,7 +1438,12 @@ begin
     bx=read_box_size(wid_text_37,wid_text_37)
     opt->set_zero_peak_box_size, bx
 
-
+    lbcgr=oimage->calculate_local_background(0)
+    for pn=0, opt->peakno()-1 do $
+    begin
+    re=fit_one_peak_PD(pn, lbcgr)
+    re=fit_one_peak_PD(pn, lbcgr)
+    endfor
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
 ;   WID_peakfit2d_L
@@ -1461,18 +1466,17 @@ begin
     ps.mindist   =a4
     ops->set_object, ps
 
+    widget_control, wid_text_6, get_value=ni
+    widget_control, wid_text_7, get_value=i0
+    widget_control, wid_text_4, get_value=om0
+    widget_control, wid_text_5, get_value=omD
+    i0=fix(i0)
+    ni=fix(ni)
+    om0=float(om0)
+    omD=float(omD)
+    widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
 
-
-   widget_control, wid_text_6, get_value=ni
-   widget_control, wid_text_7, get_value=i0
-   widget_control, wid_text_4, get_value=om0
-   widget_control, wid_text_5, get_value=omD
-   i0=fix(i0)
-   ni=fix(ni)
-   om0=float(om0)
-   omD=float(omD)
-   widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
-
+  bx=read_box_size(wid_text_37,wid_text_37)
 
  cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
  cgProgressBar -> Start
@@ -1488,20 +1492,23 @@ begin
     plot_image, oimage
     gonio=fltarr(6)
     gonio[3]=om0+i*omD
-
-
     ops->execute,oimage,oadetector, exclusions, wid_button_9, SHOW_PROGRESS_BAR=0
     ps=ops->get_object()
     ps.peaktable.peaks[*].gonio=gonio
+    bx=read_box_size(wid_text_37,wid_text_37)
+    ps.peaktable.peaks[*].intssd[0:1]=[bx[0],bx[0]]
+
+    lbcgr=oimage->calculate_local_background(0)
+    fit_all_peak_PD1, lbcgr, ps.peaktable
+
     opt->append_peaks, ps.peaktable
     update_peakno, opt->peakno()
+
     cgProgressBar -> Update, (float(i)/float(ni[0]))*100.0
    endfor
     cgProgressBar -> Destroy
     opt->find_multiple_peak_copies
     opt->calculate_all_xyz_from_pix, oadetector, wv
-    bx=read_box_size(wid_text_37,wid_text_37)
-    opt->set_zero_peak_box_size, bx ; ????
     plot_image, oimage
     plot_peaks, draw0, opt, arr1, arr2
     print_peak_list, opt, wid_list_3
@@ -1509,6 +1516,31 @@ begin
    endif else re=Dialog_message('You do not have write permission for the output directory. Please, select a different directory.')
 
  end
+
+'PS Series Pilatus 1M':$
+begin
+  next=1
+  fn=generate_fname(res)
+  b=strpos(fn, '_P0')
+  l=strlen(fn)
+  cc=strmid(fn, 0, b+2)
+  dd=strmid(fn, b+6, l-(b+7-4))
+  print, fn
+  print, cc
+  print, dd
+
+  for i=0, 200 do $
+  begin
+    name=cc+string(i, format='(I04)')+dd
+    re=file_info(name)
+    res=analyse_fname(fn, dir, 3)
+    f0=find_series_start(res)
+    f1=find_series_end(res)
+    print, name, re.exists, f0, f1
+  endfor
+
+
+end
 
  '->':$
  begin
@@ -3042,6 +3074,7 @@ end
    rep=0
    rra:
      re=fit_one_peak_PD(pn, lbcgr)
+     ;re=fit_one_peak_PD1(pn, lbcgr)
 
      pt=opt->get_object()
      XY=pt.peaks[pn].DetXY
@@ -4341,6 +4374,7 @@ common datas
  WIDGET_CONTROL, WID_BUTTON_4, SET_UVALUE='->'
  WIDGET_CONTROL, WID_BUTTON_5, SET_UVALUE='PS'
  WIDGET_CONTROL, WID_BUTTON_5s, SET_UVALUE='PS Series'
+ WIDGET_CONTROL, WID_BUTTON_51M, SET_UVALUE='PS Series Pilatus 1M'
 
  WIDGET_CONTROL, WID_BUTTON_7, SET_UVALUE=''
  WIDGET_CONTROL, WID_BUTTON_8, SET_UVALUE=''
