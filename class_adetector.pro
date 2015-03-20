@@ -106,6 +106,66 @@ end
 pro adetector_class::generate_all_peaks, ub, optable, wv, pred, exti, DAC_open
  ; generates all peaks from crystal represented by orientation matrix UB
 COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
+ kt=read_kappa_and_ttheta()
+ gonio=fltarr(6)
+ gonio[1]=kt[1] ; 2theta
+ gonio[4]=pred.chi ; this should be kappa/chi
+ for h=pred.h1, pred.h2 do $
+ begin
+   for k=pred.k1, pred.k2 do $
+   begin
+     for l=pred.l1, pred.l2 do $
+     begin
+        hkl=[h,k,l]
+        if syst_extinction(exti, hkl) eq 1 then $
+        begin
+        xyz=UB ## hkl
+        om=get_omega(A_to_kev(wv), xyz)
+        ;om=get_omega_nonorthog(A_to_kev(wv), xyz, self.alpha)
+        if om[0] ge pred.om_start and om[0] le pred.om_start+pred.om_range then $
+        begin
+          gonio[3]=om[0]
+          pix=self->calculate_pixels_from_xyz(xyz, gonio)
+          r=(pix-[self.beamx,self.beamy])
+          r=sqrt(r[0]^2+r[1]^2)
+          psi2=self->calculate_psi_angles(gonio, pix)
+          if pix[0] gt 0 and pix[0] lt self.nopixx-1 and  (abs(psi2[1]) lt DAC_open) then $
+          begin
+             ref_peak.detxy=pix
+             ref_peak.gonio=gonio
+             ref_peak.xyz=xyz
+             ref_peak.hkl=hkl
+             optable->appendpeak,ref_peak
+          endif
+        endif else if om[1] ge pred.om_start and om[1] le pred.om_start+pred.om_range then $
+        begin
+          gonio[3]=om[1]
+          pix=self->calculate_pixels_from_xyz(xyz, gonio)
+          r=(pix-[self.beamx,self.beamy])
+          r=sqrt(r[0]^2+r[1]^2)
+          psi2=self->calculate_psi_angles(gonio, pix)
+          if pix[0] gt 0 and pix[0] lt self.nopixx-1  and (abs(psi2[1]) lt DAC_open) then $
+          begin
+             ref_peak.detxy=pix
+             ref_peak.gonio=gonio
+             ref_peak.xyz=xyz
+             ref_peak.hkl=hkl
+             optable->appendpeak,ref_peak
+          endif
+        endif
+        endif
+     endfor
+   endfor
+ endfor
+
+
+end
+;--------------------------------------------------------------------
+
+;------------------------------------
+pro adetector_class::generate_all_peaks1, ub, optable, wv, pred, exti, DAC_open
+ ; generates all peaks from crystal represented by orientation matrix UB
+COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
 common Rota, Mtx
  kt=read_kappa_and_ttheta()
  gonio=fltarr(6)
@@ -135,7 +195,7 @@ common Rota, Mtx
           GenerateR, 3, om[0]
           omi=mtx
           iomi=invert(mtx)
-          gonio[5]=om[0]
+          gonio[3]=om[0] ;------------- change axis here
           pix=self->calculate_pixels_from_xyz(xyz, gonio)
           r=(pix-[self.beamx,self.beamy])
           r=sqrt(r[0]^2+r[1]^2)
@@ -150,7 +210,7 @@ common Rota, Mtx
           endif
         endif else if om[1] ge pred.om_start and om[1] le pred.om_start+pred.om_range then $
         begin
-          gonio[5]=om[1]
+          gonio[3]=om[1] ;------------- change axis here
           pix=self->calculate_pixels_from_xyz(xyz, gonio)
           r=(pix-[self.beamx,self.beamy])
           r=sqrt(r[0]^2+r[1]^2)
@@ -603,8 +663,6 @@ end
 ;-----------------------------------------------------------
 
 
-
-
 ;&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 ;--------------------------------------------------------------------
@@ -614,6 +672,98 @@ end
 ;--------------------------------------------------------------------
 
 function adetector_class::calculate_pixels_from_xyz, xyz, gonio
+; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
+; for now this is for an omega axis
+
+     sd=[0.0,0.0,0.0]
+     pix=[0.0,0.0]
+     xyz1=xyz/vlength(xyz)
+     common Rota, Mtx
+
+     GenerateR, 2, self.alpha
+     al=Mtx
+     GenerateR, 3, gonio[3]
+     om=Mtx
+    ; GenerateR, 3,-self.omega0 ;not using those zeros right now
+    ; om0=Mtx
+     GenerateR, 1, gonio[4]
+     ch=Mtx
+     ;GenerateR, 1, -self.ttheta0 ;not using those zeros right now
+     ;ch0=Mtx
+     iom=invert(om)
+     ;iom0=invert(om0)
+     ich=invert(ch)
+     ;ich0=invert(ch0)
+     ial=invert(al)
+
+     hl=ial##iom##al ##ich##xyz1 ; alpha accounts for non-orthogonality, kappa should account for change in crystal oprientation
+     ;hl=ial##iom##iom0##al##ch0##ich##ich0##xyz1
+
+     sd=calculate_sd_from_hl(hl)
+
+     pix=self->calculate_pixels_from_sd(sd, gonio)
+
+     return, pix
+
+ end
+
+;--------------------------------------------------------------------
+; Calculates recip. versor coordinates from pixel coordinates
+; (including non zero goinio position)
+; Back rotation is applied, so the final vector coordinates are at zero
+; goniometer position
+;---------------------------------------------------------------------
+
+
+function adetector_class::calculate_XYZ_from_pixels, xpix, ypix, gonio
+; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
+
+     common Rota, Mtx
+
+     vec1=[0.0,0.0,0.0]
+     vec2=vec1
+     sd=vec1
+     hl=vec1
+
+     ;----------------------------
+     sd=self->calculate_sd_from_pixels([xpix, ypix], gonio)
+     hl=calculate_hl_from_sd(sd)
+     hl=hl/vlength(hl)
+
+     GenerateR, 2,-self.alpha
+     al=Mtx
+     GenerateR, 3,-gonio[3]
+     om=Mtx
+     ;GenerateR, 3,-self.omega0
+     ;om0=Mtx
+     GenerateR, 1, -gonio[4]
+     ch=Mtx
+     ;GenerateR, 1, -self.ttheta0
+     ;ch0=Mtx
+     iom=invert(om)
+     iom0=invert(om0)
+     ich=invert(ch)
+     ich0=invert(ch0)
+     ial=invert(al)
+
+
+     vec2=al##om##om0##ial##ich0##ch##ch0##hl ; this takes into account nonorthogonal rotation with angle alpha
+
+     return, vec2
+
+ end
+
+;----------------------------------------------------------
+
+;&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+;--------------------------------------------------------------------
+; Calculates pixel coordinates from rec. vector coordinates, allows to apply further
+; goniometer rotation gonio
+; it is assumed that the goniometer rotation is relative to the original position of xyz
+;--------------------------------------------------------------------
+
+function adetector_class::calculate_pixels_from_xyz1, xyz, gonio
 ; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
 ; for now this is for an omega axis
 
@@ -655,7 +805,7 @@ function adetector_class::calculate_pixels_from_xyz, xyz, gonio
 ;---------------------------------------------------------------------
 
 
-function adetector_class::calculate_XYZ_from_pixels, xpix, ypix, gonio
+function adetector_class::calculate_XYZ_from_pixels1, xpix, ypix, gonio
 ; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
 
      common Rota, Mtx

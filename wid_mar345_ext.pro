@@ -12,6 +12,355 @@ pro WID_MAR345_ext_commons
 end
 
 
+;===============================================================
+;===============================================================
+;===============================================================
+
+pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
+
+@COMMON_DATAS
+COMMON WID_MAR345_elements
+COMMON image_type_and_arrays
+common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
+
+
+       pt=opt->get_object()
+       pt.peaks[pn].DetXY[0]= XY[0]+a[5]
+       pt.peaks[pn].DetXY[1]= XY[1]+a[6]
+
+       bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+       XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
+       yy=yinvec([bs[0]*2+1,bs[1]*2+1])
+       p2=long(one2two(profile_function(XX, YY, A)))
+
+
+       pic=oimage->get_zoomin(XY, bs, maskarr)
+
+       ;---- if part of the box area is outside active circle, replace 0 with local background ------
+       cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
+       c=where(cc eq 1)
+       if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
+
+       ;---------------------------------------------------------------------------------------------
+
+
+       attt=evaluate_fit_quality(pic, p2)
+       if attt[0] gt 0 then $
+       begin
+          opt->select_peak, pn
+       endif else $
+       begin
+
+       gonio=pt.peaks[pn].gonio
+       kt=read_kappa_and_ttheta()
+       gonio[1]=kt[1]
+       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pn].DetXY, gonio, wv)
+
+     ;------------
+       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pn].DetXY, gonio)
+       nu=ang_between_vecs([0.0,sd[1],sd[2]],[0.,-1.,0.])
+       nu1=oadetector->get_nu_from_pix(pt.peaks[pn].DetXY)
+       ;print, nu, nu1
+       tth=get_tth_from_xyz(pt.peaks[pn].xyz)
+       II=(A[1]*A[2]*A[3])*2.*!pi
+       si=2.*!pi*(A[2]*A[3]*PCERROR[1]+A[1]*A[2]*PCERROR[3]+A[1]*A[3]*PCERROR[2])
+       ty=I_corrections()
+
+      ;-- Lorenz correction
+      if ty[1] eq 1 then $
+      begin
+       ii=II/lorenz(xyz, gonio, wv)
+       si=sI/lorenz(xyz, gonio, wv)
+      endif
+
+     ;-- polarization correction
+      if ty[2] eq 1 then $
+      begin
+       P1=0.9
+       mu=20.41
+       h=0.005
+       v=vert_polariz()*90.0+nu
+       ii=II/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
+       si=sI/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
+      endif
+      ;-- CBN absorption correction
+      if ty[0] eq 1 then $
+      begin
+       om0= 0.0
+       ii=II/dac_profile(pt.peaks[pn].gonio[axis]+om0,1)
+       si=sI/dac_profile(pt.peaks[pn].gonio[axis]+om0,1)
+      end
+
+    ;-- omega polynomial correction
+       aom=omega_correction(pt.peaks[pn].gonio[axis])
+       ii=II*aom
+       si=sI*aom
+
+       pt.peaks[pn].energies[2]=A[2] ; width 2th
+       pt.peaks[pn].energies[3]=A[3] ; width chi
+       pt.peaks[pn].energies[4]=A[4] ; tilt
+       pt.peaks[pn].energies[5]=A[0] ; background
+
+       pt.peaks[pn].intAD[0]=ii
+       pt.peaks[pn].intAD[1]=si
+       opt->set_object, pt
+       end
+
+end
+;----------------------------------
+
+
+
+pro cell_now_solution_n, n
+fil='E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\cell_now_commands.txt
+get_lun, ln
+openw, ln, fil
+printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx.p4p'
+printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx._cn'
+printf, ln, 'Enter'
+printf, ln, '10'
+printf, ln, '2 20'
+printf, ln, '0.25'
+a=string(n)
+b=STRCOMPRESS(a, /REMOVE_ALL)
+printf, ln,  b
+printf, ln, '0.25'
+printf, ln, 'A'
+printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\1.p4p'
+printf, ln, 'Q'
+close, ln
+free_lun, ln
+end
+
+function find_opx_cell, cells
+  sz=size(cells)
+  nm=sz[2]
+  opx=-1
+  cpx=-1
+  for i=nm-1, 0, -1 do $
+  begin
+    if (abs(cells[3,i]-90.) lt 1.0) and (abs(cells[4,i]-90.) lt 1.0) and (abs(cells[5,i]-90.) lt 1.0) then opx=i
+    if (abs(cells[3,i]-90.) lt 1.0) and (cells[4,i] gt 91.0) and (cells[4,i] lt 100.0) and (abs(cells[5,i]-90.) lt 1.0) then cpx=i
+  endfor
+  return, [opx,cpx]
+end
+
+
+;--------------------------------
+function exclude_corners
+COMMON WID_MAR345_elements
+ re=WIDGET_INFO(WID_BUTTON_20aa3, /BUTTON_SET)
+ return, re
+end
+;--------------------------------
+function current_vs_series
+COMMON WID_MAR345_elements
+ re=WIDGET_INFO(WID_BUTTON_412b, /BUTTON_SET)
+ return, re
+end
+
+;--------------------------------
+function read_cells_from_cellnow
+   lp=fltarr(6)
+   lp0=fltarr(6)
+   fil='E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx._cn'
+   get_lun, ln
+   openr, ln, fil
+   re=''
+   while strmid(re,0, 4) ne ' FOM' and not eof(ln) do $
+   begin
+    readf, ln, re
+    ;print, re
+   endwhile
+    readf, ln, re
+    ;print, re
+   ;--- reading cell parameters sets
+   readf, ln, re
+   for i=0, 5 do lp[i]=strmid(re, 18+i*8,8)
+   num=1
+   while strmid(re,0, 3) eq '   ' and not eof(ln) do $
+   begin
+    lp=[[lp],[lp0]]
+    readf, ln, re
+    for i=0, 5 do lp[i, num]=strmid(re, 18+i*8,8)
+    num=num+1
+   endwhile
+   close, ln
+   free_lun, ln
+    ;print, lp
+   ;print, size(lp)
+   return, lp
+end
+
+;---------------------------
+
+function PS, om, axis
+@COMMON_DATAS
+COMMON WID_MAR345_elements
+COMMON image_type_and_arrays
+COMMON cont
+common selections
+common mcoordinates
+COMMON EX
+COMMON prof
+COMMON CLASS_peaktable_reference
+common status, PE_open, SIM_open
+common calib_ref, zeroref
+
+    ps=ops->get_object()
+    read_ps_settings, a1,a2,a3,a4
+    capture_calibration, oadetector, wv
+
+    ps.threshold =float(a1)
+    ps.pbox      =float(a2)
+    ps.bbox      =float(a3)
+    ps.mindist   =a4
+    ops->set_object, ps
+
+    widget_control, wid_text_6, get_value=ni
+    widget_control, wid_text_7, get_value=i0
+    widget_control, wid_text_4, get_value=om0
+    widget_control, wid_text_5, get_value=omD
+    i0=fix(i0)
+    ni=fix(ni)
+    om0=float(om0)
+    omD=float(omD)
+    widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
+
+    bx=read_box_size(wid_text_37,wid_text_37)
+
+    plot_image, oimage
+    ops->execute,oimage,oadetector, exclusions, wid_button_9, SHOW_PROGRESS_BAR=0
+    ps=ops->get_object()
+    bx=read_box_size(wid_text_37,wid_text_37)
+    ps.peaktable.peaks[*].intssd[0:1]=[bx[0],bx[0]]
+    gonio=fltarr(6)
+    gonio[axis]=om
+    ps.peaktable.peaks[*].gonio=gonio
+
+    lbcgr=oimage->calculate_local_background(0)
+    fit_all_peak_PD1, lbcgr, ps.peaktable
+
+    opt->append_peaks, ps.peaktable
+    update_peakno, opt->peakno()
+ ;   opt->find_multiple_peak_copies
+    opt->calculate_all_xyz_from_pix, oadetector, wv
+    return, opt->peakno()
+end
+;--------------------------------------------------
+
+function PS_Series
+@COMMON_DATAS
+COMMON WID_MAR345_elements
+COMMON image_type_and_arrays
+COMMON cont
+common selections
+common mcoordinates
+COMMON EX
+COMMON prof
+COMMON CLASS_peaktable_reference
+common status, PE_open, SIM_open
+common calib_ref, zeroref
+    lp=fltarr(13)
+    lpo=fltarr(13)
+    lpc=fltarr(13)
+    widget_control, wid_text_6, get_value=ni
+    widget_control, wid_text_7, get_value=i0
+    widget_control, wid_text_4, get_value=om0
+    widget_control, wid_text_5, get_value=omD
+    i0=fix(i0)
+    ni=fix(ni)
+    om0=float(om0)
+    omD=float(omD)
+    widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
+
+    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+    cgProgressBar -> Start
+
+
+    for i=0, ni[0]-1 do $
+    begin
+     res.seq=i0[0]+i
+     fn=generate_fname(res)
+     res=analyse_fname(fn, dir, 3)
+     widget_control, wid_text_9, set_value=res.name0
+     oimage->load_image, fn, oadetector
+     plot_image, oimage
+     a=PS(om0+i*omD, 3)
+     cgProgressBar -> Update, (float(i)/float(ni[0]))*100.0
+   endfor
+    cgProgressBar -> Destroy
+    opt->find_multiple_peak_copies
+    ;opt->recalculate_all_xyz, oadetector, wv
+    update_peakno, opt->peakno()
+
+    opt->calculate_all_xyz_from_pix, oadetector, wv
+    plot_image, oimage
+    plot_peaks, draw0, opt, arr1, arr2
+    print_peak_list, opt, wid_list_3
+    update_peakno, opt->peakno()
+    opt->write_object_to_file, fn+'.pks'
+    ;---------- determine UB matrix with
+
+    cell_now_solution_n, 1
+
+    a=opt->save_p4p('E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx.p4p')
+    SETENV, 'MYARG="E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\run_cellnow.cmd"'
+    spawn, '%MYARG%'  , /LOG_OUTPUT
+
+
+    opx_cpx=find_opx_cell(read_cells_from_cellnow())
+    if opx_cpx[0] gt 0 then $
+    begin
+      cell_now_solution_n, opx_cpx[0]+1
+      spawn, '%MYARG%'  , /LOG_OUTPUT
+    endif else $
+    if opx_cpx[1] gt 0 then $
+    begin
+      cell_now_solution_n, opx_cpx[1]+1
+      spawn, '%MYARG%'  , /LOG_OUTPUT
+    endif
+    pas:
+    ub=ReadUBfrom_p4p('E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\1.p4p')
+    lp= lp_from_ub(UB)
+    if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2
+    tol=0.15
+    opt->select_indexable, ub, tol
+    plot_peaks, draw0, opt, arr1, arr2
+    opt->delete_selected
+    lp=Refine_B_against_d(ub, opt, symm)
+    opt->delete_selected
+    lp=Refine_B_against_d(ub, opt, symm)
+    opt->delete_selected
+    if symm eq 2 then $
+    lpo=Refine_B_against_d(ub, opt, symm) else $
+    lpc=Refine_B_against_d(ub, opt, symm)
+    plot_image, oimage
+    plot_peaks, draw0, opt, arr1, arr2
+    if symm eq 2 then $
+    begin
+      opt->write_object_to_file, fn+'_io.pks'
+      if opx_cpx[1] gt -1 then $
+      begin
+        cell_now_solution_n, opx_cpx[1]+1
+        spawn, '%MYARG%'  , /LOG_OUTPUT
+        symm=12
+        opt->select_indexable, ub, tol
+    	plot_peaks, draw0, opt, arr1, arr2
+    	opt->delete_selected
+    	lp=Refine_B_against_d(ub, opt, symm)
+    	opt->delete_selected
+    	lp=Refine_B_against_d(ub, opt, symm)
+    	opt->delete_selected
+    	lpc=Refine_B_against_d(ub, opt, symm)
+        opt->write_object_to_file, fn+'_ic.pks'
+      endif
+    endif else $
+    begin
+      opt->write_object_to_file, fn+'_ic.pks'
+    endelse
+    return, [[lpo],[lpc]]
+end
 ;---------------------------
 
 function read_cal_type
@@ -23,6 +372,76 @@ return, rex
 end
 ;---------------------------
 
+
+function Refine_B_against_d, ub, optable1, sym
+
+       ;sym=2 for orthorhombic
+
+       ds=optable1->BUILD_d_list()
+       hkls=optable1->BUILD_hkls()
+       lp=lp_from_ub(ub)
+       lp1=automatic_lp_refinement3(lp, ds, hkls, sym)
+       lp=lp_from_ub(ub)
+       ;change ub matrix
+       b1=b_from_lp(lp1)
+       b0=b_from_lp(lp)
+       u0=ub ## invert(b0)
+       ub=u0 ## b1
+       lp1[0:5]=lp_from_ub(ub)
+       print, 'refined cell parameters', lp1
+       ddd=[-0.005, 0.005] ;$$$$$$$$$$$$$$$$$$$$$
+       lp=lp_from_ub(ub)
+       pt=optable1->get_object()
+       N=pt.peakno
+       ds=fltarr(N)
+       dsc=fltarr(N)
+       a=fltarr(N)
+       ss=optable1->calculate_Ddd(lp)
+       sel1=where(ss le ddd[0])
+       sel2=where(ss ge ddd[1])
+       if sel1[0] ne -1 then optable1->select_peaks, sel1
+       if sel2[0] ne -1 then optable1->select_peaks, sel2
+       print, n_elements(sel1)+n_elements(sel2), 'peaks selected'
+       return, lp1
+
+end
+;---------------------------
+function ReadUBfrom_p4p, res
+ub=fltarr(3,3)
+	if res ne '' then $
+	begin
+ 		FREE_LUN,2
+ 		OPENR, 2, res
+ 		str='       '
+ 		str1=''
+ 		str2=''
+ 		str3=''
+ 		; search for beginning of reflection block
+ 		while str ne 'CELLSD' and not eof(2) do $
+   			readf, 2, str, format='(A6)'
+ 		if not eof(2) then $
+ 		begin
+   			readf, 2, str1
+			readf, 2, str2
+			readf, 2, str3
+     		CLOSE, 2
+    		FREE_LUN,2
+    		ub[0,0]=float(strmid(str1, 7,16))
+    		ub[1,0]=float(strmid(str1, 23,16))
+    		ub[2,0]=float(strmid(str1, 39,16))
+
+    		ub[0,1]=float(strmid(str2, 7,16))
+    		ub[1,1]=float(strmid(str2, 23,16))
+    		ub[2,1]=float(strmid(str2, 39,16))
+
+    		ub[0,2]=float(strmid(str3, 7,16))
+    		ub[1,2]=float(strmid(str3, 23,16))
+    		ub[2,2]=float(strmid(str3, 39,16))
+ 		endif
+ 		endif
+ 		return, ub
+end
+;--------------
 
 function read_inversions
 COMMON WID_MAR345_elements

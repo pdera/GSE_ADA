@@ -102,7 +102,7 @@ COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
   read_predict_settings, pred
   oadetector->generate_all_peaks, ub, opt, wv, pred, self->Bravais_type(),DAC_open
   ;oadetector->generate_peaks_laue, ub, opt, pred, [float(en0),float(en1)]
-  if exclude_corners() eq 1 then $
+  if exclude_corners() eq 0 then $
      opt->remove_peaks_outside_aa, oadetector
    bx=read_box_size()
    opt->set_zero_peak_box_size, bx

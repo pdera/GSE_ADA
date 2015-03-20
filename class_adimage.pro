@@ -205,9 +205,9 @@ Sy=sz[2]/Ny
 
 out=fltarr(sz[1], sz[2])
 
-for i=0, Nx-1 do $
+for i=0, Nx-2 do $
 begin
-   for j=0, Ny-1 do $
+   for j=0, Ny-2 do $
    begin
     reg=self.img[i*Sx:(i+1)*Sx, j*Sy:(j+1)*Sy]
     f=where(reg gt 10)

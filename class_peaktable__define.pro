@@ -109,7 +109,84 @@ function CLASS_peaktable::peak_pos_diff_one, ubc, oadn, pred, wv, k
 end
 
 ;--------------
+
+function CLASS_peaktable::calculate_Ddd, lp
+; calculates difference between observed (from xyz) and calculated (from lp) d-spacings
+       N=self.peakno
+       ds=fltarr(N)
+       dsc=fltarr(N)
+       a=fltarr(N)
+       for i=0, n-1 do $
+       begin
+        ds[i]=1.0/vlength(self.peaks[i].xyz)
+        dsc[i]= d_from_lp_and_hkl(lp, self.peaks[i].hkl)
+       endfor
+       return,(ds-dsc)/dsc
+end
+
+;-------------------------------------------------
+
 ;--------------
+function CLASS_peaktable::BUILD_d_list
+; creates a vector of d-spacings
+; requires correct xyz lengths
+ dlist=fltarr(self.peakno)
+ for i=1, self.peakno do dlist[i-1]=1/vlength(self.peaks[i-1].XYZ)
+ return, dlist
+end
+;--------------
+function CLASS_peaktable::build_HKLs
+HKLs=fltarr(3,self.peakno)
+  for i=1, self.peakno do $
+   HKLs[0:2,i-1]=self.peaks[i-1].hkl
+   return,HKLs
+end
+;----------
+function CLASS_peaktable::build_XYZs
+XYZs=fltarr(3,self.peakno)
+  for i=1, self.peakno do $
+   XYZs[0:2,i-1]=self.peaks[i-1].xyz
+   return, XYZs
+end
+;------------------------------------------------------
+
+pro CLASS_peaktable::select_indexable, ub, limit
+
+; reindexes peaktable with a limit
+
+  iUB=invert(UB)
+  ind=0
+  self->unselect_all
+  for i=0, self.peakno-1 do $
+  begin
+     vec=iUB##self.peaks[i].XYZ
+     hkla=[round(vec[0]),round(vec[1]),round(vec[2])]
+     dhkl=vlength(hkla-vec)
+     if dhkl gt limit or $
+        (abs(vec[0]) lt limit and abs(vec[1]) lt limit and abs(vec[2]) lt limit) then $
+     begin
+        self.peaks[i].HKL=[0,0,0]
+        self.peaks[i].selected[0]=1
+        self.selectedno=self.selectedno+1
+     endif else $
+     begin
+        self.peaks[i].HKL=hkla
+        self.peaks[i].selected[0]=0
+        ind=ind+1
+     endelse
+  endfor
+
+end
+;---------------------------------------------
+
+function CLASS_peaktable::get_rotations, axis
+  if axis ge 0 and axis le 5 then $
+  return, self.peaks[*].gonio[axis] else return, -1
+end
+;--------------
+function CLASS_peaktable::get_DetXY, i
+  return, self.peaks[i].DetXY
+end
 ;--------------
 
 pro CLASS_peaktable::move_sel_peaks_AtoB, opt
@@ -159,6 +236,97 @@ function CLASS_peaktable::peak_pos_diff, ub, oadet, pred,wv
   endfor
   return,sum/self.peakno
 end
+
+;-------------------------------------------------
+function CLASS_peaktable::save_p4p, fname
+
+          if n_params()  eq 0 then fname=dialog_pickfile(FILTER='*.p4p', /WRITE, DEFAULT_EXTENSION='p4p')
+          free_lun, 4
+          if fname ne '' then $
+          begin
+          OPENW, 4, fname
+
+
+            printf, 4, 'FILEID Seattle      ?             4.00        08/20/08 14:27:16 C8H8Se3'
+			printf, 4, 'SITEID ?                                  ?'
+			printf, 4, 'TITLE  ?'
+			printf, 4, 'CHEM   C8 H8 Se3'
+			printf, 4, 'CELL      4.9159   11.1888   16.6681   90.0000   90.0000   90.0000    916.791'
+			printf, 4, 'CELLSD    0.0011    0.0028    0.0091    0.0000    0.0000    0.0000     0.229'
+			printf, 4, 'ORT1    -4.4774786e-002  2.9954357e-002  5.4960791e-002'
+			printf, 4, 'ORT2    -4.7662384e-002  7.9853413e-002 -2.2988310e-002'
+			printf, 4, 'ORT3    -1.9262548e-001 -2.6721303e-002 -7.0872242e-003'
+			printf, 4, 'ZEROS   0.0000000  0.0000000  0.0000000    0.0000    0.0000    0.0000'
+			printf, 4, 'SOURCE ?      0.41328   0.41328   0.41328   1.00000    0.00    0.00'
+			printf, 4, 'LIMITS    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00'
+			printf, 4, 'MORPH  ?'
+			printf, 4, 'DNSMET ?'
+			printf, 4, 'CCOLOR ?'
+			printf, 4, 'CSIZE  ?            ?            ?            ?            ?'
+			printf, 4, 'ADPAR      512.0000    512.0000      5.0000    1024'
+			printf, 4, 'ADCOR       20.1957      9.0120     -0.0658      0.0000      0.0000      0.0000'
+			printf, 4, 'BRAVAIS Orthorhombic          P'
+       		printf, 4, 'MOSAIC  0.44 0.84'
+
+          for i=1, self.peakno do $
+          begin
+            st = 'REF1K H      -1  -4   2 -30.000 180.000   0.150  54.736   15.40  166.45 1691.26    158'+$
+                 string(self.peaks[i-1].xyz[0], format='(F11.6)')+$
+                 string(self.peaks[i-1].xyz[1], format='(F11.6)')+$
+                 string(self.peaks[i-1].xyz[2], format='(F11.6)')+$
+                 '   0.000   0.000   0.000   0.000 '
+
+            PRINTF, 4, st
+          endfor
+          PRINTF, 4,'DATA  SPATIAL linear          linear          3.0  512.00  512.00   17.000   3136 1024'
+          CLOSE, 4
+          free_lun, 4
+          endif
+          return, fname
+end
+;-------------------------------------------------
+;-------------------------------------------------
+
+pro CLASS_peaktable::import_p4p, fname
+COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
+
+; returns peak number
+res=file_info(fname)
+xyz=fltarr(3)
+if res.exists eq 1 then $
+begin
+ FREE_LUN,2
+ OPENR, 2, fname
+ str='     '
+ ; search for beginning of reflection block
+ while str ne 'MOSA' and not eof(2) do $
+   readf, 2, str, format='(A4)'
+ readf, 2, str
+ if strmid(str,0,5) eq 'REF1K' then $
+ begin
+  x=float(strmid(str,86,10))
+  y=float(strmid(str,96,10))
+  z=float(strmid(str,106,10))
+  xyz=[x,y,z]
+  ref_peak.xyz=xyz
+  self->appendpeak,ref_peak
+  while strmid(str,0,5) eq 'REF1K' and not eof(2) do $
+  begin
+    readf, 2, str
+    x=float(strmid(str,86,10))
+    y=float(strmid(str,96,10))
+    z=float(strmid(str,106,10))
+    xyz=[x,y,z]
+    ref_peak.xyz=xyz
+    self->appendpeak,ref_peak
+  endwhile
+ endif
+ CLOSE, 2
+ FREE_LUN,2
+endif
+end
+
+;--------------------------------------------------------------------
 
 ;--------------
 function CLASS_peaktable::build_HKLs

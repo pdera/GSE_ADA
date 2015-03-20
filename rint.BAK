@@ -1200,8 +1200,8 @@ begin
   an=pt.peaks[i].gonio[axis]
   bx=min(abs(x1-an),dd)
   bb=b[dd]+1.0 ; this is the spline function
-  pt.peaks[i].IntAD[0]=pt.peaks[i].IntAD[0]/bb
-  pt.peaks[i].IntAD[1]=pt.peaks[i].IntAD[1]/bb
+  pt.peaks[s[i]].IntAD[0]=pt.peaks[s[i]].IntAD[0]/bb
+  pt.peaks[s[i]].IntAD[1]=pt.peaks[s[i]].IntAD[1]/bb
 endfor
 opt->set_object, pt
 

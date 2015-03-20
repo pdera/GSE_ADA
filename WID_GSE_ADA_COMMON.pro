@@ -236,7 +236,9 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_refine_calt_p, $
  WID_BUTTON_refine_calt_s, $
  WID_BUTTON_5s, $ ; - peak search series
- WID_BUTTON_51M
-
-
+ WID_BUTTON_51M, $
+ WID_BUTTON_412b, $
+ WID_BUTTON_413b, $
+ WID_BUTTON_20aa3, $
+ WID_BUTTON_47b
 
