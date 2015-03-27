@@ -438,13 +438,21 @@ WIDGET_CONTROL, WID_BUTTON_20aa1, SET_BUTTON=1
       ,XOFFSET=201 ,YOFFSET=325 ,SCR_XSIZE=153 ,SCR_YSIZE=32  $
       ,/ALIGN_CENTER ,VALUE='Merge step images')
 
+ WID_Base_wholeseries = Widget_base(WID_BASE_3, UNAME='WID_Base_wholeseries'  $
+      ,XOFFSET=370, YOFFSET=325, /NONEXCLUSIVE)
+
+
+ WID_BUTTON_wholeseries = Widget_Button(WID_Base_wholeseries, UNAME='WID_Button_wholeseries',VALUE='Whole p-series')
+
+
+
  WID_BUTTON_38ab = Widget_Button(WID_BASE_3, UNAME='WID_BUTTON_38ab'  $
       ,XOFFSET=201 ,YOFFSET=275 ,SCR_XSIZE=153 ,SCR_YSIZE=32  $
       ,/ALIGN_CENTER ,VALUE='Integrate Pilatus')
 
- WID_TABLE_pil = Widget_table(WID_BASE_3, UNAME='WID_table_pil'  $
-      ,XOFFSET=360 ,YOFFSET=275 ,XSIZE=1 ,YSIZE=10  $
-      ,/ALIGN_CENTER, /EDITABLE, COLUMN_WIDTHS=[50])
+ ;WID_TABLE_pil = Widget_table(WID_BASE_3, UNAME='WID_table_pil'  $
+ ;     ,XOFFSET=360 ,YOFFSET=275 ,XSIZE=1 ,YSIZE=10  $
+ ;     ,/ALIGN_CENTER, /EDITABLE, COLUMN_WIDTHS=[50])
 
   WID_TEXT_39 = Widget_Text(WID_BASE_3, UNAME='WID_TEXT_39'  $
       ,XOFFSET=101 ,YOFFSET=408 ,SCR_XSIZE=78 ,SCR_YSIZE=21 ,XSIZE=20  $

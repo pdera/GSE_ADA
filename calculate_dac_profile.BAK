@@ -170,7 +170,7 @@ function generate_abs, omin, omax
  for i=0, 180 do $
  begin
    b[0,i]=omin+i*ostep
-   b[1,i]=dac_profile(b[0,i],1)
+   b[1,i]=dac_profile(b[0,i]+i*0.5,1)
  endfor
  return, b
 end

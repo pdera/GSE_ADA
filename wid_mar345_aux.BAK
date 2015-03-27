@@ -1119,7 +1119,7 @@ if refine_twist() eq 0 then $
 'Dac absorption':$
 begin
        wset, wid_draw_6
-       a=generate_abs()
+       a=generate_abs(-120, -60)
        s=n_elements(a)/2
        device, decomposed=1
        n=n_elements(tab)
@@ -1441,6 +1441,7 @@ begin
     print, '----------------------'
    endif
  end
+
 
 'PS Series Pilatus 1M':$
 begin
@@ -3159,7 +3160,7 @@ end
        n=n_elements(re)-1
        A=re[1:n/2]
        PCERROR=re[n/2+1:n]
-       peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
+  ;     peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
      endelse
    endfor
 
@@ -3746,6 +3747,10 @@ begin
     ni=reform(fix(ni))
     sum=fltarr(arr1,arr2)
     cnt=Intarr(arr1,arr2)
+
+    if not(whole_p_series()) then $
+    begin
+
     for i=0, ni[0]-1 do $
     begin
       res.seq=i0[0]+i
@@ -3754,30 +3759,6 @@ begin
       widget_control, wid_text_9, set_value=res.name0
       oimage->load_image, fn, oadetector
       check_mask_file
-      ; Dynamic mask
-     ;  om=read_settings_file(dir+res.name0+'.txt')
-
-;       if  dynamic_mask_on() then $
-;       begin
-;        t1=SYSTIME(/SECONDS )
-;        ;*************************************
-
-        ;*************************************
-;		  mydll='AD_image8.dll'
-; 		  re=file_info(mydll)
-; 		  if re.exists eq 1 then $
-; 		  begin
-;           ad=oadetector->get_object()
-; 		   beamxy=[double(ad.beamX),double(ad.beamY)]
-;    	   tiltmtx=oadetector->tilt_mtx()
-; 	       psize=[double(ad.psizeX),double(ad.psizeY)]
-;           nopix=[Long(ad.nopixX),Long(ad.nopixY)]
-;           dist=double(ad.dist)
-;           kath=read_kappa_and_ttheta()
-;           status=call_external(mydll, 'IDL_dynamic_mask', maskarr, DIST, beamxy, nopix, tiltMtx, psize, double(kath[1]),double(om[0]+90.0),double(30.0))
-;          endif else re=dialog_message('DLL library not found',/message)
-        ;*************************************
-;      endif
       plot_image, oimage
       im=oimage->get_object()
       sum=sum+im.img*maskarr
@@ -3791,6 +3772,57 @@ begin
     maskarr[*,*]=1
     plot_image, oimage
     print, '--> done'
+    endif else $
+    begin
+;------------------------ merge whole series
+
+  fn=generate_fname(res)
+  b=strpos(fn, '_P0')
+  l=strlen(fn)
+  cc=strmid(fn, 0, b+2)
+  dd=strmid(fn, b+6, l-(b+7-4))
+  maskarr[*,*]=1
+
+  for i=0, 300 do $
+  begin
+    t0=systime(/seconds)
+    name=cc+string(i, format='(I04)')+dd
+    re=file_info(name)
+    res=analyse_fname(name, '', 3)
+    f0=find_series_start(res)
+    f1=find_series_end(res)
+    print, name, re.exists, f0, f1
+    if (re.exists eq 1) and (f0 eq 1) then $
+    begin; ----- processing individual pressure
+      sum=fltarr(arr1,arr2)
+      cnt=Intarr(arr1,arr2)
+      for ij=0, ni[0]-1 do $
+      begin
+        res.seq=i0[0]+ij
+        fn=generate_fname(res)
+        res=analyse_fname(fn, dir, 3)
+        widget_control, wid_text_9, set_value=res.name0
+        oimage->load_image, fn, oadetector
+        plot_image, oimage
+        im=oimage->get_object()
+        sum=sum+im.img*maskarr
+        cnt=cnt+maskarr
+        update_progress, float(ij+1)/ni
+      endfor
+      im.img=ni[0]*sum/cnt
+      w=where(cnt eq 0)
+      if w[0] ne -1 then im.img[w]=0
+      oimage->set_object, im
+      plot_image, oimage
+      nn=cc+string(i, format='(I04)')+'.tif'
+      write_tiff, nn, reverse(im.img,2), /long
+
+      print, '--> done', nn
+
+    endif
+  endfor
+ print, '------------------------- FINISHED ----------------------------'
+ endelse
 end
 ;-------end
  'Use exclusions':$
@@ -4156,6 +4188,7 @@ begin
     scale2=arr2/600.
     ds=which_calibrant(200., 1)
     tths=tth_from_en_and_d(A_to_keV(wv), ds)
+    kath=read_kappa_and_ttheta()
     for i=0, n_elements(tths)-2 do $
     plot_ds_ring, tths[i], scale1, scale2, 0
     plot_ds_ring, tths[n_elements(tths)-1], scale1, scale2, 0
@@ -4792,6 +4825,9 @@ WIDGET_CONTROL, WID_TEXT_opening,SET_VALUE='25.0'
  WIDGET_CONTROL, WID_Droplist_brav, SET_UVALUE='laue class'
  WIDGET_CONTROL, WID_text_rinta, SET_UVALUE='rint display'
  WIDGET_CONTROL, WID_BUTTON_select, SET_UVALUE='scale select'
+ WIDGET_CONTROL, WID_BUTTON_wholeseries, SET_UVALUE='Whole p-series'
+
+
  WIDGET_CONTROL, WID_text_sel1, SET_UVALUE=''
  WIDGET_CONTROL, WID_text_sel2, SET_UVALUE=''
  WIDGET_CONTROL, WID_text_sel1, SET_VALUE=' 0.5'
@@ -4809,7 +4845,7 @@ WIDGET_CONTROL, WID_TEXT_opening,SET_VALUE='25.0'
   vals=fltarr(N)
   vals=vals+1.0
   vals=string(vals)
-WIDGET_CONTROL,  WID_TABLE_pil, SET_VALUE=transpose(vals)
+;WIDGET_CONTROL,  WID_TABLE_pil, SET_VALUE=transpose(vals)
 
 
 Widget_Control, WID_DRAW_0, DRAW_BUTTON_EVENTS=1

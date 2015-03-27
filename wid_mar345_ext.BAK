@@ -11,17 +11,86 @@ pro WID_MAR345_ext_commons
 
 end
 
+;--------------------------------
+function read_polar
+COMMON WID_MAR345_elements
+ widget_control, wid_text_14, get_value=uv
+ return, float(uv)
+end
+
+;--------------------------------
+
+pro update_progress, prog
+COMMON WID_MAR345_elements
+ widget_control, wid_text_8, set_value=string(prog*100.0, format='(I4)')+'%'
+end
+
+function read_kappa_and_ttheta
+COMMON WID_MAR345_elements
+ widget_control, wid_text_36a, get_value=ka
+ widget_control, wid_text_36b, get_value=tth
+ return, [float(ka),float(tth)]
+end
+
+;--------------------------------
+
+function read_box_size, text1, text2
+COMMON WID_MAR345_elements
+ text1=wid_text_37
+ text2=wid_text_37
+ widget_control, text1, get_value=px
+ widget_control, text2, get_value=py
+ px=long(px)
+ py=long(py)
+ px=px[0]
+ py=py[0]
+ return, [px,py]
+end
+
+
+;--------------------------------
+
+function hkl_labels_on
+COMMON WID_MAR345_elements
+ return, widget_info(wid_button_19, /button_set)
+end
+
+;-------------------------------
+
+function omega_or_energy
+COMMON WID_MAR345_elements
+re=widget_info(wid_button_7, /button_set)
+return, re ; 1=om, 0=en
+end
+
+;-------------------------------
+
+function I_corrections
+COMMON WID_MAR345_elements
+re1=widget_info(wid_button_51a, /button_set) ; dac abs
+re2=widget_info(wid_button_51, /button_set) ; Lorenz
+re3=widget_info(wid_button_52, /button_set) ; Polariz
+return, [re1,re2, re3] ; 1=apply, 0=don't apply
+end
+
+;--------------------------------
+function vert_polariz
+COMMON WID_MAR345_elements
+ s=widget_info(WID_BUTTON_52ab, /button_set) ;
+ return, s
+end
 
 ;===============================================================
 ;===============================================================
 ;===============================================================
 
-pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis
+pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
 
 @COMMON_DATAS
-COMMON WID_MAR345_elements
-COMMON image_type_and_arrays
-common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
+@COMMON_DATAS2
+;COMMON WID_MAR345_elements
+;COMMON image_type_and_arrays
+;common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
 
 
        pt=opt->get_object()
@@ -112,11 +181,12 @@ end
 
 
 pro cell_now_solution_n, n
-fil='E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\cell_now_commands.txt
+dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+fil=dir+'cell_now_commands.txt
 get_lun, ln
 openw, ln, fil
-printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx.p4p'
-printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx._cn'
+printf, ln, dir+'xxx.p4p'
+printf, ln, dir+'xxx._cn'
 printf, ln, 'Enter'
 printf, ln, '10'
 printf, ln, '2 20'
@@ -126,7 +196,7 @@ b=STRCOMPRESS(a, /REMOVE_ALL)
 printf, ln,  b
 printf, ln, '0.25'
 printf, ln, 'A'
-printf, ln, 'E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\1.p4p'
+printf, ln, dir+'1.p4p'
 printf, ln, 'Q'
 close, ln
 free_lun, ln
@@ -163,7 +233,8 @@ end
 function read_cells_from_cellnow
    lp=fltarr(6)
    lp0=fltarr(6)
-   fil='E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx._cn'
+   dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+   fil=dir+'xxx._cn'
    get_lun, ln
    openr, ln, fil
    re=''
@@ -196,14 +267,15 @@ end
 
 function PS, om, axis
 @COMMON_DATAS
+@COMMON_DATAS2
 COMMON WID_MAR345_elements
-COMMON image_type_and_arrays
-COMMON cont
-common selections
-common mcoordinates
-COMMON EX
-COMMON prof
-COMMON CLASS_peaktable_reference
+;COMMON image_type_and_arrays
+;COMMON cont
+;common selections
+;common mcoordinates
+;COMMON EX
+;COMMON prof
+;COMMON CLASS_peaktable_reference
 common status, PE_open, SIM_open
 common calib_ref, zeroref
 
@@ -251,16 +323,17 @@ end
 
 function PS_Series
 @COMMON_DATAS
+@COMMON_DATAS2
 COMMON WID_MAR345_elements
-COMMON image_type_and_arrays
-COMMON cont
-common selections
-common mcoordinates
-COMMON EX
-COMMON prof
-COMMON CLASS_peaktable_reference
-common status, PE_open, SIM_open
-common calib_ref, zeroref
+;COMMON image_type_and_arrays
+;COMMON cont
+;common selections
+;common mcoordinates
+;COMMON EX
+;COMMON prof
+;COMMON CLASS_peaktable_reference
+;common status, PE_open, SIM_open
+;common calib_ref, zeroref
     lp=fltarr(13)
     lpo=fltarr(13)
     lpc=fltarr(13)
@@ -304,8 +377,10 @@ common calib_ref, zeroref
 
     cell_now_solution_n, 1
 
-    a=opt->save_p4p('E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\xxx.p4p')
-    SETENV, 'MYARG="E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\run_cellnow.cmd"'
+    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    a=opt->save_p4p(dirs+'xxx.p4p')
+    text='MYARG="'+dirs+'run_cellnow.cmd"'
+    SETENV, text
     spawn, '%MYARG%'  , /LOG_OUTPUT
 
 
@@ -321,7 +396,8 @@ common calib_ref, zeroref
       spawn, '%MYARG%'  , /LOG_OUTPUT
     endif
     pas:
-    ub=ReadUBfrom_p4p('E:\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\1.p4p')
+    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    ub=ReadUBfrom_p4p(dirs+'1.p4p')
     lp= lp_from_ub(UB)
     if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2
     tol=0.15
@@ -767,12 +843,7 @@ end
 
 
 
-;--------------------------------
-function vert_polariz
-COMMON WID_MAR345_elements
- s=widget_info(WID_BUTTON_52ab, /button_set) ;
- return, s
-end
+
 ;-------------------------------------
 function profile_function_name
 COMMON WID_MAR345_elements
@@ -923,42 +994,7 @@ common selections, selecting_status, select, excl, unselect, addpeak, mask, mask
    wset, draw3
    tvscl, data1, true=0
   end
-;--------------------------------
-function read_polar
-COMMON WID_MAR345_elements
- widget_control, wid_text_14, get_value=uv
- return, float(uv)
-end
-
-
-pro update_progress, prog
-COMMON WID_MAR345_elements
- widget_control, wid_text_8, set_value=string(prog*100.0, format='(I4)')+'%'
-end
-
-function read_kappa_and_ttheta
-COMMON WID_MAR345_elements
- widget_control, wid_text_36a, get_value=ka
- widget_control, wid_text_36b, get_value=tth
- return, [float(ka),float(tth)]
-end
-
-;--------------------------------
-
-function read_box_size, text1, text2
-COMMON WID_MAR345_elements
- text1=wid_text_37
- text2=wid_text_37
- widget_control, text1, get_value=px
- widget_control, text2, get_value=py
- px=long(px)
- py=long(py)
- px=px[0]
- py=py[0]
- return, [px,py]
-end
-
-;--------------------------------
+;---------------------------
 function read_box_change
 
 ; 0 is one peak
@@ -984,32 +1020,6 @@ COMMON WID_MAR345_elements
    return, [imin, imax]
 end
 
-;--------------------------------
-
-function hkl_labels_on
-COMMON WID_MAR345_elements
- return, widget_info(wid_button_19, /button_set)
-end
-
-;-------------------------------
-
-function omega_or_energy
-COMMON WID_MAR345_elements
-re=widget_info(wid_button_7, /button_set)
-return, re ; 1=om, 0=en
-end
-
-;-------------------------------
-
-function I_corrections
-COMMON WID_MAR345_elements
-re1=widget_info(wid_button_51a, /button_set) ; dac abs
-re2=widget_info(wid_button_51, /button_set) ; Lorenz
-re3=widget_info(wid_button_52, /button_set) ; Polariz
-return, [re1,re2, re3] ; 1=apply, 0=don't apply
-end
-
-;-------------------------------
 pro update_peakno, pn
 COMMON WID_MAR345_elements
  widget_control, wid_text_10, set_value=string(pn, format='(I4)')

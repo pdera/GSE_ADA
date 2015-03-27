@@ -607,9 +607,31 @@ function evaluate_fit_quality, pic, pic2
     pic3=pic-pic2
     w=where(pic2 gt median(pic2)*1.5,COMPLEMENT=w1)
     wp=where(pic gt median(pic)*1.5,COMPLEMENT=wp1)
+    if w1[0] ne -1 then $ ; strong pixels outside profile
+    w_out=where(pic[w1] gt median(pic)*1.5,COMPLEMENT=w_out1) else w_out=-1
 
     if w[0] ne -1 and wp[0] ne -1 and w1[0] ne -1 and wp1[0] ne -1 then $
     begin
+
+     ;---- find location of the center of fitted profile
+      m=max(pic2, gg)
+      center=float(ARRAY_INDICES(pic2, gg))/float(n-1)
+      if min(center) lt 0.4 or max(center) gt 0.6 then $
+      begin
+       print, '---> center = ', center
+       print, '---> significant position shift'
+      endif
+
+     ;---- find average and maximum intensity in the image outside fitted peak profile
+       if w_out[0] ne -1 then $
+       begin
+        max_out=max(pic[w1[w_out]])/median(pic)
+        avg_out=total(pic[w1[w_out]])/median(pic)/N_elements(w_out)
+        print, '---> agv_out = ', avg_out
+        print, '---> agv_Npoint = ', N_elements(w_out)
+        print, '---> max_out = ', max_out
+       endif else print, '---> no significant intensity outside profile'
+
 
       residual=max(pic3)/max(pic)
 	;  if residual gt 0.1 and max(pic3) gt median (pic) then res[0]=5.
@@ -630,7 +652,12 @@ function evaluate_fit_quality, pic, pic2
 
      ; print, 'm3/m1', max(pic3)/max(pic), min(pic3)/max(pic)
 
-    endif else res[0]=4. ; improper fitting
+    endif else $
+      begin
+         res[0]=4. ; improper fitting
+         if w[0] eq -1 then print, '---> no intensity above 150% background' else $
+         if wp[0] eq -1 then print, '---> fitted profile has no intensity above 150% background'
+      endelse
     return, res
 end
 
