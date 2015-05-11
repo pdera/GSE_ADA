@@ -1,322 +1,14 @@
-pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
+;function opt_vertical_subtraction, P, X=x, Y=y, ERR=err
+;function vertical_subtraction, P, im
+;function center_intensity, im
+;function find_overlap, image
+;function symmetric_corrlation, im
+;function two_peaks_get_profile, i1, i2
+;function one_peak_get_profile, i1, bx
+;function one_profile_fitting, i1
+;function two_profile_fitting, i1,i2
 
-@COMMON_DATAS
-@COMMON_DATAS2
 
-       opt->unselect_all
-
-       pic2=pic-pic9
-       m1=max(pic2)   ; maximum difference
-       m2=min(pic2)   ; minimum difference
-       m3=median(pic) ; background level
-       m4=a[1]        ; fitted intensity
-       m5=total(pic2) ; summ of difference intensity
-       m6=max(pic)    ; maximum in the box
-       sz=sqrt(n_elements(pic))
-       szi=(sz-1)/2
-
-       m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
-
-
-       if (m1/m6 gt 0.2) or (m7/m3 lt 3) or (a[2] gt 2.0) or (a[3] gt 2.0)  then $
-       begin
-        print, '----- ', pni, m1/m6, m1/m3, m7/m3     , a[2], a[3]
-        pt.peaks[pni].selected[0]=1
-       endif else  pt.peaks[pni].selected[0]=0
-
- 	   gonio=pt.peaks[pni].gonio
-       kt=read_kappa_and_ttheta()
-       gonio[1]=kt[1]
-       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pni].DetXY, gonio, wv)
-
-     ;------------
-
-       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pni].DetXY, gonio)
-       nu=ang_between_vecs([0.0,sd[1],sd[2]],[0.,-1.,0.])
-       nu1=oadetector->get_nu_from_pix(pt.peaks[pni].DetXY)
-       ;print, nu, nu1
-       tth=get_tth_from_xyz(pt.peaks[pni].xyz)
-       II=(A[1]*A[2]*A[3])*2.*!pi
-       si=2.*!pi*(A[2]*A[3]*PCERROR[1]+A[1]*A[2]*PCERROR[3]+A[1]*A[3]*PCERROR[2])
-       ty=I_corrections()
-
-      ;-- Lorenz correction
-      if ty[1] eq 1 then $
-      begin
-       ii=II/lorenz(xyz, gonio, wv)
-       si=sI/lorenz(xyz, gonio, wv)
-      endif
-
-     ;-- polarization correction
-      if ty[2] eq 1 then $
-      begin
-       P1=0.9
-       mu=20.41
-       h=0.005
-       v=vert_polariz()*90.0+nu
-       ii=II/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-       si=sI/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-      endif
-      ;-- CBN absorption correction
-      if ty[0] eq 1 then $
-      begin
-       om0= 0.0
-       ii=II/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-       si=sI/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-      end
-
-    ;-- omega polynomial correction
-       aom=omega_correction(pt.peaks[pni].gonio[axis])
-       ii=II*aom
-       si=sI*aom
-
-       pt.peaks[pni].energies[2]=A[2] ; width 2th
-       pt.peaks[pni].energies[3]=A[3] ; width chi
-       pt.peaks[pni].energies[4]=A[4] ; tilt
-       pt.peaks[pni].energies[5]=A[0] ; background
-
-       pt.peaks[pni].intAD[0]=ii
-       pt.peaks[pni].intAD[1]=si
-       opt->set_object, pt
-
-end
-;----------------------------------
-
-
-pro merge_peak_tables_in_series
-
-@COMMON_DATAS
-@COMMON_DATAS2
-@WID_GSE_ADA_COMMON
-
-   if res.name0 ne '' then $
-   begin
-   widget_control, wid_text_7, get_value=i0
-   widget_control, wid_text_6, get_value=ni
-   ni=fix(ni)
-   i0=fix(i0)
-
-    res.seq=i0[0]
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
-    opt->read_object_from_file, out_dir+res.name0+'.pks'
-    update_peakno, opt->peakno()
-    plot_peaks, draw0, opt, arr1, arr2
-   for i=1, ni[0]-1 do $
-   begin
-    res.seq=i0[0]+i
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
-    opt->APPEND_object_from_file, out_dir+res.name0+'.pks'
-    update_peakno, opt->peakno()
-    plot_peaks, draw0, opt, arr1, arr2
-   endfor
-   opt->write_object_to_file, out_dir+res.base0+'_merge.pks'
-   print_peak_list, opt, wid_list_3
-   peaktable_file=out_dir+res.base0+'_merge.pks'
-  endif
-
-end
-
-
-;--------------------------------------
-
-
-
-pro fit_all_peaks, prog=prog
-
-@COMMON_DATAS
-@COMMON_DATAS2
-
-   axis=3 ;was 5 for phi
-   if prog then $
-   begin
-    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
-    cgProgressBar -> Start
-   endif
-
-   nnn=opt->peakno()-1
-   lbcgr=oimage->calculate_local_background(0)
-
-   for pn=nnn, 0, -1 do $
-   begin
-
-   if prog then $
-   begin
-     IF cgProgressBar -> CheckCancel() THEN $
-     BEGIN
-     	ok = Dialog_Message('Operation canceled')
-     	cgProgressBar -> Destroy
-     	RETURN
-     ENDIF
-     cgProgressBar -> Update, (float(nnn-pn)/nnn)*100.0
-    endif
-
-
-
-     if current_vs_series() eq 1 then $
-     begin ; ----- from one image
-       ; print, 'fitting peak', pn
-        b=opt->find_close_overlaps(pn, 10)
-        if b[0] gt 0 then re=two_profile_fitting(b[1],b[2]) else $
-        re=one_profile_fitting(pn)
-        ;re=fit_one_peak_PD(pn, lbcgr) ; does not update intensity, but updates peak position
-;        if n_elements(re) ne 1 then print, 'intensity', re[1]
-
-     endif else $
-     begin ; ---- from series
-     	bs=read_box_size(wid_text_37,wid_text_37)
-     	pic=reform(cumInt[pn,*,*])
-     	pic1=pic[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
-     	re=fit_one_peak_PD_from_Pic(pn, pic)
- 	 endelse
-
-     pt=opt->get_object()
-     XY=pt.peaks[pn].DetXY
-
-     if n_elements(re) eq 1 then $
-     begin
-       opt->select_peak, pn
-     endif else $
-     begin ;--- successful fit
-       n=n_elements(re)-1
-       A=re[0:7]
-       PCERROR=re[8:15]
-
-       ;------------------------------
-       ; get images for comparison
-       ;------------------------------
-
-       bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
-       b=opt->find_close_overlaps(pn, 10)
-       if b[0] gt 0 then pic9=two_peaks_get_profile(b[1],b[2]) else $
-       pic9=one_peak_get_profile(pn)
-       if n_elements(pic9) eq 1 then pic9=fltarr((bs+1)*2)
-
-   	   sz=sqrt(n_elements(pic9))
-       szi=(sz-1)/2
-       bs=[szi,szi]
-
-       pt=opt->get_object()
-       XY=round(pt.peaks[pn].detxy)
-       pic=oimage->get_zoomin(XY, bs, maskarr)
-
-       ;--------------------------------
-       peak_intensity, pn, A, PCERROR, axis, pic, pic9
-
-     endelse
-   endfor
-   opt->calculate_all_xyz_from_pix, oadetector, wv
-
-goto, hhh
-
-   ; check for improper peak
-   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
-                                  pt.peaks[i].DetXY[0] lt 0 or $
-                                  pt.peaks[i].DetXY[0] gt arr1 or $
-                                  pt.peaks[i].DetXY[1] lt 0 or $
-                                  pt.peaks[i].DetXY[1] gt arr2 then $
-   begin
-     opt->delete_peak, i[0]
-   endif
-hhh:
-      if prog then $
-     cgProgressBar -> Destroy
-   end
-
-
-pro peak_intensity_evaluation, pni, A, PCERROR, XY, axis, lbcgr
-
-@COMMON_DATAS
-@COMMON_DATAS2
-;COMMON WID_MAR345_elements
-;COMMON image_type_and_arrays
-;common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
-
-
-       pt=opt->get_object()
-       pt.peaks[pni].DetXY[0]= XY[0]+a[5]
-       pt.peaks[pni].DetXY[1]= XY[1]+a[6]
-
-       bs=[long(pt.peaks[pni].intssd[0]),long(pt.peaks[pni].intssd[0])]
-       XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
-       yy=yinvec([bs[0]*2+1,bs[1]*2+1])
-       p2=long(one2two(profile_function(XX, YY, A)))
-
-
-       pic=oimage->get_zoomin(XY, bs, maskarr)
-
-       ;---- if part of the box area is outside active circle, replace 0 with local background ------
-       cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
-       c=where(cc eq 1)
-       if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
-
-       ;---------------------------------------------------------------------------------------------
-
-
-       attt=evaluate_fit_quality(pic, p2)
-       if attt[0] gt 0 then $
-       begin
-          opt->select_peak, pni
-       endif else $
-       begin
-
-       gonio=pt.peaks[pni].gonio
-       kt=read_kappa_and_ttheta()
-       gonio[1]=kt[1]
-       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pni].DetXY, gonio, wv)
-
-     ;------------
-       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pni].DetXY, gonio)
-       nu=ang_between_vecs([0.0,sd[1],sd[2]],[0.,-1.,0.])
-       nu1=oadetector->get_nu_from_pix(pt.peaks[pni].DetXY)
-       ;print, nu, nu1
-       tth=get_tth_from_xyz(pt.peaks[pni].xyz)
-       II=(A[1]*A[2]*A[3])*2.*!pi
-       si=2.*!pi*(A[2]*A[3]*PCERROR[1]+A[1]*A[2]*PCERROR[3]+A[1]*A[3]*PCERROR[2])
-       ty=I_corrections()
-
-      ;-- Lorenz correction
-      if ty[1] eq 1 then $
-      begin
-       ii=II/lorenz(xyz, gonio, wv)
-       si=sI/lorenz(xyz, gonio, wv)
-      endif
-
-     ;-- polarization correction
-      if ty[2] eq 1 then $
-      begin
-       P1=0.9
-       mu=20.41
-       h=0.005
-       v=vert_polariz()*90.0+nu
-       ii=II/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-       si=sI/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-      endif
-      ;-- CBN absorption correction
-      if ty[0] eq 1 then $
-      begin
-       om0= 0.0
-       ii=II/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-       si=sI/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-      end
-
-    ;-- omega polynomial correction
-       aom=omega_correction(pt.peaks[pni].gonio[axis])
-       ii=II*aom
-       si=sI*aom
-
-       pt.peaks[pni].energies[2]=A[2] ; width 2th
-       pt.peaks[pni].energies[3]=A[3] ; width chi
-       pt.peaks[pni].energies[4]=A[4] ; tilt
-       pt.peaks[pni].energies[5]=A[0] ; background
-
-       pt.peaks[pni].intAD[0]=ii
-       pt.peaks[pni].intAD[1]=si
-       opt->set_object, pt
-       end
-
-end
 ;----------------------------------
 
 function opt_vertical_subtraction, P, X=x, Y=y, ERR=err
@@ -338,19 +30,6 @@ function opt_vertical_subtraction, P, X=x, Y=y, ERR=err
     sub2=fltarr(sz,sz)
     sub2[szi-2:szi+2,szi-2:szi+2]=sub1
 
-;    g1=congrid(image1, 200,200)
-;    g2=congrid(image2, 200,200)
-;    g3=congrid(sub>0, 200,200)
-;    g4=g1-g3
-
-;    window, 1, xpos=0, ypos=0, xsize=200, ysize=200
-;    tvscl, g1
-;    window, 2, xpos=210, ypos=0, xsize=200, ysize=200
-;    tvscl, g2
-;    window, 3, xpos=420, ypos=0, xsize=200, ysize=200
-;    tvscl, g3
-;    window, 4, xpos=630, ypos=0, xsize=200, ysize=200
-;    tvscl, g4
 
     sub3=two2one(sub2) ; convert image from array to vector
     return,sub3/err
@@ -358,6 +37,7 @@ function opt_vertical_subtraction, P, X=x, Y=y, ERR=err
 end
 
 ;===============================================================
+
 function vertical_subtraction, P, im
 
 
@@ -478,101 +158,6 @@ function symmetric_corrlation, im
 
 ;===============================================================
 
-pro peak_intensity_evaluation_2d, pni, A, PCERROR, XY, axis, lbcgr
-
-@COMMON_DATAS
-@COMMON_DATAS2
-;COMMON WID_MAR345_elements
-;COMMON image_type_and_arrays
-;common selections, selecting_status, select, excl, unselect, addpeak, mask, maskarr, zoom, unmask
-
-
-       pt=opt->get_object()
-       pt.peaks[pni].DetXY[0]= XY[0]+a[5]
-       pt.peaks[pni].DetXY[1]= XY[1]+a[6]
-
-       bs=[long(pt.peaks[pni].intssd[0]),long(pt.peaks[pni].intssd[0])]
-       XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
-       yy=yinvec([bs[0]*2+1,bs[1]*2+1])
-       p2=long(one2two(profile_function(XX, YY, A)))
-
-
-       pic=oimage->get_zoomin(XY, bs, maskarr)
-
-       ;---- if part of the box area is outside active circle, replace 0 with local background ------
-       cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
-       c=where(cc eq 1)
-       if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
-
-       ;---------------------------------------------------------------------------------------------
-
-
-       attt=evaluate_fit_quality(pic, p2)
-       if attt[0] gt 0 then $
-       begin
-          opt->select_peak, pni
-       endif else $
-       begin
-
-       gonio=pt.peaks[pni].gonio
-       kt=read_kappa_and_ttheta()
-       gonio[1]=kt[1]
-       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pni].DetXY, gonio, wv)
-
-     ;------------
-       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pni].DetXY, gonio)
-       nu=ang_between_vecs([0.0,sd[1],sd[2]],[0.,-1.,0.])
-       nu1=oadetector->get_nu_from_pix(pt.peaks[pni].DetXY)
-       ;print, nu, nu1
-       tth=get_tth_from_xyz(pt.peaks[pni].xyz)
-       II=(A[1]*A[2]*A[3])*2.*!pi
-       si=2.*!pi*(A[2]*A[3]*PCERROR[1]+A[1]*A[2]*PCERROR[3]+A[1]*A[3]*PCERROR[2])
-       ty=I_corrections()
-
-      ;-- Lorenz correction
-      if ty[1] eq 1 then $
-      begin
-       ii=II/lorenz(xyz, gonio, wv)
-       si=sI/lorenz(xyz, gonio, wv)
-      endif
-
-     ;-- polarization correction
-      if ty[2] eq 1 then $
-      begin
-       P1=0.9
-       mu=20.41
-       h=0.005
-       v=vert_polariz()*90.0+nu
-       ii=II/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-       si=sI/(1.0-read_polar()*cos(2.0*v/!radeg));*cos(gonio[3]/!radeg)
-      endif
-      ;-- CBN absorption correction
-      if ty[0] eq 1 then $
-      begin
-       om0= 0.0
-       ii=II/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-       si=sI/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
-      end
-
-    ;-- omega polynomial correction
-       aom=omega_correction(pt.peaks[pni].gonio[axis])
-       ii=II*aom
-       si=sI*aom
-
-       pt.peaks[pni].energies[2]=A[2] ; width 2th
-       pt.peaks[pni].energies[3]=A[3] ; width chi
-       pt.peaks[pni].energies[4]=A[4] ; tilt
-       pt.peaks[pni].energies[5]=A[0] ; background
-
-       pt.peaks[pni].intAD[0]=ii
-       pt.peaks[pni].intAD[1]=si
-       opt->set_object, pt
-       end
-
-end
-
-;----------------------------------
-
 function two_peaks_get_profile, i1, i2
 
 ; i1 is the number of the peak to be fit
@@ -584,8 +169,6 @@ function two_peaks_get_profile, i1, i2
  pt=opt->get_object()
  x1=pt.peaks[i1].detXY
  x2=pt.peaks[i2].detXY
-
-
 
 
  ;determine box size and location
@@ -624,19 +207,7 @@ function two_peaks_get_profile, i1, i2
 
  a=oimage->get_zoomin(round(middle+round(xr1)), [ra,ra], maskarr)
 
-
- ;a=pic[cen[0]-ra:cen[0]+ra, cen[1]-ra:cen[1]+ra]
  b=b[cen[0]-ra:cen[0]+ra, cen[1]-ra:cen[1]+ra]
-
-
-;window, 1, xsize=200, ysize=200, xpos=0,ypos=0
-;tvscl, congrid(a,200,200)
-
-;window, 2, xsize=200, ysize=200, xpos=220,ypos=0
-;tvscl, congrid(b,200,200)
-
-;window, 3, xsize=200, ysize=200, xpos=440,ypos=0
-;tvscl, congrid(a-b,200,200)
 
  return, b
 
@@ -647,7 +218,7 @@ end
 
 ;----------------------------------
 
-function one_peak_get_profile, i1
+function one_peak_get_profile, i1, bx
 
 ; i1 is the number of the peak to be fit
 ; returns fitted profile parameters with uncertainties
@@ -659,7 +230,8 @@ function one_peak_get_profile, i1
  x1=pt.peaks[i1].detXY
 
  ;determine box size and location
- bx=read_box_size(wid_text_37,wid_text_37)
+ ;bx=read_box_size(wid_text_37,wid_text_37)
+
  pic=oimage->get_zoomin(round(x1), bx, maskarr)
  aaa=one2DGaussian(pic)
 
@@ -702,7 +274,8 @@ function one_profile_fitting, i1
  opt->set_object, pt
 
  ;determine box size and location
- bx=read_box_size(wid_text_37,wid_text_37)
+ ;bx=read_box_size(wid_text_37,wid_text_37)
+ bx=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
  pic=oimage->get_zoomin(x1, bx, maskarr)
  aaa=one2DGaussian(pic)
 
@@ -879,16 +452,7 @@ function one2DGaussian, image
 	    b=Voigt2dwt(XX, YY, A)
 	  endif
 
- ; window, 1, xsize=200, ysize=200, xpos=0,ypos=0
- ; tvscl, congrid(image, 200, 200)
-
-;  window, 2, xsize=200, ysize=200, xpos=210,ypos=0
-;  tvscl, congrid(one2two(b), 200, 200)
-
-
-;  window, 4, xsize=200, ysize=200, xpos=630,ypos=0
-;  tvscl, congrid(image-one2two(b), 200, 200)
-  if n_elements(pe) ne 0 then $
+   if n_elements(pe) ne 0 then $
   return, [a, pe] else return, 0
 
   endif else return, -1
@@ -1021,16 +585,7 @@ function two2DGaussians, image, loc1, loc2
 	    b=Two_Voigt2dwt(XX, YY, A)
 	  endif
 
- ; window, 1, xsize=200, ysize=200, xpos=0,ypos=0
- ; tvscl, congrid(image, 200, 200)
-
- ; window, 2, xsize=200, ysize=200, xpos=210,ypos=0
- ; tvscl, congrid(one2two(b), 200, 200)
-
-
- ; window, 4, xsize=200, ysize=200, xpos=630,ypos=0
- ; tvscl, congrid(image-one2two(b), 200, 200)
-  if n_elements(pe) eq 0 then return, 0
+   if n_elements(pe) eq 0 then return, 0
   return, [a, pe]
 
   endif else return, 0
@@ -2051,4 +1606,8 @@ end
 
 
 pro peak_fitting
+end
+
+
+pro peak_fitting_math
 end

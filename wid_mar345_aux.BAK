@@ -278,7 +278,7 @@ pro read_predict_settings, pred
 
   widget_control, wid_text_30, get_value=om_start
   widget_control, wid_text_31, get_value=om_range
-  widget_control, wid_text_34, get_value=chi
+  ;widget_control, wid_text_34, get_value=chi
   ;widget_control, wid_text_39, get_value=d
   d=0.5
   widget_control, wid_text_38, get_value=h1
@@ -293,6 +293,9 @@ pro read_predict_settings, pred
   ;--- they need to be converted to float before arithmetics is done with them
   om_start=float(om_start)
   om_range=float(om_range)
+
+  chi=0
+
   ;--------- PD change end ------
 
   ;********************************* NEW CODE ****************
@@ -334,11 +337,11 @@ end
 ;******************************* TAKEN OUT ***************
 ;--------------------------------
 
-;function load_peak_tables
-;COMMON WID_MAR345_elements
-;re=widget_info(wid_button_20, /button_set)
-;return, re
-;end
+function load_peak_tables
+ COMMON WID_MAR345_elements
+ re=widget_info(wid_button_20, /button_set)
+ return, re
+end
 ;--------------------------------
 
 pro save_cal, fn, oad, wv
@@ -464,17 +467,23 @@ end
 
 ;--------------------------------------
 
-pro read_ps_settings, a1, a2, a3, a4
+pro read_ps_settings, a1, a2, a3, a4, a5
   COMMON WID_MAR345_elements
   widget_control, wid_text_0, get_value=aa1
   widget_control, wid_text_1, get_value=aa2
   widget_control, wid_text_2, get_value=aa3
   widget_control, wid_text_3, get_value=aa4
-  a1=float(aa1)
-  a2=fix(aa2)
-  a3=fix(aa3)
-  a4=fix(aa4)
-
+  widget_control, wid_text_3a, get_value=aa5
+  a1=long(aa1)
+  a2=long(aa2)
+  a3=long(aa3)
+  a4=long(aa4)
+  a5=long(aa5)
+  a1=a1[0]
+  a2=a2[0]
+  a3=a3[0]
+  a4=a4[0]
+  a5=a5[0]
 end
 
 ;--------------------------------------
@@ -505,6 +514,7 @@ COMMON CLASS_peaktable_reference
 ;COMMON WID_Image_simulation_elements
 common status, PE_open, SIM_open
 common calib_ref, zeroref
+common closing, Wid_Image_simulation
 
  WIDGET_CONTROL, ev.id, GET_UVALUE=uv
  if n_elements(uv)  ne 0 then case uv of
@@ -537,6 +547,58 @@ begin
  re=dialog_pickfile(/read,filter='*.fcf',  path=out_dir)
  if re ne '' then widget_control, WID_text_fcf_file, set_value=re
 end
+;---------------------------------------
+
+
+;---------------------------------------
+
+'TDS':$
+begin
+ SIZ=50
+ if total(ub) eq 0 then $
+ begin
+   re=dialog_message('Open UB matrix file first')
+ endif else $
+ begin
+ pn=read_peak_selected(wid_list_3)
+ if pn ge 0 and pn lt opt->peakno() then $
+ begin
+    pt=opt->get_object()
+	print, 'HKL', pt.peaks[pn].hkl
+	print, 'XYZ', pt.peaks[pn].xyz
+	xyz=pt.peaks[pn].xyz
+	detXY=pt.peaks[pn].DetXY
+    gonio=pt.peaks[pn].gonio
+    if 	min(detXY-siz) lt 0 or max(detXY+siz) gt arr1 then $
+    begin
+      re=dialog_message('Peak too close to the image edge')
+    endif else $
+    begin
+	fi=dialog_pickfile(default_extension='txt', path=dir)
+	if fi ne '' then $
+	begin
+	  get_lun, lu
+	  openw, lu, fi
+	  im=oimage->get_object()
+      for x=-siz, siz do $
+	     for y=-siz, siz do $
+	     begin
+	       dx=[DetXY[0]+x,DetXY[1]+y]
+	       xyz=oadetector->calculate_XYZ_from_pixels_mono(dx, gonio, wv)
+	       hkl=transpose(invert(UB) ## xyz)
+	       printf, lu, long(dx), hkl,  im.img[dx[0],dx[1]], format='(I6, I6, F8.4, F8.4,  F8.4,  F10.2)'
+	     endfor
+	     close, lu
+	  	 free_lun, lu
+	  	 re=dialog_message('TDS file successfully exported')
+	endif
+	endelse ; too close
+
+ endif
+ endelse
+ end
+
+
 ;---------------------------------------
 'Compare fcf':$
 begin
@@ -1147,9 +1209,20 @@ end
    f0=find_series_start(res)
    f1=find_series_end(res)
 
+   ;--------------
+   ; open first settings file
 
+       res.seq=f0
+       fn=generate_fname(res)
+       om=read_settings_file(fn+'.txt')
+       if not(om[0] eq -100 and om[1] eq -100) then $
+       begin
+          widget_control, wid_text_4, set_value=strcompress(string(om[0]-gonio_zero_offset(), format='(F10.2)'),/remove_all)
+          widget_control, wid_text_5, set_value=strcompress(string(om[1], format='(F10.2)'),/remove_all)
+       endif
    ;--------------
 
+   widget_control, wid_text_17, set_value=res.name0
    widget_control, wid_text_9, set_value=res.name0
    widget_control, wid_text_12, set_value=string(f0, format='(I4)')
    widget_control, wid_text_11, set_value=string(f1, format='(I4)')
@@ -1231,15 +1304,16 @@ end
 
 
 
-   ;el=load_peak_tables()
-   ;re=file_info(out_dir+res.name0+'.pks')
-   ;if el eq 1 and re.exists then $
-   ;begin
-     ;opt->read_object_from_file, out_dir+res.name0+'.pks'
-;     update_peakno, opt->peakno()
-     ;print_peak_list, opt, wid_list_3
-;     plot_peaks, draw0, opt, arr1, arr2
-   ;end
+   el=load_peak_tables()
+   re=file_info(out_dir+res.name0+'.pks')
+   if el eq 1 and re.exists then $
+   begin
+    opt->read_object_from_file, out_dir+res.name0+'.pks'
+    update_peakno, opt->peakno()
+    print_peak_list, opt, wid_list_3
+    plot_peaks, draw0, opt, arr1, arr2
+    peaktable_file=out_dir+res.name0+'.pks'
+   end
 
 
   im=oimage->get_object()
@@ -1421,7 +1495,7 @@ begin
    begin
     opt->initialize
     plot_image, oimage
-    pn=PS(0.0,3)
+    pn=PS(0.0,3, prog=1)
     update_peakno, opt->peakno()
     plot_image, oimage
     plot_peaks, draw0, opt, arr1, arr2
@@ -1435,10 +1509,7 @@ begin
    if test_write(out_dir) eq 1 then $
    begin
     lp=PS_Series()
-    print, '----------------------'
-    print, lp[*,0]
-    print, lp[*,1]
-    print, '----------------------'
+    merge_peak_tables_in_series
    endif
  end
 
@@ -1520,6 +1591,7 @@ end
        res.seq=res.seq+1
        fn=generate_fname(res)
        res=analyse_fname(fn, dir, 3)
+       widget_control, wid_text_17, set_value=res.name0
        widget_control, wid_text_9, set_value=res.name0
        oimage->load_image, fn, oadetector
        check_mask_file
@@ -1582,16 +1654,16 @@ end
   endif
 ;-----------------
 
-       ;el=load_peak_tables()
-       ;re=file_info(out_dir+res.name0+'.pks')
-   ;if el eq 1 and re.exists then $
-   ;begin
-     ;opt->read_object_from_file, out_dir+res.name0+'.pks'
-     ;update_peakno, opt->peakno()
-     ;plot_peaks, draw0, opt, arr1, arr2
-     ;peaktable_file=out_dir+res.name0+'.pks'
-   ;end
-    ;plot_peaks, draw0, opt, arr1, arr2
+   el=load_peak_tables()
+   re=file_info(out_dir+res.name0+'.pks')
+   if el eq 1 and re.exists then $
+   begin
+     opt->read_object_from_file, out_dir+res.name0+'.pks'
+     update_peakno, opt->peakno()
+     plot_peaks, draw0, opt, arr1, arr2
+     peaktable_file=out_dir+res.name0+'.pks'
+    end
+    plot_peaks, draw0, opt, arr1, arr2
 
    end
  end
@@ -1602,6 +1674,7 @@ end
        res.seq=res.seq-1
        fn=generate_fname(res)
        res=analyse_fname(fn, dir, 3)
+       widget_control, wid_text_17, set_value=res.name0
        widget_control, wid_text_9, set_value=res.name0
        oimage->load_image, fn, oadetector
        check_mask_file
@@ -1658,15 +1731,15 @@ end
   endif
 ;-----------------
 
-       ;el=load_peak_tables()
-       ;re=file_info(out_dir+res.name0+'.pks')
-   ;if el eq 1 and re.exists then $
-   ;begin
-     ;opt->read_object_from_file, out_dir+res.name0+'.pks'
-     ;update_peakno, opt->peakno()
-     ;plot_peaks, draw0, opt, arr1, arr2
-     ;peaktable_file=out_dir+res.name0+'.pks'
-   ;end
+   el=load_peak_tables()
+   re=file_info(out_dir+res.name0+'.pks')
+   if el eq 1 and re.exists then $
+   begin
+     opt->read_object_from_file, out_dir+res.name0+'.pks'
+     update_peakno, opt->peakno()
+     plot_peaks, draw0, opt, arr1, arr2
+     peaktable_file=out_dir+res.name0+'.pks'
+   end
     ;    plot_peaks, draw0, opt, arr1, arr2
 
     ;   om=read_settings_file(dir+res.name0+'.txt')
@@ -1703,32 +1776,9 @@ end
   begin
 
   end
- 'Merge peaktables':$
+ 'Merge peak tables':$
   begin
-   if res.name0 ne '' and res.seq+1 le f1 then $
-   begin
-   widget_control, wid_text_7, get_value=i0
-   widget_control, wid_text_6, get_value=ni
-   ni=fix(ni)
-   i0=fix(i0)
-
-    res.seq=i0[0]
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
-    opt->read_object_from_file, out_dir+res.name0+'.pks'
-    update_peakno, opt->peakno()
-    plot_peaks, draw0, opt, arr1, arr2
-   for i=1, ni[0]-1 do $
-   begin
-    res.seq=i0[0]+i
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
-    opt->APPEND_object_from_file, out_dir+res.name0+'.pks'
-    update_peakno, opt->peakno()
-    plot_peaks, draw0, opt, arr1, arr2
-   endfor
-   opt->write_object_to_file, out_dir+res.base0+'_merge.pks'
-   endif
+   merge_peak_tables_in_series
   end
  'Read UB matrix':$
   begin
@@ -1740,6 +1790,103 @@ end
         print_UB_and_lp, ub,lp,wid_list_2, opt
      end
   end
+
+ 'Predict whole series' :$
+ begin
+   ;---- check if there is a ub mtx
+   if max(ub) ne 0 then $
+   begin
+     widget_control, Wid_Image_simulation->wid_text_14(), get_value=DAC_open
+
+ 	 cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+ 	 cgProgressBar -> Start
+     if res.name0 ne '' then $
+     begin
+        widget_control, wid_text_7, get_value=i0
+        widget_control, wid_text_6, get_value=ni
+        ni=fix(ni)
+        i0=fix(i0)
+    	res.seq=i0[0]
+    	fn=generate_fname(res)
+    	res=analyse_fname(fn, dir, 3)
+        for i=0, ni[0]-1 do $
+   		begin
+    		res.seq=i0[0]+i
+    		fn=generate_fname(res)
+    		res=analyse_fname(fn, dir, 3)
+        	oimage->load_image, fn, oadetector
+        	check_mask_file
+        	om=read_settings_file(dir+res.name0+'.txt')
+        	pt_file=out_dir+res.name0+'.pks'
+        	if not(om[0] eq -100 and om[1] eq -100) then $
+        	begin
+         		widget_control, wid_text_16, set_value=string(om[0], format='(F6.1)')
+         		widget_control, wid_text_20, set_value=string(om[1], format='(F6.1)')
+         		widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
+        	endif
+     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+
+            ;---- filter observed
+
+  			a=oimage->calculate_local_background(0)
+  			widget_control, wid_text_48, get_value=obs
+  			obs=float(obs)
+  			opt->unselect_all
+  			pt=opt->get_object()
+  			for pn=0, opt->peakno()-1 do $
+  			begin
+  				bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+    			xy=pt.peaks[pn].detXY
+ 	 			bs=[2,2]
+         		pic=oimage->get_zoomin(XY, bs, maskarr)
+    			med=median(pic)
+    			if (max(pic)-med)  lt obs then opt->select_peak, pn
+  			endfor
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+  			opt->delete_selected
+  			opt->write_object_to_file, pt_file
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+
+			;---- fit peaks
+
+   			fit_all_peaks, prog=0
+   			print_peak_list, opt, wid_list_3
+   			plot_image, oimage
+   			plot_peaks, draw0, opt, arr1, arr2
+   			update_peakno, opt->peakno()
+  			opt->delete_selected
+  			opt->write_object_to_file, pt_file
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+
+             IF cgProgressBar -> CheckCancel() THEN BEGIN
+                ok = Dialog_Message('Operation canceled')
+                cgProgressBar -> Destroy
+                RETURN
+             ENDIF
+             cgProgressBar -> Update, (float(i)/(ni[0]-1))*100.0
+
+   		endfor
+  	 endif
+   end else re=dialog_message('UB matrix has not yet been defined')
+   cgProgressBar -> Destroy
+   merge_peak_tables_in_series
+   re=dialog_message('Whole series peak prediction completed')
+ end
+
+
  'Pick image directory':$
   begin
     fn=dialog_pickfile(/directory, path=dir, get_path=dira)
@@ -2336,7 +2483,6 @@ endfor ;ih
 
  'Close':$
  begin
- common closing, Wid_Image_simulation
    ;Class_adetector
    save_cal, 'last_calibration.cal', oadetector, wv
    obj_destroy, oadetector
@@ -3119,69 +3265,13 @@ end
 ;------------------
 'Fit all peaks':$
  begin
-
-   axis=3 ;was 5 for phi
-   cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
-   cgProgressBar -> Start
-
-   nnn=opt->peakno()-1
-   lbcgr=oimage->calculate_local_background(0)
-
-   for pn=nnn, 0, -1 do $
-   begin
-
-     IF cgProgressBar -> CheckCancel() THEN $
-     BEGIN
-     	ok = Dialog_Message('Operation canceled')
-     	cgProgressBar -> Destroy
-     	RETURN
-     ENDIF
-     cgProgressBar -> Update, (float(nnn-pn)/nnn)*100.0
-
-     if current_vs_series() eq 1 then $
-     begin
-        re=fit_one_peak_PD(pn, lbcgr)
-     endif else $
-     begin
-     	bs=read_box_size(wid_text_37,wid_text_37)
-     	pic=reform(cumInt[pn,*,*])
-     	pic1=pic[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
-     	re=fit_one_peak_PD_from_Pic(pn, pic)
- 	 endelse
-
-     pt=opt->get_object()
-     XY=pt.peaks[pn].DetXY
-
-     if re[0] ne 0 then $
-     begin
-       opt->select_peak, pn
-     endif else $
-     begin ;--- successful fit
-       n=n_elements(re)-1
-       A=re[1:n/2]
-       PCERROR=re[n/2+1:n]
-  ;     peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
-     endelse
-   endfor
-
-   ; check for improper peak
-   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
-                                  pt.peaks[i].DetXY[0] lt 0 or $
-                                  pt.peaks[i].DetXY[0] gt arr1 or $
-                                  pt.peaks[i].DetXY[1] lt 0 or $
-                                  pt.peaks[i].DetXY[1] gt arr2 then $
-   begin
-     opt->delete_peak, i[0]
-   endif
-
-
+   fit_all_peaks, prog=1
    opt->calculate_all_xyz_from_pix, oadetector, wv
    print_peak_list, opt, wid_list_3
    plot_image, oimage
    plot_peaks, draw0, opt, arr1, arr2
    update_peakno, opt->peakno()
    print_R_int, Rint(get_laue_class(), opt)
-   cgProgressBar -> Destroy
    re=dialog_message('Peak profile refinement complete')
  end
 ;-------
@@ -3748,6 +3838,9 @@ begin
     sum=fltarr(arr1,arr2)
     cnt=Intarr(arr1,arr2)
 
+ 	cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+ 	cgProgressBar -> Start
+
     if not(whole_p_series()) then $
     begin
 
@@ -3763,7 +3856,12 @@ begin
       im=oimage->get_object()
       sum=sum+im.img*maskarr
       cnt=cnt+maskarr
-      update_progress, float(i+1)/ni
+      IF cgProgressBar -> CheckCancel() THEN BEGIN
+        ok = Dialog_Message('Operation canceled')
+        cgProgressBar -> Destroy
+      RETURN
+      ENDIF
+      cgProgressBar -> Update, (float(i)/(ni[0]-1))*100.0
     endfor
     im.img=ni[0]*sum/cnt
     w=where(cnt eq 0)
@@ -3771,7 +3869,7 @@ begin
     oimage->set_object, im
     maskarr[*,*]=1
     plot_image, oimage
-    print, '--> done'
+    cgProgressBar -> Destroy
     endif else $
     begin
 ;------------------------ merge whole series
@@ -3792,7 +3890,7 @@ begin
     f0=find_series_start(res)
     f1=find_series_end(res)
     print, name, re.exists, f0, f1
-    if (re.exists eq 1) and (f0 eq 1) then $
+    if (re.exists eq 1) and (f0 eq 1) and (f1 eq 68)  then $
     begin; ----- processing individual pressure
       sum=fltarr(arr1,arr2)
       cnt=Intarr(arr1,arr2)
@@ -3972,10 +4070,11 @@ begin
 
   	bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
     xy=pt.peaks[pn].detXY
+ 	 bs=[2,2]
     if current_vs_series() eq  1 then $
          pic=oimage->get_zoomin(XY, bs, maskarr) else $
     begin
-      	 bs=read_box_size(wid_text_37,wid_text_37)
+      	 ;bs=read_box_size(wid_text_37,wid_text_37)
      	 pic1=reform(cumInt[pn,*,*])
      	 pic=pic1[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
     endelse
@@ -4064,16 +4163,16 @@ begin
   if scale_spline() ne 0 then $
   begin
      apply_Scale_with_Rint_spline, get_laue_class(), opt, wid_draw_6, scale_spline()
-  endif else $
+  endif else $ ---- polynomial
   begin
    result=float(poly_text)
    pt=opt->get_object()
    for i=0, pt.peakno-1 do $
    begin
-     x1=pt.peaks[i].gonio[5]
-     m=result[0]+result[1]*x1+result[2]*x1*x1
-     pt.peaks[i].IntAD[0]=pt.peaks[i].IntAD[0]*(1.0-m)
-     pt.peaks[i].IntAD[1]=pt.peaks[i].IntAD[1]*(1.0-m)
+     x1=pt.peaks[i].gonio[3]
+     m=poly(x1,result)+1.0
+     pt.peaks[i].IntAD[0]=pt.peaks[i].IntAD[0]/m
+     pt.peaks[i].IntAD[1]=pt.peaks[i].IntAD[1]/m
    endfor
    opt->set_object, pt
   endelse
@@ -4131,6 +4230,27 @@ begin
 
 end
 
+;-------
+
+'Region select':$
+
+ begin
+   print, 'Select 2theta range according to exclusion'
+   print, exclusions
+   pt=opt->get_object()
+   for i=0, pt.peakno-1 do $
+   begin
+     tth=oadetector->calculate_tth_from_pixels(pt.peaks[i].detXY, pt.peaks[i].gonio)
+     for j=0, n_elements(exclusions)/2-1 do $
+     begin
+       if tth gt exclusions[0,j]-exclusions[1,j] and tth lt exclusions[0,j]+exclusions[1,j] then pt.peaks[i].selected[0]=1
+     endfor
+   endfor
+   opt->set_object, pt
+   plot_image, oimage
+   update_peakno, opt->peakno()
+   plot_peaks, draw0, opt, arr1, arr2
+ end
 
 ;-------
  'Move peaks':$
@@ -4202,180 +4322,75 @@ begin
 ;----------------- read intentisy scale
  if current_vs_series() eq 0 then $ ;-------------- intensity from series
  begin
-   widget_control, wid_text_24, get_value=imax
-   widget_control, wid_text_25, get_value=imin
-   imax=long(imax)
-   imin=long(imin)
-   imax=imax[0]
-   imin=imin[0]
 
- pn=read_peak_selected(wid_list_3)
- if pn ge 0 and pn lt opt->peakno() then $
- begin
-   pt=opt->get_object()
-   widget_control, wid_text_37, SET_VALUE=strcompress(string(long(pt.peaks[pn].intssd[0])),/remove_all) ; display peak box size
-   opt->unselect_all
-   opt->select_peak, pn
-   plot_peaks, draw0, opt, arr1, arr2
-   bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
-   lbcgr=oimage->calculate_local_background(0)
-
-rep=0
-rraa:
-   ;re=fit_one_peak_PD(pn,lbcgr)
-  ; re=fit_one_peak_PD(pn,lbcgr)
-
-   pt=opt->get_object()
-   XY=pt.peaks[pn].detxy
-   pic=oimage->get_zoomin(XY, bs, maskarr)
-
-  ; pic=reform(cumInt[pn,20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]])
-   pic=reform(cumInt[pn,*,*])
-   pic1=pic[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
- ;   print, 'MAX=', max(pic)
- ;   print, 'MEDIAN=', median(pic)
-
-   re=fit_one_peak_PD_from_Pic(pn, pic)
-   n=n_elements(re)-1
-   if re[0] eq 0 then A=re[1:n/2]
-
-
-
-   goto, no_circle
-
-   ;---- if part of the box area is outside active circle, replace 0 with local background ------
-   cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
-   c=where(cc eq 1)
-   if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
-   ;---------------------------------------------------------------------------------------------
-   no_circle:
-   pic1a=congrid(pic1, 210, 210)
-
-  ;----- plot image zoom
-
-    wset, wid_draw_1
-    device, decomposed=0
-    a0=pic1a<imax
-    a1=a0>imin
-    tvscl, a1, true=0
-
-  ;----------------------
-
-   if re[0] eq 0 then $
-   begin
-    XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
-    yy=yinvec([bs[0]*2+1,bs[1]*2+1])
-    p2=long(one2two(profile_function(XX, YY, A)))
-    pic2=congrid(p2, 210,210)
-    p3=pic1-p2
-    pic3=congrid(p3, 210,210)
-    xy=pt.peaks[pn].detxy
-
-    a=evaluate_fit_quality(pic1, p2)
-    print, 'fit quality', a[0], a[1]
-  ;------ profile optimization temporarily disabled
-  ;  pw=determine_optimal_profile(pic, p2, 5)
-  ;  bs=[pw,pw]
-    if rep eq 0 then $
-    begin
-      rep=1
-;      goto, rr
-    endif
-
-;    wset, wid_draw_1
-;    device, decomposed=0
- ;   a=pic1<100
-;    a1=pic1>median(pic1)
-;    tv, a1
-    wset, wid_draw_2
-    a1=pic2<imax
-    a2=a1>imin
-    tvscl, a2, true=0
-
-    wset, wid_draw_5
-    a1=pic3<imax
-    a2=a1>imin
-    tvscl, a2, true=0
-
-    if PE_open eq 1 then $ ;--- Peak Editor only
-    begin
-       display_peak, pn, pt
-       plot_peak, pn, pt, oimage
-    endif
-
-  endif else $
-  begin
-    wset, wid_draw_1
-    tvscl, pic1
-   ; wset, wid_draw_2
-   ; tvscl, pic2
-   ; wset, wid_draw_5
-   ; tvscl, pic3
-  endelse
- endif
  endif else $
  begin ;----------- individual image ----------------------
 
  pn=read_peak_selected(wid_list_3)
  if pn ge 0 and pn lt opt->peakno() then $
  begin
+
    pt=opt->get_object()
    widget_control, wid_text_37, SET_VALUE=strcompress(string(long(pt.peaks[pn].intssd[0])),/remove_all) ; display peak box size
    opt->unselect_all
    opt->select_peak, pn
    plot_peaks, draw0, opt, arr1, arr2
    bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
-   lbcgr=oimage->calculate_local_background(0)
-rep=0
 
-rr:
-   re=fit_one_peak_PD(pn,lbcgr)
-   n=n_elements(re)-1
-   if re[0] eq 0 then A=re[1:n/2]
+   b=opt->find_close_overlaps(pn, 10)
+   if b[0] gt 0 then pic9=two_peaks_get_profile(b[1],b[2]) else $
+   pic9=one_peak_get_profile(pn, bs)
+
+   if n_elements(pic9) eq 1 then pic9=fltarr((bs+1)*2)
+
+   sz=sqrt(n_elements(pic9))
+   szi=(sz-1)/2
+   bs=[szi,szi]
 
    pt=opt->get_object()
-   XY=pt.peaks[pn].detxy
+   XY=round(pt.peaks[pn].detxy)
    pic=oimage->get_zoomin(XY, bs, maskarr)
 
    ;---- if part of the box area is outside active circle, replace 0 with local background ------
-   if exclude_corners() then $
-   begin
-     cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
-     c=where(cc eq 1)
-     if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
-   endif
+  ; if exclude_corners() then $
+  ; begin
+  ;   cc=which_pixels_in_mtx_outside_circle(bs[0], xy, arr1/2-2)
+  ;   c=where(cc eq 1)
+  ;   if c[0] ne -1 then pic[c]=replicate(lbcgr[xy[0],xy[1]], n_elements(c))
+  ; endif
+
    ;---------------------------------------------------------------------------------------------
 
-   pic1=congrid(pic, 210, 210)
 
-   if re[0] eq 0 then $
-   begin
-    XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
-    yy=yinvec([bs[0]*2+1,bs[1]*2+1])
-    p2=long(one2two(profile_function(XX, YY, A)))
-    pic2=congrid(p2, 210,210)
-    p3=pic-p2
+       pic22=pic-pic9
+
+       m1=max(pic22)   ; maximum difference
+       m3=median(pic)
+       m6=max(pic)    ; maximum in the box
+
+       m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
+
+       print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
+       if (m1/m6 gt 0.5) or (m1/m3 gt 10) or (m7/m3) lt 5 then $
+       begin
+          print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
+       endif
+
+
+
+
+
+    pic1=congrid(pic, 210, 210)
+    pic2=congrid(pic9, 210,210)
+
     pic3=pic1-pic2
-    xy=pt.peaks[pn].detxy
 
-    a=evaluate_fit_quality(pic, p2)
-    print, 'fit quality', a[0], a[1]
-    pw=determine_optimal_profile(pic, p2, 5)
-    bs=[pw,pw]
-    if rep eq 0 then $
-    begin
-      rep=1
-;      goto, rr
-    endif
-
-
-   widget_control, wid_text_24, get_value=imax
-   widget_control, wid_text_25, get_value=imin
-   imax=long(imax)
-   imin=long(imin)
-   imax=imax[0]
-   imin=imin[0]
-
+    widget_control, wid_text_24, get_value=imax
+    widget_control, wid_text_25, get_value=imin
+    imax=long(imax)
+    imin=long(imin)
+    imax=imax[0]
+    imin=imin[0]
 
     wset, wid_draw_1
 	a1=pic1<imax
@@ -4396,18 +4411,13 @@ rr:
        plot_peak, pn, pt, oimage
     endif
 
-  endif else $
+  endif else $ ;- pn gt 0
   begin
     wset, wid_draw_1
     tvscl, pic1
-   ; wset, wid_draw_2
-   ; tvscl, pic2
-   ; wset, wid_draw_5
-   ; tvscl, pic3
   endelse
- endif
 
- endelse
+ endelse ; individual image
  end
 
 ;************************  NEW CODE ***************************************
@@ -4634,7 +4644,8 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_TEXT_1, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_2, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_3, SET_UVALUE=''
- ;WIDGET_CONTROL, WID_TEXT_3a, SET_UVALUE=''
+ WIDGET_CONTROL, WID_TEXT_3a, SET_UVALUE=''
+ WIDGET_CONTROL, WID_TEXT_3a, EDITABLE=1
 
  ;WIDGET_CONTROL, WID_TEXT_3a, SET_VALUE='10'
 
@@ -4675,6 +4686,7 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_TEXT_25, EDITABLE=1
 
  WIDGET_CONTROL, WID_Droplist_4aa, SET_UVALUE='Laue Class'
+ WIDGET_CONTROL, WID_DROPLIST_aaa, SET_UVALUE='Scan axis'
 
  ;WIDGET_CONTROL, WID_TEXT_37, EDITABLE=1
 
@@ -4687,13 +4699,16 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_TEXT_81, EDITABLE=1
  WIDGET_CONTROL, WID_TEXT_80, EDITABLE=1
 
- WIDGET_CONTROL, WID_TEXT_0, SET_VALUE='100'
- WIDGET_CONTROL, WID_TEXT_1, SET_VALUE='50'
- WIDGET_CONTROL, WID_TEXT_2, SET_VALUE='1.0'
- WIDGET_CONTROL, WID_TEXT_3, SET_VALUE='10'
- WIDGET_CONTROL, WID_TEXT_8, SET_VALUE=''
+ WIDGET_CONTROL, WID_TEXT_0, SET_VALUE='2'      ; gradient additive
+ WIDGET_CONTROL, WID_TEXT_1, SET_VALUE='40000'  ; max count
+ WIDGET_CONTROL, WID_TEXT_2, SET_VALUE='2' 		; smooth window
+ WIDGET_CONTROL, WID_TEXT_3, SET_VALUE='50'  	; min count
+ WIDGET_CONTROL, WID_TEXT_3a, SET_VALUE='50' 	; local background segments
+
+
+ ;WIDGET_CONTROL, WID_TEXT_8, SET_VALUE=''
  WIDGET_CONTROL, WID_TEXT_9, SET_VALUE=''
- WIDGET_CONTROL, WID_TEXT_10, SET_VALUE=''
+ ;WIDGET_CONTROL, WID_TEXT_10, SET_VALUE=''
  WIDGET_CONTROL, WID_TEXT_11, SET_VALUE=''
  WIDGET_CONTROL, WID_TEXT_12, SET_VALUE=''
 
@@ -4716,7 +4731,7 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
 
  WIDGET_CONTROL, WID_TEXT_30, EDITABLE=1
  WIDGET_CONTROL, WID_TEXT_31, EDITABLE=1
- WIDGET_CONTROL, WID_TEXT_34, EDITABLE=1
+ ;WIDGET_CONTROL, WID_TEXT_34, EDITABLE=1
  ;WIDGET_CONTROL, WID_TEXT_39, EDITABLE=1
  WIDGET_CONTROL, WID_TEXT_38, EDITABLE=1
  WIDGET_CONTROL, WID_TEXT_40, EDITABLE=1
@@ -4740,14 +4755,14 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_TEXT_30, SET_VALUE='-15.'
  WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=' 30.'
 
- WIDGET_CONTROL, WID_TEXT_34, SET_VALUE='  0.'
+ ;WIDGET_CONTROL, WID_TEXT_34, SET_VALUE='  0.'
  ;WIDGET_CONTROL, WID_TEXT_39, SET_VALUE='  0.5'
- WIDGET_CONTROL, WID_TEXT_38, SET_VALUE='-15'
- WIDGET_CONTROL, WID_TEXT_40, SET_VALUE='15'
- WIDGET_CONTROL, WID_TEXT_42, SET_VALUE='-15'
- WIDGET_CONTROL, WID_TEXT_41, SET_VALUE=' 15'
- WIDGET_CONTROL, WID_TEXT_44, SET_VALUE='-15'
- WIDGET_CONTROL, WID_TEXT_43, SET_VALUE='15'
+ WIDGET_CONTROL, WID_TEXT_38, SET_VALUE='-25'
+ WIDGET_CONTROL, WID_TEXT_40, SET_VALUE='25'
+ WIDGET_CONTROL, WID_TEXT_42, SET_VALUE='-25'
+ WIDGET_CONTROL, WID_TEXT_41, SET_VALUE='25'
+ WIDGET_CONTROL, WID_TEXT_44, SET_VALUE='-25'
+ WIDGET_CONTROL, WID_TEXT_43, SET_VALUE='25'
 
  WIDGET_CONTROL, WID_BUTTON_36aa, SET_UVALUE='Refine calibration'
  WIDGET_CONTROL, WID_BUTTON_38ab, SET_UVALUE='Integrate Pilatus'
@@ -4775,7 +4790,7 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
 
  WIDGET_CONTROL, WID_TEXT_48, SET_UVALUE=''
  ;WIDGET_CONTROL, WID_TEXT_47, SET_VALUE='2.0'
- WIDGET_CONTROL, WID_TEXT_48, SET_VALUE='1.3'
+ WIDGET_CONTROL, WID_TEXT_48, SET_VALUE='30'
 
  WIDGET_CONTROL, WID_TEXT_16, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_20, SET_UVALUE=''
@@ -4873,6 +4888,11 @@ selecting_status=0
  WIDGET_CONTROL,WID_BUTTON_36ab, SET_UVALUE='Refine Pilatus'
  WIDGET_CONTROL,WID_BUTTON_33b, SET_UVALUE='Use corners'
 
+
+ widget_control, wid_button_20, set_button=1
+ widget_control, wid_button_20aa3, set_button=1
+
+
  widget_control, wid_text_29, set_value=out_dir
  widget_control, wid_text_28, set_value=dir
  re=file_info('last_calibration.cal')
@@ -4881,7 +4901,7 @@ selecting_status=0
    load_cal, 'last_calibration.cal', oadetector, wv
    print_calibration, oadetector, wv
  end
- read_jpeg, 'start.jpg', pic, true=3
+ read_jpeg, 'start1.jpg', pic, true=3
  wset, draw0
  tvscl, congrid(pic[*,*,0:2],600,600,3), true=3
  WID_MAR345_ext

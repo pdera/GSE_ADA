@@ -1,5 +1,6 @@
 
 ;function CLASS_peaktable::recomp_UB
+;pro CLASS_peaktable::select_close_overlaps, far
 ;function CLASS_peaktable::peak_pos_diff_one, ubc, oadn, pred, wv, k
 ;pro CLASS_peaktable::move_sel_peaks_AtoB, opt
 ;pro CLASS_peaktable::replace_all_peaks_AbyB, opt
@@ -96,6 +97,46 @@ function CLASS_peaktable::recomp_UB
   XYZs=self->build_XYZs()
   UB=transpose(XYZs # transpose(HKLs) # invert(HKLs # transpose(HKLS)))
   return, UB
+end
+
+;--------------
+function CLASS_peaktable::find_close_overlaps, pn, far
+
+   noverlaps=0
+   xy1=self.peaks[pn].DetXY
+   for j=0, self.peakno-1 do if j ne pn then $
+   begin
+      xy2=self.peaks[j].DetXY
+      dxy=xy1-xy2
+      dst=sqrt(dxy[0]^2+dxy[1]^2)
+      if dst lt far then $
+      begin
+        noverlaps[0]=noverlaps[0]+1
+        if noverlaps[0] eq 1 then noverlaps=[noverlaps, pn, j] else $
+        noverlaps=[noverlaps,j]
+      endif
+   endif
+   return,noverlaps
+end
+
+;--------------
+;--------------
+pro CLASS_peaktable::select_close_overlaps, far
+ for i=0, self.peakno-2 do $
+ begin
+   xy1=self.peaks[i].DetXY
+   for j=i+1, self.peakno-1 do $
+   begin
+      xy2=self.peaks[j].DetXY
+      dxy=xy1-xy2
+      dst=sqrt(dxy[0]^2+dxy[1]^2)
+      if dst lt far then $
+      begin
+        self.peaks[i].selected[0]=1
+        self.peaks[j].selected[0]=1
+      endif
+   endfor
+ endfor
 end
 
 ;--------------

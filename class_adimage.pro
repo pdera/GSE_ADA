@@ -181,7 +181,7 @@ end
 
 ;--------------------------------------------
 
-function adimage_CLASS::calculate_local_background, corners
+function adimage_CLASS::calculate_local_background, corners, nregions
 
 ;-- MODIFICATION HISTORY:
 ;   *Written on Nov 21, 2012
@@ -195,8 +195,11 @@ function adimage_CLASS::calculate_local_background, corners
 
 ;-- OUTPUT:    returns an image array with pixel vaslues representying median background
 t0=systime(/seconds)
-Nx=20; number of regions in x
-Ny=20; number of regions in y
+
+
+if n_params() eq 1 then nregions=50
+Nx=nregions[0]; number of regions in x
+Ny=nregions[0]; number of regions in y
 
 sz=size(self.img)
 
@@ -419,6 +422,7 @@ end
        bin=size(imag)
 
 
+
        self.sts.name=fname
        ;self.sts.binning=4;
        self.sts.binning=long(self.sts.adet.nopixy/bin[2])
@@ -436,6 +440,9 @@ endcase
     self.sts.adet.nopixx=imsize[1]
     self.sts.adet.nopixY=imsize[2]
     self.sts.binning=ROUND(ad.nopixx/imsize[1])
+
+    b=read_image_settings(fname)
+
 
      endif else $
      begin

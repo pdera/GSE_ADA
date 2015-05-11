@@ -12,6 +12,9 @@ COMMON draws,DRAWA,wid_list_3a
 common status, PE_open, SIM_open
 Common labels, loffset
 common calib_ref, zeroref
+common closing, Wid_Image_simulation
+
+common uc_selection, sel, sel1, li, dl
 
 COMMON Myimage,Myimg, Myadt
 nop=0
@@ -94,7 +97,7 @@ pred={  om_start : 0.0, $
    close, 2
    free_lun, 2
   end
-
+  WID_MAR345_ext
   WID_MAR345_L
   print_scale_poly, [0.0,0.0,0.0]
   print_calibration, oadetector, wv

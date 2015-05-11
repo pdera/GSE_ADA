@@ -1,3 +1,53 @@
+pro generate_mono, en0,en1,dac_open, brav, write=write, check_overwrite=ch, del_selected=del
+
+COMMON draws,DRAWA,wid_list_3a
+@COMMON_DATAS
+COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
+
+  opt->zero
+  DAC_open=float(DAC_open)
+  read_predict_settings, pred
+  oadetector->generate_all_peaks, ub, opt, wv, pred, brav, DAC_open
+  if exclude_corners() eq 1 then $
+     opt->remove_peaks_outside_aa, oadetector
+  bx=read_box_size()
+  opt->set_zero_peak_box_size, bx
+  gg=read_overlap_limites()
+  opt->select_close_overlaps,gg[0]
+
+  plot_image, oimage
+  plot_peaks, drawA, opt, arr1, arr2
+  print_peak_list, opt, wid_list_3a
+
+  if del then opt->delete_selected
+
+  plot_image, oimage
+  plot_peaks, drawA, opt, arr1, arr2
+  print_peak_list, opt, wid_list_3a
+
+  if write eq 1 then $
+  begin
+   fn=out_dir+res.name0+'.pks'
+   re=file_info(fn)
+   if re.exists and ch eq 1 then $
+   begin
+    aa=dialog_message('pks file already exists - overwrite?',/question)
+    if aa eq 'Yes' then $
+    begin
+      opt->write_object_to_file, fn
+      peaktable_file=fn
+    endif
+   endif else $
+   begin
+    opt->write_object_to_file, fn
+    peaktable_file=fn
+   endelse
+  endif
+
+end
+
+
+
 pro WID_Image_simulation1_Cleanup, WID_Image_simulation
 common status, PE_open, SIM_open
 SIM_open = 0
@@ -17,6 +67,19 @@ end
 
 pro WID_Image_simulation::destroy
   widget_control, self.widgets.WID_Image_simulation, /destroy
+end
+
+;-------------------------------------
+function WID_Image_simulation::wid_text_7
+  return, self.widgets.wid_text_7
+end
+;-------------------------------------
+function WID_Image_simulation::wid_text_8
+  return, self.widgets.wid_text_8
+end
+;-------------------------------------
+function WID_Image_simulation::wid_text_14
+  return, self.widgets.wid_text_14
 end
 
 ;-----------------------
@@ -92,25 +155,22 @@ end
 pro WID_Image_simulation::generate_mono
 COMMON draws,DRAWA,wid_list_3a
 @COMMON_DATAS
-
 COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
-  opt->zero
+
+
   widget_control, self.widgets.wid_text_7, get_value=en0
   widget_control, self.widgets.wid_text_8, get_value=en1
   widget_control, self.widgets.wid_text_14, get_value=DAC_open
   DAC_open=float(DAC_open)
-  read_predict_settings, pred
-  oadetector->generate_all_peaks, ub, opt, wv, pred, self->Bravais_type(),DAC_open
-  ;oadetector->generate_peaks_laue, ub, opt, pred, [float(en0),float(en1)]
-  if exclude_corners() eq 1 then $
-     opt->remove_peaks_outside_aa, oadetector
-   bx=read_box_size()
-   opt->set_zero_peak_box_size, bx
+
+  generate_mono, en0,en1,dac_open, self->Bravais_type(), write=1, check_overwrite=1, del_selected=0
 
   plot_image, oimage
   plot_peaks, drawA, opt, arr1, arr2
   print_peak_list, opt, wid_list_3a
+
 end
+
 ;-----------------------
 pro WID_Image_simulation::generate_mono_0
 COMMON draws,DRAWA,wid_list_3a
@@ -142,6 +202,66 @@ function WID_Image_simulation::read_rotation_step
 end
 
 ;-----------------------
+
+function WID_Image_simulation::index
+@COMMON_DATAS
+@COMMON_DATAS2
+COMMON draws,DRAWA,wid_list_3a
+
+common uc_selection, sel, li
+   print, '---- Indexing'
+
+ ;---------- determine UB matrix with
+
+    cell_now_solution_n, 1
+
+    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    a=opt->save_p4p(dirs+'xxx.p4p')
+    text='MYARG="'+dirs+'run_cellnow.cmd"'
+    SETENV, text
+    spawn, '%MYARG%'  , /LOG_OUTPUT
+
+
+
+    lps=fltarr(6)
+    V=0.0
+    L=''
+
+    read_cells_from_cellnow, lps, v, l
+
+    WID_cell_choices, lps, v, l
+    print, 'Unit cell selected:', sel
+    cell_now_solution_n, sel
+    spawn, '%MYARG%'  , /LOG_OUTPUT
+
+    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    ub=ReadUBfrom_p4p(dirs+'1.p4p')
+    lp= lp_from_ub(UB)
+    if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2
+    tol=0.15
+    opt->select_indexable, ub, tol
+
+    ;plot_peaks, draw0, opt, arr1, arr2
+    opt->delete_selected
+    lp=Refine_B_against_d(ub, opt, symm)
+    opt->delete_selected
+    lp=Refine_B_against_d(ub, opt, symm)
+    opt->delete_selected
+
+    self->print_UB, UB
+    self->print_lp, lp
+
+     plot_image, oimage
+     plot_peaks, drawA, opt, arr1, arr2
+     print_peak_list, opt, wid_list_3a
+     update_peakno, opt->peakno()
+
+     return, 1
+
+  end
+
+
+
 
 pro WID_Image_simulation::update_rota
 COMMON rotat, rot, om, ch, ph
@@ -256,6 +376,11 @@ endif
 case ev.id of
 
 ;----
+   self.widgets.wid_button_17a:$;
+   begin
+    a=self->index()
+   end
+
    self.widgets.wid_button_3:$;       '<'
    begin
      st=self->simu_type()
@@ -846,6 +971,13 @@ function WID_Image_simulation::init
       ,VALUE='Bravais lattice type')
 
 
+
+
+
+
+
+
+
   self.widgets.WID_BASE_0 = Widget_Base(self.widgets.WID_Image_simulation, UNAME='WID_BASE_0'  $
       ,XOFFSET=239 ,YOFFSET=318 ,TITLE='IDL' ,COLUMN=1 ,/EXCLUSIVE)
 
@@ -912,8 +1044,12 @@ function WID_Image_simulation::init
 
 
   self.widgets.WID_BUTTON_17 = Widget_Button(self.widgets.WID_Image_simulation,  $
-      UNAME='WID_BUTTON_17' ,XOFFSET=156 ,YOFFSET=389 ,SCR_XSIZE=119  $
-      ,SCR_YSIZE=39 ,/ALIGN_CENTER ,VALUE='Generate')
+      UNAME='WID_BUTTON_17' ,XOFFSET=150 ,YOFFSET=389 ,SCR_XSIZE=100  $
+      ,SCR_YSIZE=30 ,/ALIGN_CENTER ,VALUE='Generate')
+
+  self.widgets.WID_BUTTON_17a = Widget_Button(self.widgets.WID_Image_simulation,  $
+      UNAME='WID_BUTTON_17a' ,XOFFSET=50 ,YOFFSET=389 ,SCR_XSIZE=100  $
+      ,SCR_YSIZE=30 ,/ALIGN_CENTER ,VALUE='Index')
 
 
   self.widgets.WID_BUTTON_18 = Widget_Button(self.widgets.WID_Image_simulation,  $
@@ -940,6 +1076,7 @@ end
 
 pro WID_Image_simulation__define
 
+common closing, Wid_Image_simulation
 
   widgets={WID_Image_simulation_widgets, $
   WID_Image_simulation:0L, $
@@ -1002,6 +1139,7 @@ pro WID_Image_simulation__define
   WID_BASE_3 :0L, $
   WID_BUTTON_16:0L, $
   WID_BUTTON_17:0L, $
+  WID_BUTTON_17a:0L, $
   WID_BUTTON_18:0L}
 
   WID_Image_simulation={WID_Image_simulation, widgets:widgets}

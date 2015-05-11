@@ -663,8 +663,6 @@ end
 ;-----------------------------------------------------------
 
 
-
-
 ;&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 ;--------------------------------------------------------------------
@@ -674,6 +672,98 @@ end
 ;--------------------------------------------------------------------
 
 function adetector_class::calculate_pixels_from_xyz, xyz, gonio
+; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
+; for now this is for an omega axis
+
+     sd=[0.0,0.0,0.0]
+     pix=[0.0,0.0]
+     xyz1=xyz/vlength(xyz)
+     common Rota, Mtx
+
+     GenerateR, 2, self.alpha
+     al=Mtx
+     GenerateR, 3, gonio[3]
+     om=Mtx
+    ; GenerateR, 3,-self.omega0 ;not using those zeros right now
+    ; om0=Mtx
+     GenerateR, 1, gonio[4]
+     ch=Mtx
+     ;GenerateR, 1, -self.ttheta0 ;not using those zeros right now
+     ;ch0=Mtx
+     iom=invert(om)
+     ;iom0=invert(om0)
+     ich=invert(ch)
+     ;ich0=invert(ch0)
+     ial=invert(al)
+
+     hl=ial##iom##al ##ich##xyz1 ; alpha accounts for non-orthogonality, kappa should account for change in crystal oprientation
+     ;hl=ial##iom##iom0##al##ch0##ich##ich0##xyz1
+
+     sd=calculate_sd_from_hl(hl)
+
+     pix=self->calculate_pixels_from_sd(sd, gonio)
+
+     return, pix
+
+ end
+
+;--------------------------------------------------------------------
+; Calculates recip. versor coordinates from pixel coordinates
+; (including non zero goinio position)
+; Back rotation is applied, so the final vector coordinates are at zero
+; goniometer position
+;---------------------------------------------------------------------
+
+
+function adetector_class::calculate_XYZ_from_pixels, xpix, ypix, gonio
+; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
+
+     common Rota, Mtx
+
+     vec1=[0.0,0.0,0.0]
+     vec2=vec1
+     sd=vec1
+     hl=vec1
+
+     ;----------------------------
+     sd=self->calculate_sd_from_pixels([xpix, ypix], gonio)
+     hl=calculate_hl_from_sd(sd)
+     hl=hl/vlength(hl)
+
+     GenerateR, 2,-self.alpha
+     al=Mtx
+     GenerateR, 3,-gonio[3]
+     om=Mtx
+     ;GenerateR, 3,-self.omega0
+     ;om0=Mtx
+     GenerateR, 1, -gonio[4]
+     ch=Mtx
+     ;GenerateR, 1, -self.ttheta0
+     ;ch0=Mtx
+     iom=invert(om)
+     iom0=invert(om0)
+     ich=invert(ch)
+     ich0=invert(ch0)
+     ial=invert(al)
+
+
+     vec2=al##om##om0##ial##ich0##ch##ch0##hl ; this takes into account nonorthogonal rotation with angle alpha
+
+     return, vec2
+
+ end
+
+;----------------------------------------------------------
+
+;&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+;--------------------------------------------------------------------
+; Calculates pixel coordinates from rec. vector coordinates, allows to apply further
+; goniometer rotation gonio
+; it is assumed that the goniometer rotation is relative to the original position of xyz
+;--------------------------------------------------------------------
+
+function adetector_class::calculate_pixels_from_xyz1, xyz, gonio
 ; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
 ; for now this is for an omega axis
 
@@ -715,7 +805,7 @@ function adetector_class::calculate_pixels_from_xyz, xyz, gonio
 ;---------------------------------------------------------------------
 
 
-function adetector_class::calculate_XYZ_from_pixels, xpix, ypix, gonio
+function adetector_class::calculate_XYZ_from_pixels1, xpix, ypix, gonio
 ; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
 
      common Rota, Mtx

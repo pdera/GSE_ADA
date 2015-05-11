@@ -9,3 +9,4 @@ common status, PE_open, SIM_open
 Common labels, loffset
 common calib_ref, zeroref
 COMMON cont, contextBase, contextBase3
+COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak

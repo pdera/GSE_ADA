@@ -27,9 +27,6 @@ function read_kappa_and_ttheta
 end
 
 
-function read_cal_type
-return, 1
-end
 
 ;==============================================================
 

@@ -11,6 +11,54 @@ pro WID_MAR345_ext_commons
 
 end
 
+
+;-----------------------------
+
+function gonio_zero_offset
+COMMON WID_MAR345_elements
+ widget_control, WID_TEXT_30aa, get_value=ka
+ return, float(ka)
+end
+
+;-----------------------------
+
+function read_image_settings, fname
+COMMON WID_MAR345_elements
+ fil=fname+'.txt'
+ re=file_info(fil)
+ if re.exists then $
+ begin
+   l1=''
+   l2=''
+   l3=''
+   l4=''
+   nums=fltarr(4)
+   get_lun, un
+   openr, un, fil
+   readf, un, l1
+   readf, un, l2
+   readf, un, l3
+   readf, un, l4
+   close, un
+   free_lun, un
+   nums[0]=float(strmid(l1, 12,strlen(l1)-12))
+   nums[1]=float(strmid(l2, 12,strlen(l2)-12))
+   nums[2]=float(strmid(l3, 12,strlen(l3)-12))
+   nums[3]=float(strmid(l4, 12,strlen(l4)-12))
+   print, nums
+
+   WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string(nums[0]-gonio_zero_offset(), format='(F6.2)')
+   WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
+
+ end
+end
+
+;--------------------------------
+function read_cal_type
+COMMON WID_MAR345_elements
+   return, widget_info(WID_BUTTON_refine_calt_p, /button_set)
+end
+
 ;--------------------------------
 function read_polar
 COMMON WID_MAR345_elements
@@ -29,6 +77,13 @@ function read_kappa_and_ttheta
 COMMON WID_MAR345_elements
  widget_control, wid_text_36a, get_value=ka
  widget_control, wid_text_36b, get_value=tth
+ return, [float(ka),float(tth)]
+end
+
+function read_overlap_limites
+COMMON WID_MAR345_elements
+ widget_control, wid_text_30r, get_value=ka
+ widget_control, wid_text_31r, get_value=tth
  return, [float(ka),float(tth)]
 end
 
@@ -74,6 +129,30 @@ end
 
 ;-------------------------------
 
+function update_on_browse
+COMMON WID_MAR345_elements
+re=widget_info(wid_button_23c, /button_set)
+return, re ;
+end
+
+;-------------------------------
+
+function fit_peaks_after_PS
+COMMON WID_MAR345_elements
+re=widget_info(wid_button_9a, /button_set)
+return, re
+end
+
+;-------------------------------
+
+function do_symmetric_correlation
+ COMMON WID_MAR345_elements
+ re=widget_info(wid_button_23b, /button_set)
+ return, re
+end
+
+;-------------------------------
+
 function I_corrections
 COMMON WID_MAR345_elements
 re1=widget_info(wid_button_51a, /button_set) ; dac abs
@@ -93,7 +172,7 @@ end
 ;===============================================================
 ;===============================================================
 
-pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
+pro peak_intensity_evaluation, pni, A, PCERROR, XY, axis, lbcgr
 
 @COMMON_DATAS
 @COMMON_DATAS2
@@ -103,10 +182,10 @@ pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
 
 
        pt=opt->get_object()
-       pt.peaks[pn].DetXY[0]= XY[0]+a[5]
-       pt.peaks[pn].DetXY[1]= XY[1]+a[6]
+       pt.peaks[pni].DetXY[0]= XY[0]+a[5]
+       pt.peaks[pni].DetXY[1]= XY[1]+a[6]
 
-       bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+       bs=[long(pt.peaks[pni].intssd[0]),long(pt.peaks[pni].intssd[0])]
        XX=Xinvec([bs[0]*2+1,bs[1]*2+1])
        yy=yinvec([bs[0]*2+1,bs[1]*2+1])
        p2=long(one2two(profile_function(XX, YY, A)))
@@ -125,21 +204,21 @@ pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
        attt=evaluate_fit_quality(pic, p2)
        if attt[0] gt 0 then $
        begin
-          opt->select_peak, pn
+          opt->select_peak, pni
        endif else $
        begin
 
-       gonio=pt.peaks[pn].gonio
+       gonio=pt.peaks[pni].gonio
        kt=read_kappa_and_ttheta()
        gonio[1]=kt[1]
-       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pn].DetXY, gonio, wv)
+       xyz=oadetector->calculate_XYZ_from_pixels_mono(pt.peaks[pni].DetXY, gonio, wv)
 
      ;------------
-       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pn].DetXY, gonio)
+       sd=oadetector->calculate_sd_from_pixels(pt.peaks[pni].DetXY, gonio)
        nu=ang_between_vecs([0.0,sd[1],sd[2]],[0.,-1.,0.])
-       nu1=oadetector->get_nu_from_pix(pt.peaks[pn].DetXY)
+       nu1=oadetector->get_nu_from_pix(pt.peaks[pni].DetXY)
        ;print, nu, nu1
-       tth=get_tth_from_xyz(pt.peaks[pn].xyz)
+       tth=get_tth_from_xyz(pt.peaks[pni].xyz)
        II=(A[1]*A[2]*A[3])*2.*!pi
        si=2.*!pi*(A[2]*A[3]*PCERROR[1]+A[1]*A[2]*PCERROR[3]+A[1]*A[3]*PCERROR[2])
        ty=I_corrections()
@@ -165,22 +244,22 @@ pro peak_intensity_evaluation, pn, A, PCERROR, XY, axis, lbcgr
       if ty[0] eq 1 then $
       begin
        om0= 0.0
-       ii=II/dac_profile(pt.peaks[pn].gonio[axis]+om0,1)
-       si=sI/dac_profile(pt.peaks[pn].gonio[axis]+om0,1)
+       ii=II/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
+       si=sI/dac_profile(pt.peaks[pni].gonio[axis]+om0,1)
       end
 
     ;-- omega polynomial correction
-       aom=omega_correction(pt.peaks[pn].gonio[axis])
+       aom=omega_correction(pt.peaks[pni].gonio[axis])
        ii=II*aom
        si=sI*aom
 
-       pt.peaks[pn].energies[2]=A[2] ; width 2th
-       pt.peaks[pn].energies[3]=A[3] ; width chi
-       pt.peaks[pn].energies[4]=A[4] ; tilt
-       pt.peaks[pn].energies[5]=A[0] ; background
+       pt.peaks[pni].energies[2]=A[2] ; width 2th
+       pt.peaks[pni].energies[3]=A[3] ; width chi
+       pt.peaks[pni].energies[4]=A[4] ; tilt
+       pt.peaks[pni].energies[5]=A[0] ; background
 
-       pt.peaks[pn].intAD[0]=ii
-       pt.peaks[pn].intAD[1]=si
+       pt.peaks[pni].intAD[0]=ii
+       pt.peaks[pni].intAD[1]=si
        opt->set_object, pt
        end
 
@@ -239,9 +318,14 @@ COMMON WID_MAR345_elements
 end
 
 ;--------------------------------
-function read_cells_from_cellnow
+pro read_cells_from_cellnow, lp, v, l
+
    lp=fltarr(6)
    lp0=fltarr(6)
+   V=0.0
+   L=''
+   V0=0.0
+   L0=''
    dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
    fil=dir+'xxx._cn'
    get_lun, ln
@@ -256,76 +340,102 @@ function read_cells_from_cellnow
     ;print, re
    ;--- reading cell parameters sets
    readf, ln, re
-   for i=0, 5 do lp[i]=strmid(re, 18+i*8,8)
+
+   for i=0, 5 do $
+   begin
+     lp[i]=strmid(re, 18+i*8,8)
+   endfor
+     V=strmid(re, 65,10)
+     L=strmid(re, 75,3)
    num=1
-   while strmid(re,0, 3) eq '   ' and not eof(ln) do $
+   while re ne '' and not eof(ln) do $
    begin
     lp=[[lp],[lp0]]
+    V=[V,V0]
+    L=[L,L0]
     readf, ln, re
     for i=0, 5 do lp[i, num]=strmid(re, 18+i*8,8)
+    V[num]=strmid(re, 65,10)
+    L[num]=strmid(re, 75,3)
     num=num+1
    endwhile
    close, ln
    free_lun, ln
     ;print, lp
    ;print, size(lp)
-   return, lp
+   lp=lp[*,0:num-2]
+   l=l[0:num-2]
+   v=v[0:num-2]
+   print, lp
+   print, v
+   print, l
+
 end
 
 ;---------------------------
 
-function PS, om, axis
+function PS, om, axis, prog=prog
 @COMMON_DATAS
 @COMMON_DATAS2
 COMMON WID_MAR345_elements
-;COMMON image_type_and_arrays
-;COMMON cont
-;common selections
-;common mcoordinates
-;COMMON EX
-;COMMON prof
-;COMMON CLASS_peaktable_reference
 common status, PE_open, SIM_open
 common calib_ref, zeroref
 
-    ps=ops->get_object()
-    read_ps_settings, a1,a2,a3,a4
-    capture_calibration, oadetector, wv
+    opt->initialize
+    read_ps_settings, a1,a2,a3,a4, a5
 
-    ps.threshold =float(a1)
-    ps.pbox      =float(a2)
-    ps.bbox      =float(a3)
-    ps.mindist   =a4
-    ops->set_object, ps
+
+    ;a1, additive for gradient
+    ;a2, max count
+    ;a3, smooth window
+    ;a4, min count
+    ;a5, local background window
+
+
+    capture_calibration, oadetector, wv
 
     widget_control, wid_text_6, get_value=ni
     widget_control, wid_text_7, get_value=i0
     widget_control, wid_text_4, get_value=om0
     widget_control, wid_text_5, get_value=omD
+
     i0=fix(i0)
     ni=fix(ni)
     om0=float(om0)
     omD=float(omD)
-    widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
+ ;   widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
 
     bx=read_box_size(wid_text_37,wid_text_37)
 
-    plot_image, oimage
-    ops->execute,oimage,oadetector, exclusions, wid_button_9, SHOW_PROGRESS_BAR=0
-    ps=ops->get_object()
-    bx=read_box_size(wid_text_37,wid_text_37)
-    ps.peaktable.peaks[*].intssd[0:1]=[bx[0],bx[0]]
+    im=oimage->get_object()
+    lbcgr=oimage->calculate_local_background(0, a5)
+    im1=smooth2(im.img-lbcgr, a3)
+    locmax, im1, a1, MASK=m,  IX=ix, IY=iy, VALUES=v, /NOEDGE
+
+if n_elements(v) gt 0 then $
+begin
+    f=where(v gt a4)
+    f1a=where(v[f] lt a2)
     gonio=fltarr(6)
-    gonio[axis]=om
-    ps.peaktable.peaks[*].gonio=gonio
+	gonio[axis]=om
 
-    lbcgr=oimage->calculate_local_background(0)
-    fit_all_peak_PD1, lbcgr, ps.peaktable
+	if f1a[0] ne -1 then $
+    for k=0, n_elements(f1a)-1 do $
+    begin
+      ref_peak.detXY=[IX[f[f1a[k]]],IY[f[f1a[k]]]]
+      ref_peak.intssd[0:1]=[bx[0],bx[0]]
+      ref_peak.gonio=gonio
+      opt->appendpeak, ref_peak
+    end
 
-    opt->append_peaks, ps.peaktable
+	pt=opt->get_object()
+
+    if  fit_peaks_after_PS() then fit_all_peaks, prog=prog
+
     update_peakno, opt->peakno()
  ;   opt->find_multiple_peak_copies
     opt->calculate_all_xyz_from_pix, oadetector, wv
+    endif
     return, opt->peakno()
 end
 ;--------------------------------------------------
@@ -343,6 +453,7 @@ COMMON WID_MAR345_elements
 ;COMMON CLASS_peaktable_reference
 ;common status, PE_open, SIM_open
 ;common calib_ref, zeroref
+
     lp=fltarr(13)
     lpo=fltarr(13)
     lpc=fltarr(13)
@@ -354,9 +465,9 @@ COMMON WID_MAR345_elements
     ni=fix(ni)
     om0=float(om0)
     omD=float(omD)
-    widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
+   ; widget_control, wid_text_8, set_value=string(0, format='(I2)')+'/'+string(ni[0], format='(I2)')
 
-    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel, text='Progress in series')
     cgProgressBar -> Start
 
 
@@ -368,10 +479,20 @@ COMMON WID_MAR345_elements
      widget_control, wid_text_9, set_value=res.name0
      oimage->load_image, fn, oadetector
      plot_image, oimage
-     a=PS(om0+i*omD, 3)
+     a=PS(om0+i*omD, 3, prog=0)
+     plot_peaks, draw0, opt, arr1, arr2
+     fn=out_dir+res.name0+'.pks'
+     opt->write_object_to_file, fn
+     IF cgProgressBar -> CheckCancel() THEN $
+     BEGIN
+     	ok = Dialog_Message('Operation canceled')
+     	cgProgressBar -> Destroy
+     	RETURN, [0,0]
+     ENDIF
      cgProgressBar -> Update, (float(i)/float(ni[0]))*100.0
    endfor
     cgProgressBar -> Destroy
+
     opt->find_multiple_peak_copies
     ;opt->recalculate_all_xyz, oadetector, wv
     update_peakno, opt->peakno()
@@ -381,7 +502,14 @@ COMMON WID_MAR345_elements
     plot_peaks, draw0, opt, arr1, arr2
     print_peak_list, opt, wid_list_3
     update_peakno, opt->peakno()
+
+
+
+goto, ror
+
     opt->write_object_to_file, fn+'.pks'
+
+
     ;---------- determine UB matrix with
 
     cell_now_solution_n, 1
@@ -393,7 +521,7 @@ COMMON WID_MAR345_elements
     spawn, '%MYARG%'  , /LOG_OUTPUT
 
 
-    opx_cpx=find_opx_cell(read_cells_from_cellnow())
+;    opx_cpx=find_opx_cell(read_cells_from_cellnow())
     if opx_cpx[0] gt 0 then $
     begin
       cell_now_solution_n, opx_cpx[0]+1
@@ -445,6 +573,7 @@ COMMON WID_MAR345_elements
       opt->write_object_to_file, fn+'_ic.pks'
     endelse
     return, [[lpo],[lpc]]
+    ror: return, [0,0]
 end
 ;---------------------------
 
@@ -618,7 +747,7 @@ pro print_scale_poly, coeff
  n=n_elements(coeff)
  poly_text=strarr(n)
  COMMON WID_MAR345_elements
- for i=0, n-1 do poly_text[i]=string(coeff[i], format='(F12.8)')
+ for i=0, n-1 do poly_text[i]=string(coeff[i], format='(F20.16)')
  widget_control, WID_list_poly, set_value=poly_text
 end
 
@@ -857,7 +986,11 @@ end
 function profile_function_name
 COMMON WID_MAR345_elements
  s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
- if s eq 1 then return, 'Voigt2dwt' else return, 'Gaussian2dwt'
+ s1=widget_info(WID_button_412z, /button_set) ; Gauss1D
+ if s eq 1 then return, 'Voigt2dwt' else $
+ begin
+ 	if s1 eq 0 then return, 'Gaussian2dwt' else return, 'Gauss1D'
+ endelse
 end
 
 

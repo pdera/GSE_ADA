@@ -19,9 +19,11 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_7, $
  WID_BUTTON_8, $
  WID_BUTTON_9, $
+ WID_BUTTON_9a, $ ; fit peaks after peak search?
  WID_BUTTON_11, $
  WID_BUTTON_12, $
  WID_BUTTON_13, $
+ WID_BUTTON_13a, $ ; Region select
  WID_BUTTON_14, $
  WID_BUTTON_15, $
  WID_BUTTON_16, $
@@ -35,6 +37,8 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_22, $
  WID_BUTTON_23, $
  WID_BUTTON_23a, $
+ WID_BUTTON_23b, $
+ WID_BUTTON_23c ,$
  WID_BUTTON_24, $
  WID_BUTTON_25, $
  WID_BUTTON_26, $ ; open calibration
@@ -83,6 +87,7 @@ COMMON WID_MAR345_elements,$
  WID_TEXT_12, $ ; range start
  WID_TEXT_14, $ ; range start
  WID_TEXT_16, $ ; range start
+ WID_TEXT_17, $ ; range start
  WID_TEXT_18, $ ; range start
  WID_TEXT_19, $ ; range start
  WID_TEXT_20, $ ; range start
@@ -198,6 +203,7 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_40a, $
  WID_BUTTON_411, $
  WID_BUTTON_412, $
+ WID_BUTTON_412z, $
  WID_BUTTON_413, $
  WID_BUTTON_511, $
  WID_BUTTON_512, $
@@ -239,6 +245,17 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_51M, $
  WID_BUTTON_412b, $
  WID_BUTTON_413b, $
+ WID_BUTTON_41aw, $
  WID_BUTTON_20aa3, $
- WID_BUTTON_47b
+ WID_BUTTON_47b, $
+ WID_BUTTON_wholeseries, $
+ WID_TEXT_30aa, $
+ WID_BUTTON_43dd, $
+ WID_BUTTON_43de, $
+ WID_DROPLIST_aaa, $
+ WID_TEXT_30r, $
+ WID_TEXT_31r, $
+ WID_BUTTON_47c, $
+ WID_BUTTON_47d, $
+ WID_Image_simulation
 

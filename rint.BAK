@@ -908,6 +908,25 @@ m=max(pt.peaks[*].intad[0])
 ;pt.peaks[*].intad[0]=pt.peaks[*].intad[0]*9999./m
 
 used=intarr(pt.peakno) ; table of peaks that have already been classified (value is class number)
+
+
+
+;free_lun, 5
+;b='C:\Users\przemyslaw\Documents\thin_section_absorption1.txt'
+;openr, 5, b
+;a=fltarr(1000,2)
+;a1=0.
+;a2=0.
+;readf, 5, a1, a2
+;aaa=[a1, a2]
+;while not eof(5) do $
+;begin
+;  readf, 5, a1, a2
+;  aaa=[[aaa],[a1,a2]]
+;endwhile
+;close, 5
+
+
 morethan2=intarr(pt.peakno)
 means=fltarr(pt.peakno) ; table of peaks that have already been classified
 classes=intarr(pt.peakno, 2) ; table of peaks that define equivalent classes [0] and number of class members [1]
@@ -988,13 +1007,14 @@ wset, draw
 device, decomposed=1
 
 plot, x, y,  thick=0, symsize=0.5, psym=6, color='000000'xl, background='FFFFFF'xl
-result = POLY_FIT(X, Y, scale_poly(), SIGMA=sigma)
+;result=POLY_FIT(aaa[0,*], aaa[1,*], 6, SIGMA=sigma, yfit=yc, /double)
+result = POLY_FIT(X, Y, scale_poly(), SIGMA=sigma, yfit=yc, /double)
 print_scale_poly, result
 s=sort(x)
 x1=x[s]
-yc=result[0]+result[1]*x1+result[2]*x1*x1
+;yc=result[0]+result[1]*x1+result[2]*x1*x1
 
-oplot, x1, yc,  thick=2, color='00ff00'xl
+oplot, x, yc,  thick=2, color='00ff00'xl
 
 return, ri/rit
 
@@ -1088,11 +1108,26 @@ end
 wset, draw
 device, decomposed=1
 
-plot, x, y,  thick=0, symsize=0.5, psym=6, color='000000'xl, background='FFFFFF'xl
+;n=n_elements(x)
+;b=sort(x)
+;x=x[b]
+;y=y[b]
+;x=x[1:n-4]
+;y=y[1:n-4]
+
+;plot, x, y,  thick=0, symsize=0.5, psym=6, color='000000'xl, background='FFFFFF'xl
+
+;b=smooth(y, 30)
+
+;b=SPLINE(x,y,x,1.0)
+
+;oplot, x, b, color='00FF00'xl, thick=2
+
 
 a=interval_nodes(x , y, np)
 s=sort(x)
 x1=x[s]
+
 b = SPLINE( a[*,0], a[*,1], x1)
 
 oplot, x1, b, color='00FF00'xl, thick=2
@@ -1200,8 +1235,8 @@ begin
   an=pt.peaks[i].gonio[axis]
   bx=min(abs(x1-an),dd)
   bb=b[dd]+1.0 ; this is the spline function
-  pt.peaks[s[i]].IntAD[0]=pt.peaks[s[i]].IntAD[0]/bb
-  pt.peaks[s[i]].IntAD[1]=pt.peaks[s[i]].IntAD[1]/bb
+  pt.peaks[i].IntAD[0]=pt.peaks[i].IntAD[0]/bb
+  pt.peaks[i].IntAD[1]=pt.peaks[i].IntAD[1]/bb
 endfor
 opt->set_object, pt
 

@@ -12,6 +12,9 @@ COMMON draws,DRAWA,wid_list_3a
 common status, PE_open, SIM_open
 Common labels, loffset
 common calib_ref, zeroref
+common closing, Wid_Image_simulation
+
+common uc_selection, sel, sel1, li, dl
 
 COMMON Myimage,Myimg, Myadt
 nop=0
@@ -100,6 +103,8 @@ pred={  om_start : 0.0, $
   print_calibration, oadetector, wv
   wid_sim=obj_new('WID_Image_simulation')
   wid_sim->hide
+
+  Wid_Image_simulation=wid_sim
   wid_peditor=obj_new('WID_Peak_editor')
   wid_peditor->hide
   wid_film=obj_new('WID_profile_film_viewer')
