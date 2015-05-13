@@ -1,0 +1,107 @@
+;
+; IDL Event Callback Procedures
+; Wid_settings_gen_dlg_eventcb
+;
+; Generated on:	05/12/2015 10:25.24
+;
+;-----------------------------------------------------------------
+
+;-----------------------------------------------------------------
+; Activate Button Callback Procedure.
+; Argument:
+;   Event structure:
+;
+;   {WIDGET_BUTTON, ID:0L, TOP:0L, HANDLER:0L, SELECT:0}
+;
+;   ID is the widget ID of the component generating the event. TOP is
+;       the widget ID of the top level widget containing ID. HANDLER
+;       contains the widget ID of the widget associated with the
+;       handler routine.
+
+;   SELECT is set to 1 if the button was set, and 0 if released.
+;       Normal buttons do not generate events when released, so
+;       SELECT will always be 1. However, toggle buttons (created by
+;       parenting a button to an exclusive or non-exclusive base)
+;       return separate events for the set and release actions.
+
+;   Retrieve the IDs of other widgets in the widget hierarchy using
+;       id=widget_info(Event.top, FIND_BY_UNAME=name)
+
+;-----------------------------------------------------------------
+pro Closeup, Event
+	widget_control, event.top,/destroy
+
+end
+;-----------------------------------------------------------------
+; Activate Button Callback Procedure.
+; Argument:
+;   Event structure:
+;
+;   {WIDGET_BUTTON, ID:0L, TOP:0L, HANDLER:0L, SELECT:0}
+;
+;   ID is the widget ID of the component generating the event. TOP is
+;       the widget ID of the top level widget containing ID. HANDLER
+;       contains the widget ID of the widget associated with the
+;       handler routine.
+
+;   SELECT is set to 1 if the button was set, and 0 if released.
+;       Normal buttons do not generate events when released, so
+;       SELECT will always be 1. However, toggle buttons (created by
+;       parenting a button to an exclusive or non-exclusive base)
+;       return separate events for the set and release actions.
+
+;   Retrieve the IDs of other widgets in the widget hierarchy using
+;       id=widget_info(Event.top, FIND_BY_UNAME=name)
+
+;-----------------------------------------------------------------
+pro Generate_and_end, Event
+	widget_control, event.top, get_uvalue=fnstuff
+	fn=fnstuff(0)
+	dir=fnstuff(1)
+	res=analyse_fname(fn, dir, 3)
+	startind = fix(fnstuff(2))
+	endind = startind+fix(fnstuff(3))-1
+
+	; get the values which will be written to the settings file
+	id = widget_info (event.top, FIND_BY_UNAME='startAngLE')
+	widget_control, id, get_value=v0
+	startAngle = float(v0)
+	id = widget_info (event.top, FIND_BY_UNAME='angIncLE')
+	widget_control, id, get_value=v0
+	angInc = float(v0)
+	id = widget_info (event.top, FIND_BY_UNAME='chiLE')
+	widget_control, id, get_value=v0
+	chival = float(v0)
+	id = widget_info (event.top, FIND_BY_UNAME='detectLE')
+	widget_control, id, get_value=v0
+	detectval = float(v0)
+	id = widget_info (event.top, FIND_BY_UNAME='exposLE')
+	widget_control, id, get_value=v0
+	exptime = float(v0)
+
+
+
+	for i=startind, endind do begin
+		res.seq = i
+		fn = generate_fname(res)
+		outFileName = fn+'.txt'
+		omega0 = startAngle + (i-startind) * angInc
+		openw,6,outFileName
+		printf,6,FORMAT='(a-10,"=",F13.4)','omega0',omega0
+		printf,6,FORMAT='(a-10,"=",F13.4)','omegaR',angInc
+		printf,6,FORMAT='(a-10,"=",F13.4)','chi',chival
+		printf,6,FORMAT='(a-10,"=",F13.4)','detector',detectval
+		printf,6,FORMAT='(a-10,"=",F13.4)','exp. time',exptime
+
+		close,6
+
+	endfor
+
+	widget_control, event.top,/destroy
+
+end
+;
+; Empty stub procedure used for autoloading.
+;
+pro Wid_settings_gen_dlg_eventcb
+end

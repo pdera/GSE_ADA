@@ -1206,8 +1206,13 @@ end
    save_last_directories
    widget_control, wid_text_28, set_value=dir
    res=analyse_fname(fn, dir, 3)
+   fileparms = strarr(4)
+   fileparms(0) = fn
+   fileparms(1) = dir
    f0=find_series_start(res)
    f1=find_series_end(res)
+   fileparms(2) = f0
+   fileparms(3) = f1
 
    ;--------------
    ; open first settings file
@@ -1219,7 +1224,9 @@ end
        begin
           widget_control, wid_text_4, set_value=strcompress(string(om[0]-gonio_zero_offset(), format='(F10.2)'),/remove_all)
           widget_control, wid_text_5, set_value=strcompress(string(om[1], format='(F10.2)'),/remove_all)
-       endif
+       endif else begin
+       		wid_settings_gen_dlg,fileparms
+       endelse
    ;--------------
 
    widget_control, wid_text_17, set_value=res.name0
