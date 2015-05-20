@@ -131,9 +131,9 @@ pro WID_BASE_0, fn, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
       ,XOFFSET=119 ,YOFFSET=217 ,SCR_XSIZE=84 ,SCR_YSIZE=25 ,XSIZE=20  $
       ,YSIZE=1,/editable,value='0.')
 
-  Widget_Control, startNumLE, set_value=strcompress(fn(2))
+  Widget_Control, startNumLE, set_value=fn(2)
   numims = string(fix(fn(3))-fix(fn(2))+1)
-  Widget_Control, numImagesLE, set_value=strcompress(numims)
+  Widget_Control, numImagesLE, set_value=numims
   Widget_control, WID_BASE_0, set_uvalue=fn
   Widget_Control, /REALIZE, WID_BASE_0
 

@@ -190,16 +190,9 @@ common datas
  begin
   dir=''
   out_dir=''
-  cell_now_dir=''
-  ldirfile = 'last_directory.txt'
-  nlines = file_lines (ldirfile)
-  openr, 6, ldirfile
+  openr, 6, 'last_directory.txt'
   readf, 6, dir
   readf, 6, out_dir
-  if nlines gt 2 then begin
-  	readf, 6, cell_now_dir
-  endif
-  print, cell_now_dir
   close, 6
   free_lun, 6
  end
@@ -212,7 +205,6 @@ common datas
  openw, 6, 'last_directory.txt'
  printf, 6, dir
  printf, 6, out_dir
- printf, 6, cell_now_dir
  close, 6
  free_lun, 6
 end
