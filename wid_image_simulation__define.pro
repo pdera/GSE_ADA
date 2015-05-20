@@ -215,7 +215,8 @@ common uc_selection, sel, li
 
     cell_now_solution_n, 1
 
-    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+	dirs=cell_now_dir
     a=opt->save_p4p(dirs+'xxx.p4p')
     text='MYARG="'+dirs+'run_cellnow.cmd"'
     SETENV, text
@@ -234,7 +235,8 @@ common uc_selection, sel, li
     cell_now_solution_n, sel
     spawn, '%MYARG%'  , /LOG_OUTPUT
 
-    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+	dirs = cell_now_dir
     ub=ReadUBfrom_p4p(dirs+'1.p4p')
     lp= lp_from_ub(UB)
     if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2

@@ -269,7 +269,13 @@ end
 
 
 pro cell_now_solution_n, n
-dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+@common_datas
+if not FILE_TEST(cell_now_dir) then begin
+	Wid_cellnow_path_dlg
+endif
+
+;dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+dir=cell_now_dir
 fil=dir+'cell_now_commands.txt
 get_lun, ln
 openw, ln, fil
@@ -288,6 +294,30 @@ printf, ln, dir+'1.p4p'
 printf, ln, 'Q'
 close, ln
 free_lun, ln
+
+fil = dir+'run_cellnow.cmd'
+get_lun,ln
+openw, ln, fil
+printf, ln, '@ECHO OFF'
+printf, ln, 'SETLOCAL EnableExtensions EnableDelayedExpansion'
+printf, ln, 'REM script to automate indexing with cell_now'
+printf, ln, 'REM 2015-02-14 pd'
+printf, ln, 'SET CELL="'+cell_now_dir+'cell_now.exe"'
+printf, ln, 'SET COMM="'+cell_now_dir+'cell_now_commands.txt"'
+printf, ln, ''
+printf, ln, 'SET PROJ=xxx.p4p'
+
+printf, ln, 'REM announce target'
+printf, ln, 'ECHO Processing %PROJ% ...'
+printf, ln, 'ECHO %CELL%'
+printf, ln, '%CELL% < %COMM%'
+printf, ln, 'REM done'
+printf, ln, 'ENDLOCAL'
+printf, ln, 'ECHO ON'
+close,ln
+free_lun, ln
+
+
 end
 
 function find_opx_cell, cells
@@ -319,14 +349,15 @@ end
 
 ;--------------------------------
 pro read_cells_from_cellnow, lp, v, l
-
+	@COMMON_DATAS
    lp=fltarr(6)
    lp0=fltarr(6)
    V=0.0
    L=''
    V0=0.0
    L0=''
-   dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+   ;dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+   dir = cell_now_dir
    fil=dir+'xxx._cn'
    get_lun, ln
    openr, ln, fil
@@ -513,8 +544,8 @@ goto, ror
     ;---------- determine UB matrix with
 
     cell_now_solution_n, 1
-
-    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+	dirs=cell_now_dir
+    ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
     a=opt->save_p4p(dirs+'xxx.p4p')
     text='MYARG="'+dirs+'run_cellnow.cmd"'
     SETENV, text
@@ -533,7 +564,8 @@ goto, ror
       spawn, '%MYARG%'  , /LOG_OUTPUT
     endif
     pas:
-    dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+    ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+	dirs=cell_now_dir
     ub=ReadUBfrom_p4p(dirs+'1.p4p')
     lp= lp_from_ub(UB)
     if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2
