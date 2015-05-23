@@ -273,7 +273,8 @@ pro cell_now_solution_n, n
 if not FILE_TEST(cell_now_dir) then begin
 	Wid_cellnow_path_dlg
 endif
-
+; write to last_directory.txt
+save_last_directories
 ;dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
 dir=cell_now_dir
 fil=dir+'cell_now_commands.txt

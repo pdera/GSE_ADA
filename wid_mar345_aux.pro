@@ -199,7 +199,7 @@ common datas
   if nlines gt 2 then begin
   	readf, 6, cell_now_dir
   endif
-  print, cell_now_dir
+  ;print, cell_now_dir
   close, 6
   free_lun, 6
  end
