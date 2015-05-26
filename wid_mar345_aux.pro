@@ -193,12 +193,14 @@ common datas
   cell_now_dir=''
   ldirfile = 'last_directory.txt'
   nlines = file_lines (ldirfile)
+
   openr, 6, ldirfile
   readf, 6, dir
-  readf, 6, out_dir
-  if nlines gt 2 then begin
+  if nlines gt 1 then $
+  	readf, 6, out_dir
+  if nlines gt 2 then $
   	readf, 6, cell_now_dir
-  endif
+
   ;print, cell_now_dir
   close, 6
   free_lun, 6
@@ -1245,6 +1247,13 @@ end
    widget_control, wid_text_7, set_value=string(f0, format='(I4)')
    print, f0, f1
    oimage->load_image, fn, oadetector
+   ; check for existence of cal file
+   detectFileSpecific = res.base+'.cal'
+
+   if FILE_TEST(detectFileSpecific) then begin
+   	load_cal,detectFileSpecific, oadetector, wv
+   endif
+
    ;oimage->append_image, fn, oadetector
 
    print_calibration, oadetector, wv
@@ -1777,7 +1786,9 @@ end
  end
  'Save calibration':$
  begin
-   fn=dialog_pickfile(/write, filter='*.cal', DEFAULT_EXTENSION='.cal', path=out_dir)
+   outfileTmp = res.base+'.cal'
+   ;stop
+   fn=dialog_pickfile(/write, filter='*.cal', File=outfileTmp, DEFAULT_EXTENSION='.cal') ;, path=out_dir)
    if fn ne '' then $
    begin
 
