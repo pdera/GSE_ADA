@@ -1,0 +1,5 @@
+omega0    =     -107.000
+omegaR    =      16.5000
+chi       =      -90.438000
+detector  =      -263.00000
+exp. time =      16.5000

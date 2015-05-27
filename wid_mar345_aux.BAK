@@ -1232,8 +1232,8 @@ end
        om=read_settings_file(fn+'.txt')
        if not(om[0] eq -100 and om[1] eq -100) then $
        begin
-          widget_control, wid_text_4, set_value=strcompress(string(om[0]-gonio_zero_offset(), format='(F10.2)'),/remove_all)
-          widget_control, wid_text_5, set_value=strcompress(string(om[1], format='(F10.2)'),/remove_all)
+          widget_control, wid_text_4, set_value=strcompress(string(read_om_rotation_dir()*(om[0]-gonio_zero_offset()), format='(F10.2)'),/remove_all)
+          widget_control, wid_text_5, set_value=strcompress(string(read_om_rotation_dir()*om[1], format='(F10.2)'),/remove_all)
        endif else begin
        		wid_settings_gen_dlg,fileparms
        endelse
@@ -1252,7 +1252,7 @@ end
 
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
- endif else begin
+   endif else begin
    	ok = Dialog_Message (['No associated cal file found', $
                       'You may want to assign current', $
                       'calibration to that series',$

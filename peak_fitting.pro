@@ -760,6 +760,149 @@ end
 
 ;----------------------------------
 
+
+
+function two2DGaussians, image, loc1, loc2
+
+; fits two 2d gaussian profiles simultaneously in the same fitting box
+; location of peak 1 is passed as parameter of pixel coordinates relative to center
+; location of peak 2 is passed as parameter of pixel coordinates relative to center
+
+  if n_elements(image) ne 0 then $
+  begin
+
+    sz=sqrt(n_elements(image))
+    szi=(sz-1)/2
+
+
+    XX=Xinvec([sz,sz]) ; x-coordinates as vector. Center is at 0,0
+    yy=yinvec([sz,sz]) ; y-coordinates as vector. Center is at 0,0
+    zz=TWO2ONE(image)
+
+
+
+    location1=loc1
+    location2=loc2
+
+; 15 fitting parameters is for two pseudo Voigt on one flat background
+      parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
+                       limits:[0.D,0]}, 15)
+
+;   P[0] - background
+;   P[1] - peak 1 intensity
+;   P[2] - x width 1
+;   P[3] - y width 1
+;   P[4] - tilting of the profile 1
+;   P[5] - x shift 1
+;   P[6] - y shift 1
+;   P[7] - Lorentz 1
+
+;   P[8] - peak intensity 2
+;   P[9] - x width 2
+;   P[10] - y width 2
+;   P[11] - tilting of the profile 2
+;   P[12] - x shift 2
+;   P[13] - y shift 2
+;   P[14] - Lorentz 2
+
+
+      parinfo[0].value = median(image); background
+      parinfo[1].value = image[szi+loc1[0],szi+loc1[1]]-median(image); intensity
+      parinfo[2].value = 0.5; width
+      parinfo[3].value = 0.5; width
+      parinfo[4].value = 0.0; tilt
+      parinfo[5].value = loc1[1]; shift
+      parinfo[6].value = loc1[0]; shift
+      parinfo[7].value = 0.0; lorenz
+
+      parinfo[8].value = image[szi+loc2[0],szi+loc2[1]]-median(image)	; intensity
+      parinfo[9].value = 0.5		; width
+      parinfo[10].value = 0.5		; width
+      parinfo[11].value = 0.0		; tilt
+      parinfo[12].value = loc2[1]	; shift
+      parinfo[13].value = loc2[0]	; shift
+      parinfo[14].value = 0.0		; lorenz
+
+      parinfo[0].limited(0) = 1
+      parinfo[0].limits(0)  = 0.D
+      parinfo[1].limited(0) = 1
+      parinfo[1].limits(0)  = 0.D
+      parinfo[2].limited(0) = 1
+      parinfo[2].limits(0)  = 0.D
+      parinfo[3].limited(0) = 1
+      parinfo[3].limits(0)  = 0.D
+      parinfo[4].limited(0) = 1
+      parinfo[4].limited(1) = 1
+      parinfo[4].limits(0)  = -!pi;!pi/2.
+      parinfo[4].limits(1)  =  !pi;*3./2.
+      parinfo[5].limited(0) = 1
+      parinfo[5].limited(1) = 1
+      parinfo[5].limits(0)  = -szi
+      parinfo[5].limits(1)  = szi
+      parinfo[6].limited(0) = 1
+      parinfo[6].limited(1) = 1
+      parinfo[6].limits(0)  = -szi
+      parinfo[6].limits(1)  = szi
+      parinfo[7].limited(0) = 1
+      parinfo[7].limited(1) = 1
+      parinfo[7].limits(0)  = 0.
+      parinfo[7].limits(1)  = 1.
+
+
+      parinfo[8].limited(0) = 1
+      parinfo[8].limits(0)  = 0.D
+      parinfo[9].limited(0) = 1
+      parinfo[9].limits(0)  = 0.D
+      parinfo[10].limited(0) = 1
+      parinfo[10].limits(0)  = 0.D
+      parinfo[11].limited(0) = 1
+      parinfo[11].limited(1) = 1
+      parinfo[11].limits(0)  = -!pi;!pi/2.
+      parinfo[11].limits(1)  =  !pi;*3./2.
+      parinfo[12].limited(0) = 1
+      parinfo[12].limited(1) = 1
+      parinfo[12].limits(0)  = -szi
+      parinfo[12].limits(1)  = szi
+      parinfo[13].limited(0) = 1
+      parinfo[13].limited(1) = 1
+      parinfo[13].limits(0)  = -szi
+      parinfo[13].limits(1)  = szi
+      parinfo[14].limited(0) = 1
+      parinfo[14].limited(1) = 1
+      parinfo[14].limits(0)  = 0.
+      parinfo[14].limits(1)  = 1.
+
+      er=REPLICATE(1.,sz*sz)
+
+
+      A = MPFIT2DFUN('Two_Voigt2dwt', XX, YY, ZZ, ER, PERROR=PE, BESTNORM=BN,parinfo=parinfo, ERRMSG=msg, quiet=1)
+	  if n_elements(PE) gt 0 then $
+	  begin
+	    ;print, '--- Two profile fitting successful!'
+	    ;print, a
+	    ;print, pe
+	    b=Two_Voigt2dwt(XX, YY, A)
+	  endif
+
+ ; window, 1, xsize=200, ysize=200, xpos=0,ypos=0
+ ; tvscl, congrid(image, 200, 200)
+
+ ; window, 2, xsize=200, ysize=200, xpos=210,ypos=0
+ ; tvscl, congrid(one2two(b), 200, 200)
+
+
+ ; window, 4, xsize=200, ysize=200, xpos=630,ypos=0
+ ; tvscl, congrid(image-one2two(b), 200, 200)
+  if n_elements(pe) eq 0 then return, 0
+  return, [a, pe]
+
+  endif else return, 0
+
+
+end
+
+;----------------------------------
+
 function two_peaks_get_profile, i1, i2
 
 ; i1 is the number of the peak to be fit
@@ -931,144 +1074,6 @@ end
 
 ;----------------------------------
 
-function two2DGaussians, image, loc1, loc2
-
-; fits two 2d gaussian profiles simultaneously in the same fitting box
-; location of peak 1 is passed as parameter of pixel coordinates relative to center
-; location of peak 2 is passed as parameter of pixel coordinates relative to center
-
-  if n_elements(image) ne 0 then $
-  begin
-
-    sz=sqrt(n_elements(image))
-    szi=(sz-1)/2
-
-
-    XX=Xinvec([sz,sz]) ; x-coordinates as vector. Center is at 0,0
-    yy=yinvec([sz,sz]) ; y-coordinates as vector. Center is at 0,0
-    zz=TWO2ONE(image)
-
-
-
-    location1=loc1
-    location2=loc2
-
-; 15 fitting parameters is for two pseudo Voigt on one flat background
-      parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
-                       limits:[0.D,0]}, 15)
-
-;   P[0] - background
-;   P[1] - peak 1 intensity
-;   P[2] - x width 1
-;   P[3] - y width 1
-;   P[4] - tilting of the profile 1
-;   P[5] - x shift 1
-;   P[6] - y shift 1
-;   P[7] - Lorentz 1
-
-;   P[8] - peak intensity 2
-;   P[9] - x width 2
-;   P[10] - y width 2
-;   P[11] - tilting of the profile 2
-;   P[12] - x shift 2
-;   P[13] - y shift 2
-;   P[14] - Lorentz 2
-
-
-      parinfo[0].value = median(image); background
-      parinfo[1].value = image[szi+loc1[0],szi+loc1[1]]-median(image); intensity
-      parinfo[2].value = 0.5; width
-      parinfo[3].value = 0.5; width
-      parinfo[4].value = 0.0; tilt
-      parinfo[5].value = loc1[1]; shift
-      parinfo[6].value = loc1[0]; shift
-      parinfo[7].value = 0.0; lorenz
-
-      parinfo[8].value = image[szi+loc2[0],szi+loc2[1]]-median(image)	; intensity
-      parinfo[9].value = 0.5		; width
-      parinfo[10].value = 0.5		; width
-      parinfo[11].value = 0.0		; tilt
-      parinfo[12].value = loc2[1]	; shift
-      parinfo[13].value = loc2[0]	; shift
-      parinfo[14].value = 0.0		; lorenz
-
-      parinfo[0].limited(0) = 1
-      parinfo[0].limits(0)  = 0.D
-      parinfo[1].limited(0) = 1
-      parinfo[1].limits(0)  = 0.D
-      parinfo[2].limited(0) = 1
-      parinfo[2].limits(0)  = 0.D
-      parinfo[3].limited(0) = 1
-      parinfo[3].limits(0)  = 0.D
-      parinfo[4].limited(0) = 1
-      parinfo[4].limited(1) = 1
-      parinfo[4].limits(0)  = -!pi;!pi/2.
-      parinfo[4].limits(1)  =  !pi;*3./2.
-      parinfo[5].limited(0) = 1
-      parinfo[5].limited(1) = 1
-      parinfo[5].limits(0)  = -szi
-      parinfo[5].limits(1)  = szi
-      parinfo[6].limited(0) = 1
-      parinfo[6].limited(1) = 1
-      parinfo[6].limits(0)  = -szi
-      parinfo[6].limits(1)  = szi
-      parinfo[7].limited(0) = 1
-      parinfo[7].limited(1) = 1
-      parinfo[7].limits(0)  = 0.
-      parinfo[7].limits(1)  = 1.
-
-
-      parinfo[8].limited(0) = 1
-      parinfo[8].limits(0)  = 0.D
-      parinfo[9].limited(0) = 1
-      parinfo[9].limits(0)  = 0.D
-      parinfo[10].limited(0) = 1
-      parinfo[10].limits(0)  = 0.D
-      parinfo[11].limited(0) = 1
-      parinfo[11].limited(1) = 1
-      parinfo[11].limits(0)  = -!pi;!pi/2.
-      parinfo[11].limits(1)  =  !pi;*3./2.
-      parinfo[12].limited(0) = 1
-      parinfo[12].limited(1) = 1
-      parinfo[12].limits(0)  = -szi
-      parinfo[12].limits(1)  = szi
-      parinfo[13].limited(0) = 1
-      parinfo[13].limited(1) = 1
-      parinfo[13].limits(0)  = -szi
-      parinfo[13].limits(1)  = szi
-      parinfo[14].limited(0) = 1
-      parinfo[14].limited(1) = 1
-      parinfo[14].limits(0)  = 0.
-      parinfo[14].limits(1)  = 1.
-
-      er=REPLICATE(1.,sz*sz)
-
-
-      A = MPFIT2DFUN('Two_Voigt2dwt', XX, YY, ZZ, ER, PERROR=PE, BESTNORM=BN,parinfo=parinfo, ERRMSG=msg, quiet=1)
-	  if n_elements(PE) gt 0 then $
-	  begin
-	    ;print, '--- Two profile fitting successful!'
-	    ;print, a
-	    ;print, pe
-	    b=Two_Voigt2dwt(XX, YY, A)
-	  endif
-
- ; window, 1, xsize=200, ysize=200, xpos=0,ypos=0
- ; tvscl, congrid(image, 200, 200)
-
- ; window, 2, xsize=200, ysize=200, xpos=210,ypos=0
- ; tvscl, congrid(one2two(b), 200, 200)
-
-
- ; window, 4, xsize=200, ysize=200, xpos=630,ypos=0
- ; tvscl, congrid(image-one2two(b), 200, 200)
-  if n_elements(pe) eq 0 then return, 0
-  return, [a, pe]
-
-  endif else return, 0
-
-
-end
 ;----------------------------------
 
 function one_peak_get_profile, i1

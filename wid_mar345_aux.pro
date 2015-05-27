@@ -306,14 +306,6 @@ pro read_predict_settings, pred
 
   chi=0
 
-  ;--------- PD change end ------
-
-  ;********************************* NEW CODE ****************
-  if read_om_rotation_dir() eq -1 then $
-  begin
-     om_start = -(om_start + om_range)
-  endif
-  ;********************************* NEW CODE ****************
 
   pred.om_start  =  float(om_start)
   pred.om_range = float(om_range)
@@ -1232,8 +1224,8 @@ end
        om=read_settings_file(fn+'.txt')
        if not(om[0] eq -100 and om[1] eq -100) then $
        begin
-          widget_control, wid_text_4, set_value=strcompress(string(om[0]-gonio_zero_offset(), format='(F10.2)'),/remove_all)
-          widget_control, wid_text_5, set_value=strcompress(string(om[1], format='(F10.2)'),/remove_all)
+          widget_control, wid_text_4, set_value=strcompress(string(read_om_rotation_dir()*(om[0]-gonio_zero_offset()), format='(F10.2)'),/remove_all)
+          widget_control, wid_text_5, set_value=strcompress(string(read_om_rotation_dir()*om[1], format='(F10.2)'),/remove_all)
        endif else begin
        		wid_settings_gen_dlg,fileparms
        endelse

@@ -12,6 +12,20 @@ pro WID_MAR345_ext_commons
 end
 
 
+;********************************** NEW CODE ****************
+function read_om_rotation_dir
+COMMON WID_MAR345_elements
+   re=widget_info(WID_BUTTON_OMEGA_ROTATION, /button_set)
+   ;---- PD change
+   ;---- 6/23/2010
+   ;---- changed default setting to GSECARS
+   if re eq 1 then return, -1 else return, 1
+
+   ;---- PD change end
+end
+
+;********************************** NEW CODE ****************
+
 ;-----------------------------
 
 function gonio_zero_offset
@@ -47,9 +61,15 @@ COMMON WID_MAR345_elements
    nums[3]=float(strmid(l4, 12,strlen(l4)-12))
    print, nums
 
-   WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string(nums[0]-gonio_zero_offset(), format='(F6.2)')
-   WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
-
+   if read_om_rotation_dir() eq 1 then $
+   begin
+    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string((nums[0]-gonio_zero_offset()), format='(F6.2)')
+    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
+   end else $
+   begin
+    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string( read_om_rotation_dir()*(nums[0]-gonio_zero_offset())-nums[1], format='(F6.2)')
+    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
+   endelse
  end
 end
 
@@ -1253,18 +1273,6 @@ COMMON WID_MAR345_elements
    return, a[0]
 end
 
-;********************************** NEW CODE ****************
-function read_om_rotation_dir
-COMMON WID_MAR345_elements
-   re=widget_info(WID_BUTTON_OMEGA_ROTATION, /button_set)
-   ;---- PD change
-   ;---- 6/23/2010
-   ;---- changed default setting to GSECARS
-   if re eq 1 then return, -1 else return, 1
-   ;---- PD change end
-end
-
-;********************************** NEW CODE ****************
 
 ;********************************** NEW CODE ****************
 pro WID_MAR345_Cleanup, WID_MAR345
