@@ -203,17 +203,42 @@ end
 
 ;-----------------------
 
+function symcodes, x
+case x of
+
+;- returns number of free paranmeters in constrained lp refinement
+7: s= 0 ; - triclinic
+4: s= 11; - monoclinic a
+5: s= 12; - monoclinic b
+6: s= 13; - monoclinic c
+3: s= 2 ; - orthorhombic
+2: s= 3 ; - tetragonal
+1: s= 4 ; - hexagonal
+0: s=5  ;- cubic
+endcase
+return, s
+
+end
+;-----------------------
+
 function WID_Image_simulation::index
 @COMMON_DATAS
 @COMMON_DATAS2
 COMMON draws,DRAWA,wid_list_3a
 
 common uc_selection, sel, li
+
+
+    if opt->peakno() gt 0 then $
+    begin
+
    print, '---- Indexing'
 
  ;---------- determine UB matrix with
 
-    cell_now_solution_n, 1
+    ab=cell_now_solution_n(1)
+    if ab eq 0 then $
+    begin
 
     ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
 	dirs=cell_now_dir
@@ -231,24 +256,27 @@ common uc_selection, sel, li
     read_cells_from_cellnow, lps, v, l
 
     WID_cell_choices, lps, v, l
+
+    if sel eq -1 then re=dialog_message('You have to select one of the solutions') else $
+    begin
     print, 'Unit cell selected:', sel
-    cell_now_solution_n, sel
+    ab=cell_now_solution_n(sel+1)
     spawn, '%MYARG%'  , /LOG_OUTPUT
 
     ;dirs='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
 	dirs = cell_now_dir
     ub=ReadUBfrom_p4p(dirs+'1.p4p')
     lp= lp_from_ub(UB)
-    if lp[4] lt 89. or  lp[4] gt 91. then symm=12 else symm=2
-    tol=0.15
+    symm=symcodes(li)
+    tol=0.1
     opt->select_indexable, ub, tol
 
     ;plot_peaks, draw0, opt, arr1, arr2
-    opt->delete_selected
+    ;opt->delete_selected
     lp=Refine_B_against_d(ub, opt, symm)
-    opt->delete_selected
+    ;opt->delete_selected
     lp=Refine_B_against_d(ub, opt, symm)
-    opt->delete_selected
+    ;opt->delete_selected
 
     self->print_UB, UB
     self->print_lp, lp
@@ -257,8 +285,14 @@ common uc_selection, sel, li
      plot_peaks, drawA, opt, arr1, arr2
      print_peak_list, opt, wid_list_3a
      update_peakno, opt->peakno()
-
      return, 1
+     endelse
+     endif else return, -1; no cell_now
+     endif else $
+     begin
+       re=dialog_message('You need some peaks first, to attempt indexing')
+       return, -1
+     endelse
 
   end
 

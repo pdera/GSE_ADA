@@ -19,14 +19,28 @@ pro WID_cell_choices_L_event, Event
       if( Tag_Names(Event, /STRUCTURE_NAME) eq 'WIDGET_BUTTON' )then $
         Unit_cell_select, Event
     end
+
+
+    Widget_Info(wWidget, FIND_BY_UNAME='WID_LIST_cell_choices'): $
+      begin
+        print, 'Im here'
+        List_choice, Event
+      end
+
     else:
   endcase
 
 end
 
+;function recognize_crystal_system_from_lp, lp, lengtol, angtol
+
+
 pro WID_cell_choices, lps, v, l;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
 
-   common uc_selection, sel, sel1, li, dl
+   common uc_selection, sel, sel1, li, dl, lpss
+
+
+   lpss=lps
 
   Resolve_Routine, 'WID_cell_choices_eventcb',/COMPILE_FULL_FILE  ; Load event callback routines
 
@@ -50,7 +64,7 @@ pro WID_cell_choices, lps, v, l;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
       UNAME='WID_DROPLIST_symmetry' ,XOFFSET=12 ,YOFFSET=253  $
       ,SCR_XSIZE=132 ,SCR_YSIZE=19 ,VALUE=[ 'cubic', 'hexagonal',  $
       'tetragonal', 'orthorhombic', 'monoclinic-a', 'monoclinic-b',  $
-      'monoclinic-c' ])
+      'monoclinic-c' ,'triclinic'])
 
 
   WID_LABEL_0 = Widget_Label(WID_cell_choices_L, UNAME='WID_LABEL_0'  $
@@ -65,7 +79,7 @@ pro WID_cell_choices, lps, v, l;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
   st=''
   for j=0,5 do st=st+string(lps[j,0], format='(F10.4)')
   list=st+string(V[0],format='(F12.2)')+l[0]
-  for i=0, n_elements(lps)/6-1 do $
+  for i=1, n_elements(lps)/6-1 do $
   begin
     st=''
     for j=0,5 do st=st+string(lps[j,i], format='(F10.4)')

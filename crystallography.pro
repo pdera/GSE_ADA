@@ -1926,6 +1926,29 @@ endcase
 end
 
 ;---------------------------------------------------------------
+
+function recognize_crystal_system_from_lp, lp, lengtol, angtol
+
+ab_dif  = abs(lp[0]-lp[1])
+ac_dif  = abs(lp[0]-lp[2])
+bc_dif  = abs(lp[1]-lp[2])
+abc_dif = max([ab_dif, ac_dif, bc_dif])
+alpha_dif = abs(lp[3]-90.0)
+beta_dif  = abs(lp[4]-90.0)
+gamma_dif = abs(lp[5]-90.0)
+ang_dif=max([alpha_dif, beta_dif, gamma_dif])
+																										symm=7 ; triclinic
+if gamma_dif lt angtol and beta_dif lt angtol then 													symm=4 ; mono-a
+if alpha_dif lt angtol and gamma_dif lt angtol then 													symm=5 ; mono-b
+if alpha_dif lt angtol and beta_dif lt angtol then 													symm=6 ; mono-c
+if ang_dif lt angtol then 																				symm=3 ; orthorhombic
+if ab_dif lt lengtol and alpha_dif lt angtol and beta_dif lt angtol and abs(lp[5]-120.0) lt angtol then symm=2 ; hexagonal
+if ab_dif lt lengtol and ang_dif lt angtol then 														symm=1 ; tetragonal
+if abc_dif lt lengtol and ang_dif lt angtol then 														symm=0 ; cubic
+return, symm
+end
+
+;---------------------------------------------------------------
 function np_lp, sym
 ;- returns number of free paranmeters in constrained lp refinement
 ; 0  - triclinic
@@ -2451,8 +2474,6 @@ pro save_UB, ub, fname
    free_lun, 2
   endif
 end
-
-;----------------------------------
 
 pro crystallography
 end

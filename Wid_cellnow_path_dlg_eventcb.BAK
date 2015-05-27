@@ -66,7 +66,7 @@ pro CloseUp, Event
 	re=file_info(path+'cell_now.exe')
 	if re.exists then  $
 	begin
-	   cell_now_dir = path+'\'
+	   cell_now_dir = path
        widget_control, event.top,/destroy
 	endif else mi=dialog_message('cell_now.exe is not present in the selected directory')
 end

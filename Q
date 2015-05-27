@@ -1,0 +1,5 @@
+
+ CELL_NOW - Find unit-cell and matrices for twins and other problem crystals
+
+    431 reflections read from file: C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\bin\1.p4p
+

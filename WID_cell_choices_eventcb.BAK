@@ -31,12 +31,31 @@ end
 ;       id=widget_info(Event.top, FIND_BY_UNAME=name)
 
 ;-----------------------------------------------------------------
+
+
+;-----------------------------------------------------------------
+
 pro Unit_cell_select, Event
 
-   common uc_selection, sel, li
+   common uc_selection, sel, sel1, li, dl, lpss
 
    sel=WIDGET_info(li, /list_select)
+   sel1=WIDGET_info(dl, /droplist_select)
+   if sel eq -1 then $
+   begin
+      re=dialog_message('You have to select one of the solutions')
+   endif else $
+   begin
+     WIDGET_CONTROL, event.top, /destroy
+   endelse
+end
 
-   print, '---- select'
-   WIDGET_CONTROL, event.top, /destroy
+pro list_choice, Event
+common uc_selection, sel, sel1, li, dl, lpss
+   list=Widget_Info(event.top, FIND_BY_UNAME='WID_LIST_cell_choices')
+   re=widget_info(list, /list_select)
+   b=recognize_crystal_system_from_lp(lpss[re,0:5], 0.01, 1.0)
+   drop=Widget_Info(event.top, FIND_BY_UNAME='WID_DROPLIST_symmetry')
+   widget_control, drop, set_droplist_select=b
+   print, 'list chocie', b
 end
