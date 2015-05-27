@@ -1252,7 +1252,14 @@ end
 
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
-   endif
+   endif else begin
+   	ok = Dialog_Message (['No associated cal file found', $
+                      'You may want to assign current', $
+                      'calibration to that series',$
+                      'See Calibration -> Save option"'], $
+                    /CENTER, $
+                    TITLE = 'No Associaated Cal File Found')
+   	endelse
 
    ;oimage->append_image, fn, oadetector
 
