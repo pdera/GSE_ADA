@@ -3,7 +3,8 @@ pro generate_mono, en0,en1,dac_open, brav, write=write, check_overwrite=ch, del_
 COMMON draws,DRAWA,wid_list_3a
 @COMMON_DATAS
 COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
-
+if n_elements(res) gt 0 then $
+begin
   opt->zero
   DAC_open=float(DAC_open)
   read_predict_settings, pred
@@ -43,6 +44,7 @@ COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
     peaktable_file=fn
    endelse
   endif
+ endif else re=dialog_message('Open an image before simulating peaks')
 
 end
 
@@ -161,9 +163,10 @@ COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
   widget_control, self.widgets.wid_text_7, get_value=en0
   widget_control, self.widgets.wid_text_8, get_value=en1
   widget_control, self.widgets.wid_text_14, get_value=DAC_open
+  write_file=widget_info(self.widgets.WID_BUTTON_17b, /button_set)
   DAC_open=float(DAC_open)
 
-  generate_mono, en0,en1,dac_open, self->Bravais_type(), write=1, check_overwrite=1, del_selected=0
+  generate_mono, en0,en1,dac_open, self->Bravais_type(), write=write_file, check_overwrite=1, del_selected=0
 
   plot_image, oimage
   plot_peaks, drawA, opt, arr1, arr2
@@ -579,9 +582,9 @@ case ev.id of
         lp=lp_from_ub(ub)
         self->print_UB, UB
         self->print_lp, lp
-        re=widget_info(self.widgets.wid_button_16, /button_set)
-        st=self->simu_type()
-        if st eq 1 and re eq 1 then self->generate_laue else if re eq 1 then self->generate_mono
+        ;re=widget_info(self.widgets.wid_button_16, /button_set)
+        ;st=self->simu_type()
+        ;if st eq 1 and re eq 1 then self->generate_laue else if re eq 1 then self->generate_mono
      end
    end
 
@@ -598,15 +601,16 @@ case ev.id of
 
    ;---------------
 
-     self.widgets.wid_button_19:$;       'scale -'
+  self.widgets.wid_button_19:$;       'scale -'
   begin
+    widget_control, self.widgets.WID_TEXT_13, GET_VALUE=scale
     lp=lp_from_ub(ub)
     B=b_from_lp(lp)
     U=UB # invert(B)
     lp1=lp
-    lp1[0]=0.995*lp[0]
-    lp1[1]=0.995*lp[1]
-    lp1[2]=0.995*lp[2]
+    lp1[0]=(1.0-scale)*lp[0]
+    lp1[1]=(1.0-scale)*lp[1]
+    lp1[2]=(1.0-scale)*lp[2]
     B1=b_from_lp(lp1)
     UB=U # B1
     lp=lp_from_ub(ub)
@@ -623,13 +627,15 @@ case ev.id of
 
   self.widgets.wid_button_14:$;       'scale +'
   begin
+    widget_control, self.widgets.WID_TEXT_13, GET_VALUE=scale
+    scale=float(scale)
     lp=lp_from_ub(ub)
     B=b_from_lp(lp)
     U=UB # invert(B)
     lp1=lp
-    lp1[0]=1.005*lp[0]
-    lp1[1]=1.005*lp[1]
-    lp1[2]=1.005*lp[2]
+    lp1[0]=(1.0+scale)*lp[0]
+    lp1[1]=(1.0+scale)*lp[1]
+    lp1[2]=(1.0+scale)*lp[2]
     B1=b_from_lp(lp1)
     UB=U # B1
     lp=lp_from_ub(ub)
@@ -787,7 +793,7 @@ ph=0.0
    widget_control, self.widgets.WID_TEXT_9, SET_VALUE='0.0'
    widget_control, self.widgets.WID_TEXT_10, SET_VALUE='0.0'
    widget_control, self.widgets.WID_TEXT_11, SET_VALUE='0.0'
-   widget_control, self.widgets.WID_TEXT_13, SET_VALUE='0.005'
+   widget_control, self.widgets.WID_TEXT_13, SET_VALUE='0.002'
    widget_control, self.widgets.WID_TEXT_13, EDITABLE=1
    widget_control, self.widgets.WID_BUTTON_12, /SET_BUTTON
    text=['P','A','B','C','I','F','Ro','Rr']
@@ -1090,18 +1096,27 @@ function WID_Image_simulation::init
 ;      ,SCR_YSIZE=39 ,/ALIGN_CENTER ,VALUE='Refine omega')
 
 
-  self.widgets.WID_BASE_3 = Widget_Base(self.widgets.WID_Image_simulation, UNAME='WID_BASE_3'  $
-      ,XOFFSET=510 ,YOFFSET=193 ,TITLE='IDL' ,COLUMN=1  $
-      ,/NONEXCLUSIVE)
+  ;self.widgets.WID_BASE_3 = Widget_Base(self.widgets.WID_Image_simulation, UNAME='WID_BASE_3'  $
+  ;    ,XOFFSET=510 ,YOFFSET=193 ,TITLE='IDL' ,COLUMN=1  $
+  ;    ,/NONEXCLUSIVE)
 
 
-  self.widgets.WID_BUTTON_16 = Widget_Button(self.widgets.WID_BASE_3, UNAME='WID_BUTTON_16'  $
-      ,/ALIGN_LEFT ,VALUE='Generate on load')
+  ;self.widgets.WID_BUTTON_16 = Widget_Button(self.widgets.WID_BASE_3, UNAME='WID_BUTTON_16'  $
+  ;    ,/ALIGN_LEFT ,VALUE='Generate on load')
 
 
   self.widgets.WID_BUTTON_17 = Widget_Button(self.widgets.WID_Image_simulation,  $
       UNAME='WID_BUTTON_17' ,XOFFSET=150 ,YOFFSET=389 ,SCR_XSIZE=100  $
       ,SCR_YSIZE=30 ,/ALIGN_CENTER ,VALUE='Generate')
+
+
+  self.widgets.WID_BASE_3a = Widget_Base(self.widgets.WID_Image_simulation, UNAME='WID_BASE_3a'  $
+      ,XOFFSET=150 ,YOFFSET=420 ,TITLE='IDL' ,COLUMN=1  $
+      ,/NONEXCLUSIVE)
+
+ self.widgets.WID_BUTTON_17b = Widget_Button(self.widgets.WID_BASE_3a,  $
+      UNAME='WID_BUTTON_17b' ,/ALIGN_CENTER ,VALUE='Update pks file')
+
 
   self.widgets.WID_BUTTON_17a = Widget_Button(self.widgets.WID_Image_simulation,  $
       UNAME='WID_BUTTON_17a' ,XOFFSET=50 ,YOFFSET=389 ,SCR_XSIZE=100  $
@@ -1151,6 +1166,7 @@ common closing, Wid_Image_simulation
   WID_TEXT_5:0L, $
   WID_LIST_0:0L, $
   WID_BASE_1:0L, $
+  WID_BASE_3a:0L, $
   WID_BUTTON_0:0L, $
   WID_BUTTON_1:0L, $
   WID_BUTTON_2:0L, $
@@ -1192,10 +1208,11 @@ common closing, Wid_Image_simulation
   WID_LABEL_16:0L, $
   WID_TEXT_14 :0L, $
   WID_BUTTON_15:0L, $
-  WID_BASE_3 :0L, $
-  WID_BUTTON_16:0L, $
+  ;WID_BASE_3 :0L, $
+  ;WID_BUTTON_16:0L, $
   WID_BUTTON_17:0L, $
   WID_BUTTON_17a:0L, $
+  WID_BUTTON_17b:0L, $
   WID_BUTTON_18:0L}
 
   WID_Image_simulation={WID_Image_simulation, widgets:widgets}
