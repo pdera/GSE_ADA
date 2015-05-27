@@ -1,0 +1,91 @@
+HEADER
+; IDL Visual Widget Builder Resource file. Version 1
+; Generated on:	05/27/2015 10:22.23
+VERSION 1
+END
+
+WID_BASE_peak_filtering BASE 5 5 132 384
+TLB
+CAPTION "IDL"
+XPAD = 3
+YPAD = 3
+SPACE = 3
+BEGIN
+  WID_BASE_1 BASE 8 19 95 311
+  XPAD = 3
+  YPAD = 3
+  SPACE = 3
+  CAPTION "IDL"
+  BEGIN
+    WID_TEXT_0 TEXT 5 30 40 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_1 TEXT 5 80 40 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_2 TEXT 5 130 40 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_3 TEXT 5 180 40 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_4 TEXT 5 230 40 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_BASE_2 BASE 5 0 0 0
+    COLUMNS = 1
+    NONEXCLUSIVE
+    CAPTION "IDL"
+    BEGIN
+      WID_BUTTON_0 PUSHBUTTON -1 -1 0 0
+      VALUE "Min I"
+      ALIGNLEFT
+      END
+    END
+    WID_BASE_3 BASE 5 50 0 0
+    COLUMNS = 1
+    NONEXCLUSIVE
+    CAPTION "IDL"
+    BEGIN
+      WID_BUTTON_1 PUSHBUTTON -1 -1 0 0
+      VALUE "Max I"
+      ALIGNLEFT
+      END
+    END
+    WID_BASE_4 BASE 5 100 0 0
+    COLUMNS = 1
+    NONEXCLUSIVE
+    CAPTION "IDL"
+    BEGIN
+      WID_BUTTON_2 PUSHBUTTON -1 -1 0 0
+      VALUE "Max width"
+      ALIGNLEFT
+      END
+    END
+    WID_BASE_5 BASE 5 150 0 0
+    COLUMNS = 1
+    NONEXCLUSIVE
+    CAPTION "IDL"
+    BEGIN
+      WID_BUTTON_3 PUSHBUTTON -1 -1 0 0
+      VALUE "Max diff"
+      ALIGNLEFT
+      END
+    END
+    WID_BASE_6 BASE 5 200 0 0
+    COLUMNS = 1
+    NONEXCLUSIVE
+    CAPTION "IDL"
+    BEGIN
+      WID_BUTTON_4 PUSHBUTTON -1 -1 0 0
+      VALUE "Total diff"
+      ALIGNLEFT
+      END
+    END
+  END
+END
