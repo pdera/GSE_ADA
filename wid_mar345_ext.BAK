@@ -12,6 +12,20 @@ pro WID_MAR345_ext_commons
 end
 
 
+;********************************** NEW CODE ****************
+function read_om_rotation_dir
+COMMON WID_MAR345_elements
+   re=widget_info(WID_BUTTON_OMEGA_ROTATION, /button_set)
+   ;---- PD change
+   ;---- 6/23/2010
+   ;---- changed default setting to GSECARS
+   if re eq 1 then return, -1 else return, 1
+
+   ;---- PD change end
+end
+
+;********************************** NEW CODE ****************
+
 ;-----------------------------
 
 function gonio_zero_offset
@@ -1259,19 +1273,6 @@ COMMON WID_MAR345_elements
    return, a[0]
 end
 
-;********************************** NEW CODE ****************
-function read_om_rotation_dir
-COMMON WID_MAR345_elements
-   re=widget_info(WID_BUTTON_OMEGA_ROTATION, /button_set)
-   ;---- PD change
-   ;---- 6/23/2010
-   ;---- changed default setting to GSECARS
-   if re eq 1 then return, -1 else return, 1
-
-   ;---- PD change end
-end
-
-;********************************** NEW CODE ****************
 
 ;********************************** NEW CODE ****************
 pro WID_MAR345_Cleanup, WID_MAR345

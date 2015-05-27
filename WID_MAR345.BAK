@@ -601,7 +601,7 @@ WIDGET_CONTROL, WID_BUTTON_20aa1, SET_BUTTON=1
 
   WID_DROPLIST_aab = Widget_Droplist(WID_BASE_4, UNAME='WID_DROPLIST_aab'  $
       ,XOFFSET=320 ,YOFFSET=60 ,SCR_XSIZE=78 ,SCR_YSIZE=21 ,XSIZE=20  $
-      ,YSIZE=1, value=['energy','omega'])
+      ,YSIZE=1, value=['omega','energy'])
 
 ;  WID_DROPLIST_aab = Widget_Droplist(WID_BASE_4, UNAME='WID_DROPLIST_aab'  $
 ;      ,XOFFSET=320 ,YOFFSET=60 ,SCR_XSIZE=78 ,SCR_YSIZE=21 ,XSIZE=20  $
