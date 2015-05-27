@@ -1347,13 +1347,85 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
 
 
   WID_BASE_pd = Widget_Base(WID_BASE_9, UNAME='WID_BASE_fun'  $
-      ,XOFFSET=430 ,YOFFSET=220 ,COLUMN=1 ,/EXCLUSIVE)
+      ,XOFFSET=430 ,YOFFSET=200 ,COLUMN=1 ,/EXCLUSIVE)
 
   WID_BUTTON_412b = Widget_Button(WID_BASE_pd, UNAME='WID_BUTTON_412a'  $
       ,/ALIGN_LEFT ,VALUE='Current img')
 
   WID_BUTTON_413b = Widget_Button(WID_BASE_pd, UNAME='WID_BUTTON_413a'  $
       ,/ALIGN_LEFT ,VALUE='Series', sensitive=0)
+
+
+
+
+;-------- peak filtering controls
+
+  aWID_BASE_1 = Widget_Base(WID_BASE_9,  $
+      UNAME='aWID_BASE_1' ,XOFFSET=430 ,YOFFSET=260 ,SCR_XSIZE=95  $
+      ,SCR_YSIZE=258 ,TITLE='IDL' ,SPACE=3 ,XPAD=3 ,YPAD=3)
+
+
+  aWID_TEXT_0 = Widget_Text(aWID_BASE_1, UNAME='aWID_TEXT_0' ,XOFFSET=5  $
+      ,YOFFSET=30 ,SCR_XSIZE=40 ,SCR_YSIZE=21 ,XSIZE=20 ,YSIZE=1)
+
+
+  aWID_TEXT_1 = Widget_Text(aWID_BASE_1, UNAME='aWID_TEXT_1' ,XOFFSET=5  $
+      ,YOFFSET=80 ,SCR_XSIZE=40 ,SCR_YSIZE=21 ,XSIZE=20 ,YSIZE=1)
+
+
+  aWID_TEXT_2 = Widget_Text(aWID_BASE_1, UNAME='aWID_TEXT_2' ,XOFFSET=5  $
+      ,YOFFSET=130 ,SCR_XSIZE=40 ,SCR_YSIZE=21 ,XSIZE=20 ,YSIZE=1)
+
+
+  aWID_TEXT_3 = Widget_Text(aWID_BASE_1, UNAME='aWID_TEXT_3' ,XOFFSET=5  $
+      ,YOFFSET=180 ,SCR_XSIZE=40 ,SCR_YSIZE=21 ,XSIZE=20 ,YSIZE=1)
+
+
+  aWID_TEXT_4 = Widget_Text(aWID_BASE_1, UNAME='aWID_TEXT_4' ,XOFFSET=5  $
+      ,YOFFSET=230 ,SCR_XSIZE=40 ,SCR_YSIZE=21 ,XSIZE=20 ,YSIZE=1)
+
+
+  aWID_BASE_2 = Widget_Base(aWID_BASE_1, UNAME='aWID_BASE_2' ,XOFFSET=5  $
+      ,TITLE='IDL' ,COLUMN=1 ,/NONEXCLUSIVE)
+
+
+  aWID_BUTTON_0 = Widget_Button(aWID_BASE_2, UNAME='aWID_BUTTON_0'  $
+      ,/ALIGN_LEFT ,VALUE='Min I')
+
+
+  aWID_BASE_3 = Widget_Base(aWID_BASE_1, UNAME='aWID_BASE_3' ,XOFFSET=5  $
+      ,YOFFSET=50 ,TITLE='IDL' ,COLUMN=1 ,/NONEXCLUSIVE)
+
+
+  aWID_BUTTON_1 = Widget_Button(aWID_BASE_3, UNAME='aWID_BUTTON_1'  $
+      ,/ALIGN_LEFT ,VALUE='Max I')
+
+
+  aWID_BASE_4 = Widget_Base(aWID_BASE_1, UNAME='aWID_BASE_4' ,XOFFSET=5  $
+      ,YOFFSET=100 ,TITLE='IDL' ,COLUMN=1 ,/NONEXCLUSIVE)
+
+
+  aWID_BUTTON_2 = Widget_Button(aWID_BASE_4, UNAME='aWID_BUTTON_2'  $
+      ,/ALIGN_LEFT ,VALUE='Max width')
+
+
+  aWID_BASE_5 = Widget_Base(aWID_BASE_1, UNAME='aWID_BASE_5' ,XOFFSET=5  $
+      ,YOFFSET=150 ,TITLE='IDL' ,COLUMN=1 ,/NONEXCLUSIVE)
+
+
+  aWID_BUTTON_3 = Widget_Button(aWID_BASE_5, UNAME='aWID_BUTTON_3'  $
+      ,/ALIGN_LEFT ,VALUE='Max diff')
+
+
+  aWID_BASE_6 = Widget_Base(aWID_BASE_1, UNAME='aWID_BASE_6' ,XOFFSET=5  $
+      ,YOFFSET=200 ,TITLE='IDL' ,COLUMN=1 ,/NONEXCLUSIVE)
+
+
+  aWID_BUTTON_4 = Widget_Button(aWID_BASE_6, UNAME='aWID_BUTTON_4'  $
+      ,/ALIGN_LEFT ,VALUE='Total diff')
+
+
+ ;------------------------------
 
 
 

@@ -257,5 +257,14 @@ COMMON WID_MAR345_elements,$
  WID_TEXT_31r, $
  WID_BUTTON_47c, $
  WID_BUTTON_47d, $
- WID_DROPLIST_aab
-
+ WID_DROPLIST_aab, $
+  aWID_TEXT_0, $
+  aWID_TEXT_1, $
+  aWID_TEXT_2, $
+  aWID_TEXT_3, $
+  aWID_TEXT_4, $
+  aWID_BUTTON_0, $
+  aWID_BUTTON_1, $
+  aWID_BUTTON_2, $
+  aWID_BUTTON_3, $
+  aWID_BUTTON_4

@@ -1,6 +1,6 @@
 HEADER
 ; IDL Visual Widget Builder Resource file. Version 1
-; Generated on:	05/27/2015 10:22.23
+; Generated on:	05/27/2015 10:23.50
 VERSION 1
 END
 
@@ -11,7 +11,7 @@ XPAD = 3
 YPAD = 3
 SPACE = 3
 BEGIN
-  WID_BASE_1 BASE 8 19 95 311
+  WID_BASE_1 BASE 8 19 95 258
   XPAD = 3
   YPAD = 3
   SPACE = 3

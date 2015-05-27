@@ -308,12 +308,6 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
 
        m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
 
-     ;---------------------------------------------------------------------------
-
-     ; Peak quality filtering
-
-     ;---------------------------------------------------------------------------
-
 
        if (m1/m6 gt 0.2) or (m7/m3 lt 3) or (a[2] gt 2.0) or (a[3] gt 2.0)  then $
        begin
