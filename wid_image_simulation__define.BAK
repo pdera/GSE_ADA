@@ -277,7 +277,7 @@ common uc_selection, sel, li
     if sel eq -1 then re=dialog_message('You have to select one of the solutions') else $
     begin
     ; set Bravais lattice type
-    widget_control, self.widgets.wid_droplist_0, set_droplist_select=Brav_types(strcompress(l[sel],/remove_all))
+    widget_control, self.widgets.wid_droplist_0, set_droplist_select=Brav_types(l[sel])
 
     print, 'Unit cell selected:', sel
     ab=cell_now_solution_n(sel+1)
