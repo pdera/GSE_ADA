@@ -424,7 +424,7 @@ function AA, x, x1,A
  return, -A[1,0]*x[0]*x1[0]-A[1,1]*x[1]*x1[0]-A[1,2]*x[2]*x1[0]+A[0,0]*x[0]*x1[1]+A[0,1]*x[1]*x1[1]+A[0,2]*x[2]*x1[1]
 end
 ;---
-function BB, x, x1,A
+function BB1, x, x1,A
  return,  A[0,0]*x[0]*x1[0]+A[0,1]*x[1]*x1[0]+A[0,2]*x[2]*x1[0]+A[1,0]*x[0]*x1[1]+A[1,1]*x[1]*x1[1]+A[1,2]*x[2]*x1[1]
 end
 ;---
@@ -447,7 +447,7 @@ function general_axis, A, vec, en
  ttheta=tth_from_en_and_d(en,d)
  xyz=Vec*d
  xyz1=A#[1.0,0.0,0.0]
- return, sincos(AA(xyz,xyz1,A),BB(xyz,xyz1,A),CC(xyz,xyz1,A)-cos((90.0+ttheta/2.0)/!radeg))
+ return, sincos(AA(xyz,xyz1,A),BB1(xyz,xyz1,A),CC(xyz,xyz1,A)-cos((90.0+ttheta/2.0)/!radeg))
 end
 
 ;--------------------------------------------------------------------
@@ -1926,6 +1926,29 @@ endcase
 end
 
 ;---------------------------------------------------------------
+
+function recognize_crystal_system_from_lp, lp, lengtol, angtol
+
+ab_dif  = abs(lp[0]-lp[1])
+ac_dif  = abs(lp[0]-lp[2])
+bc_dif  = abs(lp[1]-lp[2])
+abc_dif = max([ab_dif, ac_dif, bc_dif])
+alpha_dif = abs(lp[3]-90.0)
+beta_dif  = abs(lp[4]-90.0)
+gamma_dif = abs(lp[5]-90.0)
+ang_dif=max([alpha_dif, beta_dif, gamma_dif])
+																										symm=7 ; triclinic
+if gamma_dif lt angtol and beta_dif lt angtol then 													symm=4 ; mono-a
+if alpha_dif lt angtol and gamma_dif lt angtol then 													symm=5 ; mono-b
+if alpha_dif lt angtol and beta_dif lt angtol then 													symm=6 ; mono-c
+if ang_dif lt angtol then 																				symm=3 ; orthorhombic
+if ab_dif lt lengtol and alpha_dif lt angtol and beta_dif lt angtol and abs(lp[5]-120.0) lt angtol then symm=2 ; hexagonal
+if ab_dif lt lengtol and ang_dif lt angtol then 														symm=1 ; tetragonal
+if abc_dif lt lengtol and ang_dif lt angtol then 														symm=0 ; cubic
+return, symm
+end
+
+;---------------------------------------------------------------
 function np_lp, sym
 ;- returns number of free paranmeters in constrained lp refinement
 ; 0  - triclinic
@@ -2451,8 +2474,6 @@ pro save_UB, ub, fname
    free_lun, 2
   endif
 end
-
-;----------------------------------
 
 pro crystallography
 end

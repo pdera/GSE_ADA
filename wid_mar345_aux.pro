@@ -1912,11 +1912,12 @@ end
              cgProgressBar -> Update, (float(i)/(ni[0]-1))*100.0
 
    		endfor
+        cgProgressBar -> Destroy
+        merge_peak_tables_in_series
+        re=dialog_message('Whole series peak prediction completed')
   	 endif
    end else re=dialog_message('UB matrix has not yet been defined')
-   cgProgressBar -> Destroy
-   merge_peak_tables_in_series
-   re=dialog_message('Whole series peak prediction completed')
+
  end
 
 
@@ -4811,7 +4812,7 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
 
  ;********************* NEW CODE **************************
  WIDGET_CONTROL, WID_LIST_INFO, SET_UVALUE = 'Code info"
- WIDGET_CONTROL, WID_LIST_INFO, SET_VALUE= ['GSE_ADA V. 1.3 ' ,'Written by: Przemek Dera, GSECARS ' ,'Comments/questions: pdera@cars.uchicago.edu ']
+ WIDGET_CONTROL, WID_LIST_INFO, SET_VALUE= ['ATREX 1.0' ,'Hawaii Institute of Geophysics and Planetology','Przemek Dera' ,'Harold Garbeil','Comments/questions: pdera@hawaii.edu', 'Project supported by NSF grant EAR1440005']
 
  WIDGET_CONTROL, WID_BUTTON_HELP, SET_UVALUE='Help'
  WIDGET_CONTROL, WID_BUTTON_OMEGA_ROTATION, SET_UVALUE = ''

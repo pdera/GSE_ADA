@@ -14,7 +14,7 @@ Common labels, loffset
 common calib_ref, zeroref
 common closing, Wid_Image_simulation
 
-common uc_selection, sel, sel1, li, dl
+common uc_selection, sel, sel1, li, dl, lpss
 
 COMMON Myimage,Myimg, Myadt
 nop=0

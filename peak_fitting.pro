@@ -1,3 +1,294 @@
+;----------------------------------
+
+function one2two, x
+ sz=n_elements(x)
+ sz1=long(sqrt(sz))
+ if sz1*sz1 eq sz then $
+ begin
+   b=fltarr(sz1,sz1)
+   for i=0,sz1-1 do b[0:sz1-1,i]=x[i*sz1:(i+1)*sz1-1]
+   return, b
+ endif else return, 0
+end
+
+;----------------------------------
+
+function two2one,x
+ sz=size(x)
+ if n_elements(x) gt 0 then $
+ begin
+ b=fltarr(sz[1]*sz[1])
+ b=x[0:sz[1]-1,0]
+ for i=1,sz[1]-1 do b=[b,x[0:sz[1]-1,i]]
+ return, b
+ endif else return, 0
+end
+
+;----------------------------------
+function Xinvec, siz
+ XX=fltarr(siz[0],siz[1])
+ for i=0, siz[1]-1 do $
+ begin
+  X=replicate(i-(siz[1]-1)/2.,siz[0])
+  XX[*,i]=X
+ endfor
+ return, two2one(XX)
+end
+;----------------------------------
+function Yinvec, siz
+ XX=fltarr(siz[0],siz[1])
+ for i=0, siz[1]-1 do $
+ begin
+  X=replicate(i-(siz[0]-1)/2.,siz[1])
+  XX[i,*]=X
+ endfor
+ return, two2one(XX)
+end
+;--------------------------------------
+function pixel_outside_circle, xy, rad
+  n=n_elements(xy)/2
+  if n gt 1 then $
+  begin
+    for i=0, n-1 do $
+    begin
+     r=lonarr(n)
+     X1=xy[i,0]-(rad-1)
+     Y1=xy[i,1]-(rad-1)
+     r=sqrt(X1^2+Y1^2)
+     if r ge rad-1 then r[i]=1
+    endfor
+  endif else $
+  begin
+     X1=xy[0]-(rad)
+     Y1=xy[1]-(rad)
+     r=sqrt(X1^2+Y1^2)
+     if r ge rad then r=1 else r=0
+  endelse
+  return, r
+end
+
+;----------------------------------
+
+function which_pixels_in_mtx_outside_circle, s1a, xy0, rad
+; s1 is the size of square mtx
+ ;s1a=(s1-1)/2
+ res=lonarr(s1a*2+1,s1a*2+1)
+ for i=-s1a, s1a do $
+  for j=-s1a, s1a do $
+    begin
+      x=xy0[0]+i
+      y=xy0[1]+j
+      res[i+s1a,j+s1a]=pixel_outside_circle([x,y], rad)
+    endfor
+    return, res
+end
+
+;-------------------------------------------------------------
+
+function recenter_to_max_intensity, pic
+ n=size(pic)
+ n1=n[1]
+ n2=(n[1]-1)/2
+ m=max(pic,i)
+ y=long(i/n1)
+ x=i-long(i/n1)*n1
+ return, [x-n2,y-n2]
+end
+
+;----------------------
+
+function peak_fit_error_codes, code
+case code of
+0:re='Fitting successful'
+1:re='Position shift in first fitting moves the peak outside of the box'
+2:re='After first shift position is too close to image edge'
+3:re='Peak number is incorrect'
+4:re='Initital position too close to image edge'
+5:re='Final peak fitting failed'
+else:re='Unknown error code'
+endcase
+return, re
+end
+
+
+
+;-----------------------------
+
+
+function Two_Gaussians, p, X=x, Y=y, ERR=err
+
+; X is X profile
+; Y is Y profile
+
+; parameters
+
+;   P[0] - scale X
+;   P[1] - shift X
+;   P[2] - width X
+;   P[3] - background const X
+;   P[4] - background lin X
+
+;   P[5] - scale Y
+;   P[6] - shift Y
+;   P[7] - width Y
+;   P[8] - background const Y
+;   P[9] - background lin Y
+    sz=n_elements(X)
+    XX=indgen(Sz)
+
+    model1= Gauss(P[0:4],xx)
+    model2= Gauss(P[5:9],xx)
+
+    arr=[(model1-X),(model2-Y)]
+    return,arr/err
+
+end
+
+;-----------------------------
+
+
+function Gaussian2dwt, X, Y, P
+ LYV=65535 ;top y value
+; parameters
+;   P[0] - background
+;   P[1] - peak intensity
+;   P[2] - x width
+;   P[3] - y width
+;   P[4] - tilting of the profile
+;   P[5] - x shift
+;   P[6] - y shift
+
+
+ mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
+ XY=[[X],[Y]]
+ XY1=mtx ## XY
+ sz=n_elements(X)
+ X1=XY1[0:sz-1,0]
+ Y1=XY1[0:sz-1,1]
+ sz=n_elements(p)
+ if sz eq 8 then $
+ begin
+ U=((x1-p[5])/p[2])^2+((y1-p[6])/p[3])^2
+ G=p[0]+p[1]*exp(-U/2.)
+ return,G<LYV
+ endif else return,0
+end
+
+;-----------------------------
+
+function Voigt2dwt_0, X, Y, P
+
+; parameters
+;   P[0] - background
+;   P[1] - peak intensity
+;   P[2] - x width
+;   P[3] - y width
+;   P[4] - tilting of the profile
+;   P[5] - x shift
+;   P[6] - y shift
+;   P[7] - Lorentz
+ ;LYV=65535 ;top y value
+ mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
+ XY=[[X],[Y]]
+ XY1=mtx ## XY
+;  XY1=[[X],[Y]]
+ sz=n_elements(X)
+ X1=XY1[0:sz-1,0]
+ Y1=XY1[0:sz-1,1]
+ sz=n_elements(p)
+ if sz eq 8 then $
+ begin
+   Zx=((X1-P[5])/P[2])^2
+   Zy=((Y1-P[6])/P[3])^2
+   G=exp(-0.5*(Zx+Zy))
+   L=1.0/((1.0+Zx)*(1.0+Zy))
+   c=p[7]
+   M=P[0]+P[1]*(c*L+(1.0-c)*G)
+   return,M;<LYV
+ endif else return,0
+end
+
+;-----------------------------
+
+;-----------------------------
+
+function Two_Voigt2dwt, X, Y, P
+
+; only one flat background parameter is fitted
+; parameters
+
+;   P[0] - background
+;   P[1] - peak 1 intensity
+;   P[2] - x width 1
+;   P[3] - y width 1
+;   P[4] - tilting of the profile 1
+;   P[5] - x shift 1
+;   P[6] - y shift 1
+;   P[7] - Lorentz 1
+
+;   P[8] - peak intensity 2
+;   P[9] - x width 2
+;   P[10] - y width 2
+;   P[11] - tilting of the profile 2
+;   P[12] - x shift 2
+;   P[13] - y shift 2
+;   P[14] - Lorentz 2
+
+ PV1= Voigt2dwt(X, Y, P[0:7])
+ PV2= Voigt2dwt(X, Y, [0.0,P[8:14]])
+
+ M=PV1+PV2
+ return,M;<LYV
+end
+
+;-----------------------------
+
+function Voigt2dwt, X, Y, P
+
+; parameters
+;   P[0] - background
+;   P[1] - peak intensity
+;   P[2] - x width
+;   P[3] - y width
+;   P[4] - tilting of the profile
+;   P[5] - x shift
+;   P[6] - y shift
+;   P[7] - Lorentz
+ ;LYV=65535 ;top y value
+ mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
+ XY=[[X],[Y]]
+ XY1=mtx ## XY
+ ; XY1=[[X],[Y]]
+ sz=n_elements(X)
+ X1=XY1[0:sz-1,0]
+ Y1=XY1[0:sz-1,1]
+ sz=n_elements(p)
+ if sz eq 8 then $
+ begin
+   Zx=((X1-P[5])/P[2])^2
+   Zy=((Y1-P[6])/P[3])^2
+   G=exp(-0.33*(Zx+Zy))
+   ;-------------- Lorenzian
+   L=1.0/(1.0+Zx+Zy)
+   c=p[7]
+   M=P[0]+P[1]*(c*L+(1.0-c)*G)
+   return,M;<LYV
+ endif else return,0
+end
+
+;-----------------------------
+function profile_function, X, Y, P
+
+COMMON WID_MAR345_elements
+ s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
+ if s eq 1 then return, Voigt2dwt(X,Y,P) else return, Gaussian2dwt(X,Y,P)
+end
+
+
+
+
+;-----------------------
+
 pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
 
 @COMMON_DATAS
@@ -119,111 +410,7 @@ pro merge_peak_tables_in_series
 end
 
 
-;--------------------------------------
-
-
-
-pro fit_all_peaks, prog=prog
-
-@COMMON_DATAS
-@COMMON_DATAS2
-
-   axis=3 ;was 5 for phi
-   if prog then $
-   begin
-    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
-    cgProgressBar -> Start
-   endif
-
-   nnn=opt->peakno()-1
-   lbcgr=oimage->calculate_local_background(0)
-
-   for pn=nnn, 0, -1 do $
-   begin
-
-   if prog then $
-   begin
-     IF cgProgressBar -> CheckCancel() THEN $
-     BEGIN
-     	ok = Dialog_Message('Operation canceled')
-     	cgProgressBar -> Destroy
-     	RETURN
-     ENDIF
-     cgProgressBar -> Update, (float(nnn-pn)/nnn)*100.0
-    endif
-
-
-
-     if current_vs_series() eq 1 then $
-     begin ; ----- from one image
-       ; print, 'fitting peak', pn
-        b=opt->find_close_overlaps(pn, 10)
-        if b[0] gt 0 then re=two_profile_fitting(b[1],b[2]) else $
-        re=one_profile_fitting(pn)
-        ;re=fit_one_peak_PD(pn, lbcgr) ; does not update intensity, but updates peak position
-;        if n_elements(re) ne 1 then print, 'intensity', re[1]
-
-     endif else $
-     begin ; ---- from series
-     	bs=read_box_size(wid_text_37,wid_text_37)
-     	pic=reform(cumInt[pn,*,*])
-     	pic1=pic[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
-     	re=fit_one_peak_PD_from_Pic(pn, pic)
- 	 endelse
-
-     pt=opt->get_object()
-     XY=pt.peaks[pn].DetXY
-
-     if n_elements(re) eq 1 then $
-     begin
-       opt->select_peak, pn
-     endif else $
-     begin ;--- successful fit
-       n=n_elements(re)-1
-       A=re[0:7]
-       PCERROR=re[8:15]
-
-       ;------------------------------
-       ; get images for comparison
-       ;------------------------------
-
-       bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
-       b=opt->find_close_overlaps(pn, 10)
-       if b[0] gt 0 then pic9=two_peaks_get_profile(b[1],b[2]) else $
-       pic9=one_peak_get_profile(pn)
-       if n_elements(pic9) eq 1 then pic9=fltarr((bs+1)*2)
-
-   	   sz=sqrt(n_elements(pic9))
-       szi=(sz-1)/2
-       bs=[szi,szi]
-
-       pt=opt->get_object()
-       XY=round(pt.peaks[pn].detxy)
-       pic=oimage->get_zoomin(XY, bs, maskarr)
-
-       ;--------------------------------
-       peak_intensity, pn, A, PCERROR, axis, pic, pic9
-
-     endelse
-   endfor
-   opt->calculate_all_xyz_from_pix, oadetector, wv
-
-goto, hhh
-
-   ; check for improper peak
-   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
-                                  pt.peaks[i].DetXY[0] lt 0 or $
-                                  pt.peaks[i].DetXY[0] gt arr1 or $
-                                  pt.peaks[i].DetXY[1] lt 0 or $
-                                  pt.peaks[i].DetXY[1] gt arr2 then $
-   begin
-     opt->delete_peak, i[0]
-   endif
-hhh:
-      if prog then $
-     cgProgressBar -> Destroy
-   end
-
+;--------------------------------------------------------------
 
 pro peak_intensity_evaluation, pni, A, PCERROR, XY, axis, lbcgr
 
@@ -645,166 +832,11 @@ function two_peaks_get_profile, i1, i2
 
 end
 
-;----------------------------------
-
-function one_peak_get_profile, i1
-
-; i1 is the number of the peak to be fit
-; returns fitted profile parameters with uncertainties
-
-@COMMON_DATAS
-@COMMON_DATAS2
-
- pt=opt->get_object()
- x1=pt.peaks[i1].detXY
-
- ;determine box size and location
- bx=read_box_size(wid_text_37,wid_text_37)
- pic=oimage->get_zoomin(round(x1), bx, maskarr)
- aaa=one2DGaussian(pic)
-
- sz=sqrt(n_elements(pic))
-
- XX=Xinvec([sz,sz]) ; x-coordinates as vector. Center is at 0,0
- yy=yinvec([sz,sz]) ; y-coordinates as vector. Center is at 0,0
- if n_elements(aaa) ne 1 then baa=one2two(Voigt2dwt(XX, YY, Aaa[0:7])) else baa=fltarr(sz,sz)
-
- return, baa
-
-end
-
-;----------------------------------
-
-function one_profile_fitting, i1
-
-; i1 is the number of the peak to be fit
-; returns fitted profile parameters with uncertainties
-
-@COMMON_DATAS
-@COMMON_DATAS2
-
- pt=opt->get_object()
- x1=pt.peaks[i1].detXY
-
-; check if selected pixels are the maxima. If not, then update
- pic1=oimage->get_zoomin(x1, [2,2], maskarr)
- b1=max(pic1,j1)
- ind1=ARRAY_INDICES(pic1, j1)
- x1=x1+ind1-[2,2]
-
-;recenter one more time
- pic1=oimage->get_zoomin(x1, [2,2], maskarr)
- b1=max(pic1,j1)
- ind1=ARRAY_INDICES(pic1, j1)
- x1=x1+ind1-[2,2]
-
- pt.peaks[i1].detXY=x1
- opt->set_object, pt
-
- ;determine box size and location
- bx=read_box_size(wid_text_37,wid_text_37)
- pic=oimage->get_zoomin(x1, bx, maskarr)
- aaa=one2DGaussian(pic)
-
- if n_elements(aaa) ne 1 then $
- begin
-
- t=-aaa[4]
- mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
- XYa=[aaa[5],aaa[6]]
- ea=transpose(mtx ## XYa)
- pt.peaks[i1].detXY=x1+[-ea[1],-ea[0]]
- opt->set_object, pt
- return, aaa
-
-endif else return, 0
-
-end
 
 
 ;----------------------------------
-function two_profile_fitting, i1,i2
-
-; i1 and i2 and numbers of the two peaks to be fit together
-; returns fitted profile parameters with uncertainties
-
-@COMMON_DATAS
-@COMMON_DATAS2
-
- pt=opt->get_object()
- x1=pt.peaks[i1].detXY
- x2=pt.peaks[i2].detXY
- dx2=x2-x1
-
-; check if selected pixels are the maxima. If not, then update
- pic1=oimage->get_zoomin(x1, [2,2], maskarr)
- pic2=oimage->get_zoomin(x2, [2,2], maskarr)
- b1=max(pic1,j1)
- b2=max(pic2,j2)
- ind1=ARRAY_INDICES(pic1, j1)
- ind2=ARRAY_INDICES(pic2, j2)
- x1=x1+ind1-[2,2]
- x2=x2+ind2-[2,2]
-
-;recenter one more time
- pic1=oimage->get_zoomin(x1, [2,2], maskarr)
- pic2=oimage->get_zoomin(x2, [2,2], maskarr)
- b1=max(pic1,j1)
- b2=max(pic2,j2)
- ind1=ARRAY_INDICES(pic1, j1)
- ind2=ARRAY_INDICES(pic2, j2)
- x1=x1+ind1-[2,2]
- x2=x2+ind2-[2,2]
 
 
- pt.peaks[i1].detXY=x1
- pt.peaks[i2].detXY=x2
- opt->set_object, pt
-
-
- dx2=x2-x1
-
- ;determine box size and location
- middle=(x1+x2)/2.0
- d=x1-middle
- d=round(sqrt(d[0]*d[0]+d[1]*d[1])+6)
- xr1=x1-middle
- xr2=x2-middle
- ;print, xr1, xr2
- pic=oimage->get_zoomin(middle, [d,d], maskarr)
- aaa=two2DGaussians(pic, xr1,xr2)
-
- if N_elements(aaa) ne 1 then $
- begin
-
-
- t=-aaa[4]
- mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
- XYa=[aaa[5],aaa[6]]
- ;print, 'Unrotation'
- ea=transpose(mtx ## XYa)
- pt.peaks[i2].detXY=middle+[-ea[1],-ea[0]]
-
- t=-aaa[11]
- mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
- XYa=[aaa[12],aaa[13]]
- ;print, 'Unrotation'
- ea=transpose(mtx ## XYa)
- pt.peaks[i1].detXY=middle+[-ea[1],-ea[0]]
-
-
-
- ;pt.peaks[i2].detXY=middle+[aaa[13],aaa[12]]
- opt->set_object, pt
-
-
- return, [aaa[0:7],aaa[15:22]]
- endif else $
- return, 0
-
-end
-
-;----------------------------------
 
 function one2DGaussian, image
 
@@ -1039,6 +1071,33 @@ function two2DGaussians, image, loc1, loc2
 end
 ;----------------------------------
 
+function one_peak_get_profile, i1
+
+; i1 is the number of the peak to be fit
+; returns fitted profile parameters with uncertainties
+
+@COMMON_DATAS
+@COMMON_DATAS2
+
+ pt=opt->get_object()
+ x1=pt.peaks[i1].detXY
+
+ ;determine box size and location
+ bx=read_box_size(wid_text_37,wid_text_37)
+ pic=oimage->get_zoomin(round(x1), bx, maskarr)
+ aaa=one2DGaussian(pic)
+
+ sz=sqrt(n_elements(pic))
+
+ XX=Xinvec([sz,sz]) ; x-coordinates as vector. Center is at 0,0
+ yy=yinvec([sz,sz]) ; y-coordinates as vector. Center is at 0,0
+ if n_elements(aaa) ne 1 then baa=one2two(Voigt2dwt(XX, YY, Aaa[0:7])) else baa=fltarr(sz,sz)
+
+ return, baa
+
+end
+
+;--------------------------------------
 
 
 function simple_sum, image
@@ -1181,6 +1240,138 @@ end
 
 ;--------------
 
+function one_profile_fitting, i1
+
+; i1 is the number of the peak to be fit
+; returns fitted profile parameters with uncertainties
+
+@COMMON_DATAS
+@COMMON_DATAS2
+
+ pt=opt->get_object()
+ x1=pt.peaks[i1].detXY
+
+; check if selected pixels are the maxima. If not, then update
+ pic1=oimage->get_zoomin(x1, [2,2], maskarr)
+ b1=max(pic1,j1)
+ ind1=ARRAY_INDICES(pic1, j1)
+ x1=x1+ind1-[2,2]
+
+;recenter one more time
+ pic1=oimage->get_zoomin(x1, [2,2], maskarr)
+ b1=max(pic1,j1)
+ ind1=ARRAY_INDICES(pic1, j1)
+ x1=x1+ind1-[2,2]
+
+ pt.peaks[i1].detXY=x1
+ opt->set_object, pt
+
+ ;determine box size and location
+ bx=read_box_size(wid_text_37,wid_text_37)
+ pic=oimage->get_zoomin(x1, bx, maskarr)
+ aaa=one2DGaussian(pic)
+
+ if n_elements(aaa) ne 1 then $
+ begin
+
+ t=-aaa[4]
+ mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
+ XYa=[aaa[5],aaa[6]]
+ ea=transpose(mtx ## XYa)
+ pt.peaks[i1].detXY=x1+[-ea[1],-ea[0]]
+ opt->set_object, pt
+ return, aaa
+
+endif else return, 0
+
+end
+
+
+;----------------------------------
+function two_profile_fitting, i1,i2
+
+; i1 and i2 and numbers of the two peaks to be fit together
+; returns fitted profile parameters with uncertainties
+
+@COMMON_DATAS
+@COMMON_DATAS2
+
+ pt=opt->get_object()
+ x1=pt.peaks[i1].detXY
+ x2=pt.peaks[i2].detXY
+ dx2=x2-x1
+
+; check if selected pixels are the maxima. If not, then update
+ pic1=oimage->get_zoomin(x1, [2,2], maskarr)
+ pic2=oimage->get_zoomin(x2, [2,2], maskarr)
+ b1=max(pic1,j1)
+ b2=max(pic2,j2)
+ ind1=ARRAY_INDICES(pic1, j1)
+ ind2=ARRAY_INDICES(pic2, j2)
+ x1=x1+ind1-[2,2]
+ x2=x2+ind2-[2,2]
+
+;recenter one more time
+ pic1=oimage->get_zoomin(x1, [2,2], maskarr)
+ pic2=oimage->get_zoomin(x2, [2,2], maskarr)
+ b1=max(pic1,j1)
+ b2=max(pic2,j2)
+ ind1=ARRAY_INDICES(pic1, j1)
+ ind2=ARRAY_INDICES(pic2, j2)
+ x1=x1+ind1-[2,2]
+ x2=x2+ind2-[2,2]
+
+
+ pt.peaks[i1].detXY=x1
+ pt.peaks[i2].detXY=x2
+ opt->set_object, pt
+
+
+ dx2=x2-x1
+
+ ;determine box size and location
+ middle=(x1+x2)/2.0
+ d=x1-middle
+ d=round(sqrt(d[0]*d[0]+d[1]*d[1])+6)
+ xr1=x1-middle
+ xr2=x2-middle
+ ;print, xr1, xr2
+ pic=oimage->get_zoomin(middle, [d,d], maskarr)
+ aaa=two2DGaussians(pic, xr1,xr2)
+
+ if N_elements(aaa) ne 1 then $
+ begin
+
+
+ t=-aaa[4]
+ mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
+ XYa=[aaa[5],aaa[6]]
+ ;print, 'Unrotation'
+ ea=transpose(mtx ## XYa)
+ pt.peaks[i2].detXY=middle+[-ea[1],-ea[0]]
+
+ t=-aaa[11]
+ mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
+ XYa=[aaa[12],aaa[13]]
+ ;print, 'Unrotation'
+ ea=transpose(mtx ## XYa)
+ pt.peaks[i1].detXY=middle+[-ea[1],-ea[0]]
+
+
+
+ ;pt.peaks[i2].detXY=middle+[aaa[13],aaa[12]]
+ opt->set_object, pt
+
+
+ return, [aaa[0:7],aaa[15:22]]
+ endif else $
+ return, 0
+
+end
+
+;----------------------------------
+
+
 function grow_peak, arr, bkg, x,y, mins, xmax, ymax
 ;-- up
 if y lt ymax-1 then $
@@ -1219,117 +1410,6 @@ return, [xl,xr, yd,yu, xl+xy[0],yd+xy[1]]
 end
 ;--------------
 
-;----------------------------------
-
-function one2two, x
- sz=n_elements(x)
- sz1=long(sqrt(sz))
- if sz1*sz1 eq sz then $
- begin
-   b=fltarr(sz1,sz1)
-   for i=0,sz1-1 do b[0:sz1-1,i]=x[i*sz1:(i+1)*sz1-1]
-   return, b
- endif else return, 0
-end
-
-;----------------------------------
-
-function two2one,x
- sz=size(x)
- if n_elements(x) gt 0 then $
- begin
- b=fltarr(sz[1]*sz[1])
- b=x[0:sz[1]-1,0]
- for i=1,sz[1]-1 do b=[b,x[0:sz[1]-1,i]]
- return, b
- endif else return, 0
-end
-
-;----------------------------------
-function Xinvec, siz
- XX=fltarr(siz[0],siz[1])
- for i=0, siz[1]-1 do $
- begin
-  X=replicate(i-(siz[1]-1)/2.,siz[0])
-  XX[*,i]=X
- endfor
- return, two2one(XX)
-end
-;----------------------------------
-function Yinvec, siz
- XX=fltarr(siz[0],siz[1])
- for i=0, siz[1]-1 do $
- begin
-  X=replicate(i-(siz[0]-1)/2.,siz[1])
-  XX[i,*]=X
- endfor
- return, two2one(XX)
-end
-;--------------------------------------
-function pixel_outside_circle, xy, rad
-  n=n_elements(xy)/2
-  if n gt 1 then $
-  begin
-    for i=0, n-1 do $
-    begin
-     r=lonarr(n)
-     X1=xy[i,0]-(rad-1)
-     Y1=xy[i,1]-(rad-1)
-     r=sqrt(X1^2+Y1^2)
-     if r ge rad-1 then r[i]=1
-    endfor
-  endif else $
-  begin
-     X1=xy[0]-(rad)
-     Y1=xy[1]-(rad)
-     r=sqrt(X1^2+Y1^2)
-     if r ge rad then r=1 else r=0
-  endelse
-  return, r
-end
-
-;----------------------------------
-
-function which_pixels_in_mtx_outside_circle, s1a, xy0, rad
-; s1 is the size of square mtx
- ;s1a=(s1-1)/2
- res=lonarr(s1a*2+1,s1a*2+1)
- for i=-s1a, s1a do $
-  for j=-s1a, s1a do $
-    begin
-      x=xy0[0]+i
-      y=xy0[1]+j
-      res[i+s1a,j+s1a]=pixel_outside_circle([x,y], rad)
-    endfor
-    return, res
-end
-
-;-------------------------------------------------------------
-
-function recenter_to_max_intensity, pic
- n=size(pic)
- n1=n[1]
- n2=(n[1]-1)/2
- m=max(pic,i)
- y=long(i/n1)
- x=i-long(i/n1)*n1
- return, [x-n2,y-n2]
-end
-
-;----------------------
-
-function peak_fit_error_codes, code
-case code of
-0:re='Fitting successful'
-1:re='Position shift in first fitting moves the peak outside of the box'
-2:re='After first shift position is too close to image edge'
-3:re='Peak number is incorrect'
-4:re='Initital position too close to image edge'
-5:re='Final peak fitting failed'
-else:re='Unknown error code'
-endcase
-return, re
-end
 
 
 function fit_one_peak_PD_from_Pic, pni, pica
@@ -1875,178 +1955,111 @@ function evaluate_fit_quality, pic, pic2
 end
 
 
-;-----------------------------
+;--------------------------------------
 
 
-function Two_Gaussians, p, X=x, Y=y, ERR=err
 
-; X is X profile
-; Y is Y profile
+pro fit_all_peaks, prog=prog
 
-; parameters
+@COMMON_DATAS
+@COMMON_DATAS2
 
-;   P[0] - scale X
-;   P[1] - shift X
-;   P[2] - width X
-;   P[3] - background const X
-;   P[4] - background lin X
+   axis=3 ;was 5 for phi
+   if prog then $
+   begin
+    cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+    cgProgressBar -> Start
+   endif
 
-;   P[5] - scale Y
-;   P[6] - shift Y
-;   P[7] - width Y
-;   P[8] - background const Y
-;   P[9] - background lin Y
-    sz=n_elements(X)
-    XX=indgen(Sz)
+   nnn=opt->peakno()-1
+   lbcgr=oimage->calculate_local_background(0)
 
-    model1= Gauss(P[0:4],xx)
-    model2= Gauss(P[5:9],xx)
+   for pn=nnn, 0, -1 do $
+   begin
 
-    arr=[(model1-X),(model2-Y)]
-    return,arr/err
-
-end
-
-;-----------------------------
-
-
-function Gaussian2dwt, X, Y, P
- LYV=65535 ;top y value
-; parameters
-;   P[0] - background
-;   P[1] - peak intensity
-;   P[2] - x width
-;   P[3] - y width
-;   P[4] - tilting of the profile
-;   P[5] - x shift
-;   P[6] - y shift
+   if prog then $
+   begin
+     IF cgProgressBar -> CheckCancel() THEN $
+     BEGIN
+     	ok = Dialog_Message('Operation canceled')
+     	cgProgressBar -> Destroy
+     	RETURN
+     ENDIF
+     cgProgressBar -> Update, (float(nnn-pn)/nnn)*100.0
+    endif
 
 
- mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
- XY=[[X],[Y]]
- XY1=mtx ## XY
- sz=n_elements(X)
- X1=XY1[0:sz-1,0]
- Y1=XY1[0:sz-1,1]
- sz=n_elements(p)
- if sz eq 8 then $
- begin
- U=((x1-p[5])/p[2])^2+((y1-p[6])/p[3])^2
- G=p[0]+p[1]*exp(-U/2.)
- return,G<LYV
- endif else return,0
-end
 
-;-----------------------------
+     if current_vs_series() eq 1 then $
+     begin ; ----- from one image
+       ; print, 'fitting peak', pn
+        b=opt->find_close_overlaps(pn, 10)
+        if b[0] gt 0 then re=two_profile_fitting(b[1],b[2]) else $
+        re=one_profile_fitting(pn)
+        ;re=fit_one_peak_PD(pn, lbcgr) ; does not update intensity, but updates peak position
+;        if n_elements(re) ne 1 then print, 'intensity', re[1]
 
-function Voigt2dwt_0, X, Y, P
+     endif else $
+     begin ; ---- from series
+     	bs=read_box_size(wid_text_37,wid_text_37)
+     	pic=reform(cumInt[pn,*,*])
+     	pic1=pic[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
+     	re=fit_one_peak_PD_from_Pic(pn, pic)
+ 	 endelse
 
-; parameters
-;   P[0] - background
-;   P[1] - peak intensity
-;   P[2] - x width
-;   P[3] - y width
-;   P[4] - tilting of the profile
-;   P[5] - x shift
-;   P[6] - y shift
-;   P[7] - Lorentz
- ;LYV=65535 ;top y value
- mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
- XY=[[X],[Y]]
- XY1=mtx ## XY
-;  XY1=[[X],[Y]]
- sz=n_elements(X)
- X1=XY1[0:sz-1,0]
- Y1=XY1[0:sz-1,1]
- sz=n_elements(p)
- if sz eq 8 then $
- begin
-   Zx=((X1-P[5])/P[2])^2
-   Zy=((Y1-P[6])/P[3])^2
-   G=exp(-0.5*(Zx+Zy))
-   L=1.0/((1.0+Zx)*(1.0+Zy))
-   c=p[7]
-   M=P[0]+P[1]*(c*L+(1.0-c)*G)
-   return,M;<LYV
- endif else return,0
-end
+     pt=opt->get_object()
+     XY=pt.peaks[pn].DetXY
 
-;-----------------------------
+     if n_elements(re) eq 1 then $
+     begin
+       opt->select_peak, pn
+     endif else $
+     begin ;--- successful fit
+       n=n_elements(re)-1
+       A=re[0:7]
+       PCERROR=re[8:15]
 
-;-----------------------------
+       ;------------------------------
+       ; get images for comparison
+       ;------------------------------
 
-function Two_Voigt2dwt, X, Y, P
+       bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+       b=opt->find_close_overlaps(pn, 10)
+       if b[0] gt 0 then pic9=two_peaks_get_profile(b[1],b[2]) else $
+       pic9=one_peak_get_profile(pn)
+       if n_elements(pic9) eq 1 then pic9=fltarr((bs+1)*2)
 
-; only one flat background parameter is fitted
-; parameters
+   	   sz=sqrt(n_elements(pic9))
+       szi=(sz-1)/2
+       bs=[szi,szi]
 
-;   P[0] - background
-;   P[1] - peak 1 intensity
-;   P[2] - x width 1
-;   P[3] - y width 1
-;   P[4] - tilting of the profile 1
-;   P[5] - x shift 1
-;   P[6] - y shift 1
-;   P[7] - Lorentz 1
+       pt=opt->get_object()
+       XY=round(pt.peaks[pn].detxy)
+       pic=oimage->get_zoomin(XY, bs, maskarr)
 
-;   P[8] - peak intensity 2
-;   P[9] - x width 2
-;   P[10] - y width 2
-;   P[11] - tilting of the profile 2
-;   P[12] - x shift 2
-;   P[13] - y shift 2
-;   P[14] - Lorentz 2
+       ;--------------------------------
+       peak_intensity, pn, A, PCERROR, axis, pic, pic9
 
- PV1= Voigt2dwt(X, Y, P[0:7])
- PV2= Voigt2dwt(X, Y, [0.0,P[8:14]])
+     endelse
+   endfor
+   opt->calculate_all_xyz_from_pix, oadetector, wv
 
- M=PV1+PV2
- return,M;<LYV
-end
+goto, hhh
 
-;-----------------------------
+   ; check for improper peak
+   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
+                                  pt.peaks[i].DetXY[0] lt 0 or $
+                                  pt.peaks[i].DetXY[0] gt arr1 or $
+                                  pt.peaks[i].DetXY[1] lt 0 or $
+                                  pt.peaks[i].DetXY[1] gt arr2 then $
+   begin
+     opt->delete_peak, i[0]
+   endif
+hhh:
+      if prog then $
+     cgProgressBar -> Destroy
+   end
 
-function Voigt2dwt, X, Y, P
-
-; parameters
-;   P[0] - background
-;   P[1] - peak intensity
-;   P[2] - x width
-;   P[3] - y width
-;   P[4] - tilting of the profile
-;   P[5] - x shift
-;   P[6] - y shift
-;   P[7] - Lorentz
- ;LYV=65535 ;top y value
- mtx=[[cos(p[4]),sin(p[4])],[-sin(p[4]),cos(p[4])]]
- XY=[[X],[Y]]
- XY1=mtx ## XY
- ; XY1=[[X],[Y]]
- sz=n_elements(X)
- X1=XY1[0:sz-1,0]
- Y1=XY1[0:sz-1,1]
- sz=n_elements(p)
- if sz eq 8 then $
- begin
-   Zx=((X1-P[5])/P[2])^2
-   Zy=((Y1-P[6])/P[3])^2
-   G=exp(-0.33*(Zx+Zy))
-   ;-------------- Lorenzian
-   L=1.0/(1.0+Zx+Zy)
-   c=p[7]
-   M=P[0]+P[1]*(c*L+(1.0-c)*G)
-   return,M;<LYV
- endif else return,0
-end
-
-;-----------------------------
-;-----------------------------
-function profile_function, X, Y, P
-
-COMMON WID_MAR345_elements
- s=widget_info(WID_button_413a, /button_set) ; pseudo-Voigt
- if s eq 1 then return, Voigt2dwt(X,Y,P) else return, Gaussian2dwt(X,Y,P)
-end
 
 
 

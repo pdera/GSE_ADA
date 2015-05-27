@@ -268,20 +268,30 @@ end
 
 
 
-pro cell_now_solution_n, n
+function cell_now_solution_n, n
 @common_datas
-if not FILE_TEST(cell_now_dir) then begin
+fl=cell_now_dir+'cell_now.exe'
+re=file_info(fl)
+if not(re.exists) then begin
 	Wid_cellnow_path_dlg
 endif
+
+
+fl=cell_now_dir+'cell_now.exe'
+re=file_info(fl)
+if re.exists eq 1 then $
+begin
+
+
 ; write to last_directory.txt
 save_last_directories
-;dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
+;dir='C:\Users\prze
 dir=cell_now_dir
 fil=dir+'cell_now_commands.txt
 get_lun, ln
 openw, ln, fil
-printf, ln, dir+'xxx.p4p'
-printf, ln, dir+'xxx._cn'
+printf, ln, 'xxx.p4p'
+printf, ln, 'xxx._cn'
 printf, ln, 'Enter'
 printf, ln, '10'
 printf, ln, '2 20'
@@ -291,7 +301,7 @@ b=STRCOMPRESS(a, /REMOVE_ALL)
 printf, ln,  b
 printf, ln, '0.25'
 printf, ln, 'A'
-printf, ln, dir+'1.p4p'
+printf, ln, '1.p4p'
 printf, ln, 'Q'
 close, ln
 free_lun, ln
@@ -303,11 +313,11 @@ printf, ln, '@ECHO OFF'
 printf, ln, 'SETLOCAL EnableExtensions EnableDelayedExpansion'
 printf, ln, 'REM script to automate indexing with cell_now'
 printf, ln, 'REM 2015-02-14 pd'
-printf, ln, 'SET CELL="'+cell_now_dir+'cell_now.exe"'
+printf, ln, 'SET CELL="cell_now.exe"'
 printf, ln, 'SET COMM="'+cell_now_dir+'cell_now_commands.txt"'
 printf, ln, ''
 printf, ln, 'SET PROJ=xxx.p4p'
-
+printf, ln, 'cd "'+cell_now_dir+'"'
 printf, ln, 'REM announce target'
 printf, ln, 'ECHO Processing %PROJ% ...'
 printf, ln, 'ECHO %CELL%'
@@ -317,8 +327,8 @@ printf, ln, 'ENDLOCAL'
 printf, ln, 'ECHO ON'
 close,ln
 free_lun, ln
-
-
+return, 0
+endif else return, -1
 end
 
 function find_opx_cell, cells
@@ -447,26 +457,32 @@ common calib_ref, zeroref
 if n_elements(v) gt 0 then $
 begin
     f=where(v gt a4)
-    f1a=where(v[f] lt a2)
-    gonio=fltarr(6)
-	gonio[axis]=om
-
-	if f1a[0] ne -1 then $
-    for k=0, n_elements(f1a)-1 do $
+    if f[0] ne -1 then $
     begin
-      ref_peak.detXY=[IX[f[f1a[k]]],IY[f[f1a[k]]]]
-      ref_peak.intssd[0:1]=[bx[0],bx[0]]
-      ref_peak.gonio=gonio
-      opt->appendpeak, ref_peak
-    end
+     f1a=where(v[f] lt a2)
+     if f1a[0] ne -1 then $
+     begin
+      gonio=fltarr(6)
+      gonio[axis]=om
 
-	pt=opt->get_object()
+      if f1a[0] ne -1 then $
+      for k=0, n_elements(f1a)-1 do $
+      begin
+        ref_peak.detXY=[IX[f[f1a[k]]],IY[f[f1a[k]]]]
+        ref_peak.intssd[0:1]=[bx[0],bx[0]]
+        ref_peak.gonio=gonio
+        opt->appendpeak, ref_peak
+      end
 
-    if  fit_peaks_after_PS() then fit_all_peaks, prog=prog
+      pt=opt->get_object()
 
-    update_peakno, opt->peakno()
- ;   opt->find_multiple_peak_copies
-    opt->calculate_all_xyz_from_pix, oadetector, wv
+      if  fit_peaks_after_PS() then fit_all_peaks, prog=prog
+
+      update_peakno, opt->peakno()
+  ;   opt->find_multiple_peak_copies
+      opt->calculate_all_xyz_from_pix, oadetector, wv
+      endif
+     endif
     endif
     return, opt->peakno()
 end
