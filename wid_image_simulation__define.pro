@@ -592,7 +592,10 @@ case ev.id of
 
       self.widgets.wid_button_11:$;       'Save UB'
    begin
-     fname=dialog_pickfile(FILTER='*.ub', /write, path=out_dir, default_extension='ub')
+     ; try to associate with image file
+     tempName = res.base + '.ub'
+     fname=dialog_pickfile(FILTER='*.ub', /write, FILE=tempName, default_extension='ub')
+     ;fname=dialog_pickfile(FILTER='*.ub', /write, path=out_dir, default_extension='ub')
      if fname ne '' then $
      begin
         save_UB, ub, fname
