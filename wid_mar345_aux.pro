@@ -1252,6 +1252,17 @@ end
                     /CENTER, $
                     TITLE = 'No Associaated Cal File Found')
    	endelse
+   	; then check for ub file
+   	ubFileSpecific = res.base+'.ub'
+   	if FILE_TEST(ubFileSpecific) then begin
+
+   	 UB=open_UB(ubFileSpecific)
+     lp=lp_from_ub(UB)
+     Wid_Image_simulation->print_UB,UB
+     Wid_Image_simulation->print_lp,lp
+
+  	endif
+
 
    ;oimage->append_image, fn, oadetector
 
