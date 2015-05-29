@@ -703,6 +703,69 @@ end
    endelse ;spline
    end; filename ok
 end
+'SaveProj' :$
+	begin
+		print, 'in here'
+		zeroOff = gonio_zero_offset()
+		omRotation = read_om_rotation_dir()
+		resVal = read_inversions ()
+		case resVal of
+			1: begin
+				rex = 0
+				rey = 1
+				tra = 1
+				end
+			2 : begin
+				rex = 1
+				rey = 1
+				tra = 0
+				end
+			3 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			4 : begin
+				rex = 0
+				rey = 0
+				tra = 1
+				end
+			5 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			6 : begin
+				rex = 1
+				rey = 1
+				tra = 1
+				end
+			7 : begin
+				rex = 0
+				rey = 1
+				tra = 0
+				end
+		endcase
+
+		widget_control, Wid_Image_simulation->wid_text_14(), get_value=DAC_open
+  		DAC_open=float(DAC_open)
+  		cor = I_corrections()
+  		DAC_abs = cor(0)
+  		outFile = res.base+'_projset.txt'
+		outFile = dialog_pickfile (/write, File=outFile, filter='*.txt')
+		openw,lun, outFile, /get_lun
+		printf,lun, 'Zero Offset    : '+string(zeroOff)
+		printf,lun, 'Omega Rotation : '+string(omRotation)
+		printf,lun, 'X inversion    : '+string(rex)
+		printf,lun, 'Y inversion    : '+string(rey)
+		printf,lun, 'Transpose      : '+string(tra)
+		printf,lun, 'DAC Opening    : '+string(DAC_open)
+		printf,lun, 'DAC abs status : '+string(DAC_abs)
+		close,lun
+		;stop
+	end
+
+
 ;---------------------------------------
   'WID_BUTTON_fcf_appl':$
 begin
@@ -1179,6 +1242,8 @@ if refine_twist() eq 0 then $
       endif ; file exists
       en:
      end
+
+
 
 'Dac absorption':$
 begin
@@ -4579,6 +4644,7 @@ common datas
  WIDGET_CONTROL,WID_BUTTON_413b, SET_UVALUE=''
  WIDGET_CONTROL,WID_BUTTON_412b, SET_BUTTON=1
  WIDGET_CONTROL,WID_BUTTON_47b, SET_UVALUE='Int. from series'
+ WIDGET_CONTROL, WID_BUTTON_SAVEPROJ, SET_UVALUE='SaveProj'
 
 ; WIDGET_CONTROL, WID_BUTTON_1c, SET_UVALUE='SubtrImg'
 ; WIDGET_CONTROL, WID_BUTTON_1d, SET_UVALUE='AddImg'
