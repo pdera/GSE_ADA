@@ -1500,6 +1500,23 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
   WID_DRAW_3 = Widget_Draw(WID_BASE_11, UNAME='WID_DRAW_3' ,XOFFSET=2  $
       ,YOFFSET=74 ,SCR_XSIZE=428 ,SCR_YSIZE=428)
 
+   ; ************************** NEW CODE ***************************
+  WID_BASE_TASK= Widget_Base(WID_TAB_0, UNAME='WID_BASE_TASK'  $
+      ,SCR_XSIZE=455 ,SCR_YSIZE=506 ,TITLE='Task List' ,SPACE=3 ,XPAD=3  $
+      ,YPAD=3)
+
+  WID_LIST_TASK = Widget_List(WID_BASE_TASK, UNAME='WID_LIST_TASK'  $
+      ,XOFFSET=17 ,YOFFSET=30 ,SCR_XSIZE=415 ,SCR_YSIZE=130 , XSIZE=20  $
+      ,YSIZE=1, SENSITIVE = 0)
+
+  WID_BUTTON_IM2TASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_IM2TASK'  $
+  	  ,XOFFSET=17, YOFFSET=160,$
+      SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Add Image To Task', uvalue='')
+
+  WID_BUTTON_DELTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_DELTASK'  $
+  	  ,XOFFSET=17, YOFFSET=195,$
+      SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Delete Task', uvalue='')
+
 
   ; ************************** NEW CODE ***************************
   WID_BASE_HELP = Widget_Base(WID_TAB_0, UNAME='WID_BASE_HELP'  $
@@ -1529,6 +1546,9 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
   WID_TEXT_opening = Widget_Text(WID_BASE_3, UNAME='WID_TEXT_48'  $
       ,XOFFSET=220 ,YOFFSET=101 ,/EDITABLE  $
       ,XSIZE=6 ,YSIZE=1)
+
+
+
 
   ; *************************** NEW CODE ***************************
 
