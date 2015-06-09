@@ -1506,8 +1506,8 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
       ,YPAD=3)
 
   WID_LIST_TASK = Widget_List(WID_BASE_TASK, UNAME='WID_LIST_TASK'  $
-      ,XOFFSET=17 ,YOFFSET=30 ,SCR_XSIZE=465 ,SCR_YSIZE=130 , XSIZE=20  $
-      ,YSIZE=1, SENSITIVE = 0)
+      ,XOFFSET=17 ,YOFFSET=20 ,SCR_XSIZE=465 ,SCR_YSIZE=130 , XSIZE=20  $
+      ,YSIZE=1, SENSITIVE = 1)
 
   WID_BUTTON_IM2TASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_IM2TASK'  $
   	  ,XOFFSET=17, YOFFSET=160,$
@@ -1516,6 +1516,11 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
   WID_BUTTON_DELTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_DELTASK'  $
   	  ,XOFFSET=17, YOFFSET=195,$
       SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Delete Task', uvalue='')
+
+  WID_BUTTON_DELTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_CLEARTASK'  $
+  	  ,XOFFSET=17, YOFFSET=230,$
+      SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Clear All', uvalue='')
+
 
 
   ; ************************** NEW CODE ***************************

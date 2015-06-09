@@ -519,6 +519,7 @@ common calib_ref, zeroref
 common closing, Wid_Image_simulation
 
  WIDGET_CONTROL, ev.id, GET_UVALUE=uv
+ if ev.id eq WID_LIST_TASK then return
  if n_elements(uv)  ne 0 then case uv of
  ;******************************** NEW CODE **********************
  'Omega Start Event': $
@@ -4326,6 +4327,59 @@ begin
 		return
 	endif
 
+	; ok to add to the task list
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if numims gt 0 then begin
+		widget_control, WID_LIST_TASK, get_uvalue=tasklist
+		if (tasklist(0) eq 'EMPTY') then begin
+			tasklist=strarr(1)
+			tasklist(0)=res.path+res.name0
+		endif else $
+			tasklist=[tasklist,res.path+res.name0]
+	endif else begin
+		tasklist=strarr(1)
+		tasklist(0)=res.path+res.name0
+	endelse
+	widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+
+
+end
+'ClearTask' : $ ; clear all from task list widget
+begin
+	tasklist=strarr(0)
+	tasklist(0)='EMPTY'
+	widget_control, WID_LIST_TASK, set_value='', set_uvalue=tasklist
+end
+
+'DeleteTask': $ ; add current image to task list...
+begin
+
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if numims le 0 then return
+	widget_control, WID_LIST_TASK, get_uvalue=tasklist
+	if numims eq 1 then begin
+		tasklist=strarr(1)
+		tasklist(0)='EMPTY'
+		widget_control, WID_LIST_TASK, set_value='', set_uvalue=tasklist
+		return
+	endif
+
+	selind = widget_info( WID_LIST_TASK, /LIST_SELECT)
+	if selind eq 0 then begin
+		tasklist = tasklist (1:*)
+		widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+		return
+	endif
+	if selind eq numims -1 then begin
+		tasklist = tasklist(0:selind -1)
+		widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+		return
+	endif
+	tasklist = [tasklist(0:selind-1), tasklist(selind+1:*)]
+	widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+
+
+
 
 
 
@@ -4766,6 +4820,8 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_BUTTON_49, SET_UVALUE='Simulate'
  WIDGET_CONTROL, WID_BUTTON_50, SET_UVALUE='Cake'
  WIDGET_CONTROL, WID_BUTTON_IM2TASK, SET_UVALUE='AddIm2Task'
+ WIDGET_CONTROL, WID_BUTTON_DELTASK, SET_UVALUE='DeleteTask'
+ WIDGET_CONTROL, WID_BUTTON_CLEARTASK, SET_UVALUE='ClearTask'
  WIDGET_CONTROL, WID_TEXT_0, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_1, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_2, SET_UVALUE=''
