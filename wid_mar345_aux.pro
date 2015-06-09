@@ -703,6 +703,7 @@ end
    endelse ;spline
    end; filename ok
 end
+
 'SaveProj' :$
 	begin
 		print, 'in here'
@@ -4307,7 +4308,28 @@ begin
   endelse
 
 end
+'AddIm2Task': $ ; add current image to task list...
+begin
+	myim = res.name0
+	; now check for ub file
+	; and check for
+	calfile = res.base + '.cal'
+	fileexists = FILE_TEST (calfile)
+	if (fileexists eq 0) then begin
+		ok= dialog_message (/Error, "Corresponding .cal file does not exist. Image is not added to task list")
+		return
+	endif
+	ubfile = res.base + '.ub'
+	fileexists = FILE_TEST (ubfile)
+	if (fileexists eq 0) then begin
+		ok= dialog_message (/Error, "Corresponding .ub file does not exist. Image is not added to task list")
+		return
+	endif
 
+
+
+
+end
 'Max filter':$ ;--- calculate maximum threshold filter
 begin
   re=WIDGET_INFO(WID_BUTTON_33a, /BUTTON_SET)
@@ -4743,6 +4765,7 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  ;WIDGET_CONTROL, WID_BUTTON_48, SET_UVALUE='Save UB'
  WIDGET_CONTROL, WID_BUTTON_49, SET_UVALUE='Simulate'
  WIDGET_CONTROL, WID_BUTTON_50, SET_UVALUE='Cake'
+ WIDGET_CONTROL, WID_BUTTON_IM2TASK, SET_UVALUE='AddIm2Task'
  WIDGET_CONTROL, WID_TEXT_0, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_1, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_2, SET_UVALUE=''
