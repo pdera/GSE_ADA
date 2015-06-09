@@ -1502,11 +1502,11 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
 
    ; ************************** NEW CODE ***************************
   WID_BASE_TASK= Widget_Base(WID_TAB_0, UNAME='WID_BASE_TASK'  $
-      ,SCR_XSIZE=455 ,SCR_YSIZE=506 ,TITLE='Task List' ,SPACE=3 ,XPAD=3  $
+      ,SCR_XSIZE=500 ,SCR_YSIZE=506 ,TITLE='Task List' ,SPACE=3 ,XPAD=3  $
       ,YPAD=3)
 
   WID_LIST_TASK = Widget_List(WID_BASE_TASK, UNAME='WID_LIST_TASK'  $
-      ,XOFFSET=17 ,YOFFSET=30 ,SCR_XSIZE=415 ,SCR_YSIZE=130 , XSIZE=20  $
+      ,XOFFSET=17 ,YOFFSET=30 ,SCR_XSIZE=465 ,SCR_YSIZE=130 , XSIZE=20  $
       ,YSIZE=1, SENSITIVE = 0)
 
   WID_BUTTON_IM2TASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_IM2TASK'  $
