@@ -1517,10 +1517,17 @@ WID_BUTTON_refine_twist = Widget_Button(WID_BASE_ref, UNAME='WID_BUTTON_refine_t
   	  ,XOFFSET=17, YOFFSET=195,$
       SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Delete Task', uvalue='')
 
-  WID_BUTTON_DELTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_CLEARTASK'  $
+  WID_BUTTON_CLEARTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_CLEARTASK'  $
   	  ,XOFFSET=17, YOFFSET=230,$
       SCR_XSIZE=104 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Clear All', uvalue='')
 
+   WID_BUTTON_SAVETASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_SAVETASK'  $
+  	  ,XOFFSET=160, YOFFSET=160,$
+      SCR_XSIZE=114 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Save Tasks To File', uvalue='')
+
+  WID_BUTTON_READTASK = Widget_Button(WID_BASE_TASK, UNAME='WID_BUTTON_READTASK'  $
+  	  ,XOFFSET=160, YOFFSET=195,$
+      SCR_XSIZE=114 ,SCR_YSIZE=29 ,/ALIGN_LEFT ,VALUE='Read Tasks From File', uvalue='')
 
 
   ; ************************** NEW CODE ***************************

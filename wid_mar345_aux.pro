@@ -4346,10 +4346,37 @@ begin
 end
 'ClearTask' : $ ; clear all from task list widget
 begin
-	tasklist=strarr(0)
+	tasklist=strarr(1)
 	tasklist(0)='EMPTY'
 	widget_control, WID_LIST_TASK, set_value='', set_uvalue=tasklist
 end
+'SaveTask' : $ ; save to file
+begin
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if (numims le 0) then return
+	outfile = DIALOG_PICKFILE (title='Save Tasks To Output File',filter=['*.txt','*.*'])
+	openw,lun, outfile,/get_lun
+	widget_control, WID_LIST_TASK, get_uvalue=tasklist
+	printf, lun, tasklist
+	close,lun
+	free_lun,lun
+end
+'ReadTask' : $ ; read tasks from file
+begin
+
+
+	tfile = DIALOG_PICKFILE (title='Load Tasks from  File',filter=['*.txt','*.*'])
+	status = FILE_TEST(tfile)
+	if (status lt 0) then return
+	nlines = FILE_LINES(tfile)
+	tasklist = strarr(nlines)
+	openr,lun, tfile,/get_lun
+	readf, lun, tasklist
+	close,lun
+	free_lun,lun
+	widget_control, WID_LIST_TASK, set_uvalue=tasklist, set_value=tasklist
+end
+
 
 'DeleteTask': $ ; add current image to task list...
 begin
@@ -4365,6 +4392,7 @@ begin
 	endif
 
 	selind = widget_info( WID_LIST_TASK, /LIST_SELECT)
+	if selind lt 0 then return
 	if selind eq 0 then begin
 		tasklist = tasklist (1:*)
 		widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
@@ -4822,6 +4850,8 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  WIDGET_CONTROL, WID_BUTTON_IM2TASK, SET_UVALUE='AddIm2Task'
  WIDGET_CONTROL, WID_BUTTON_DELTASK, SET_UVALUE='DeleteTask'
  WIDGET_CONTROL, WID_BUTTON_CLEARTASK, SET_UVALUE='ClearTask'
+ WIDGET_CONTROL, WID_BUTTON_SAVETASK, SET_UVALUE='SaveTask'
+ WIDGET_CONTROL, WID_BUTTON_READTASK, SET_UVALUE='ReadTask'
  WIDGET_CONTROL, WID_TEXT_0, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_1, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_2, SET_UVALUE=''
