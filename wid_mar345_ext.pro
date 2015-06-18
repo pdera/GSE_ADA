@@ -11,6 +11,40 @@ pro WID_MAR345_ext_commons
 
 end
 
+;------------
+function read_batch, file
+ ba={batch_structure, $
+ 		mltp : 0.0, $
+ 		f0	 : 0,$
+ 		f1	 : 0,$
+ 		fname: ''}
+    aa=0.0
+    aa2=0
+    aa3=0
+    bb=''
+    re=file_info(file)
+    if re.exists then $
+    begin
+      get_lun, ln
+      no=0
+      openr, ln, file
+      while not(eof(ln)) do $
+      begin
+        readf, ln, aa,aa2,aa3, bb
+        ba.mltp=aa
+        ba.f0=aa2
+        ba.f1=aa3
+        ba.fname=bb
+        if no eq 0 then bas=ba else bas=[bas,ba]
+        no=no+1
+	  endwhile
+      close, ln
+      free_lun, ln
+      return, bas
+    end
+
+    return, ba
+end
 
 ;********************************** NEW CODE ****************
 function read_om_rotation_dir
@@ -334,11 +368,12 @@ printf, ln, '@ECHO OFF'
 printf, ln, 'SETLOCAL EnableExtensions EnableDelayedExpansion'
 printf, ln, 'REM script to automate indexing with cell_now'
 printf, ln, 'REM 2015-02-14 pd'
+printf, ln,  strmid(cell_now_dir, 0,2)
+printf, ln, 'cd "'+cell_now_dir+'"'
 printf, ln, 'SET CELL="cell_now.exe"'
 printf, ln, 'SET COMM="'+cell_now_dir+'cell_now_commands.txt"'
-printf, ln, ''
 printf, ln, 'SET PROJ=xxx.p4p'
-printf, ln, 'cd "'+cell_now_dir+'"'
+printf, ln, 'REM announce target'
 printf, ln, 'REM announce target'
 printf, ln, 'ECHO Processing %PROJ% ...'
 printf, ln, 'ECHO %CELL%'
@@ -495,6 +530,8 @@ begin
         opt->appendpeak, ref_peak
       end
 
+      opt->select_weaker_overlaps, 5
+      opt->delete_selected
       pt=opt->get_object()
 
       if  fit_peaks_after_PS() then fit_all_peaks, prog=prog

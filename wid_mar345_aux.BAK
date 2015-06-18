@@ -703,6 +703,69 @@ end
    endelse ;spline
    end; filename ok
 end
+'SaveProj' :$
+	begin
+		print, 'in here'
+		zeroOff = gonio_zero_offset()
+		omRotation = read_om_rotation_dir()
+		resVal = read_inversions ()
+		case resVal of
+			1: begin
+				rex = 0
+				rey = 1
+				tra = 1
+				end
+			2 : begin
+				rex = 1
+				rey = 1
+				tra = 0
+				end
+			3 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			4 : begin
+				rex = 0
+				rey = 0
+				tra = 1
+				end
+			5 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			6 : begin
+				rex = 1
+				rey = 1
+				tra = 1
+				end
+			7 : begin
+				rex = 0
+				rey = 1
+				tra = 0
+				end
+		endcase
+
+		widget_control, Wid_Image_simulation->wid_text_14(), get_value=DAC_open
+  		DAC_open=float(DAC_open)
+  		cor = I_corrections()
+  		DAC_abs = cor(0)
+  		outFile = res.base+'_projset.txt'
+		outFile = dialog_pickfile (/write, File=outFile, filter='*.txt')
+		openw,lun, outFile, /get_lun
+		printf,lun, 'Zero Offset    : '+string(zeroOff)
+		printf,lun, 'Omega Rotation : '+string(omRotation)
+		printf,lun, 'X inversion    : '+string(rex)
+		printf,lun, 'Y inversion    : '+string(rey)
+		printf,lun, 'Transpose      : '+string(tra)
+		printf,lun, 'DAC Opening    : '+string(DAC_open)
+		printf,lun, 'DAC abs status : '+string(DAC_abs)
+		close,lun
+		;stop
+	end
+
+
 ;---------------------------------------
   'WID_BUTTON_fcf_appl':$
 begin
@@ -1180,6 +1243,8 @@ if refine_twist() eq 0 then $
       en:
      end
 
+
+
 'Dac absorption':$
 begin
        wset, wid_draw_6
@@ -1196,6 +1261,68 @@ begin
          plot, a[0,*],a[1,*], color='0000FF'xl, background='FFFFFF'xl
        endelse
        device, decomposed=0
+end
+'Process batch':$
+begin
+	print, 'Process batch'
+	ba=read_batch(dir+'batch.txt')
+	for i=0, n_ellements(ba) do $
+	begin
+     fname=ba[*].fname
+     ; open first image
+
+     ; open cal
+     ; open ub
+   	 re=file_info(fname+'ub')
+     endfor
+
+ end
+
+
+
+
+
+end
+
+'Open batch file':$
+begin
+   print, 'Open batch file'
+   file=dir+'batch.txt'
+
+   re0=file_info(file)
+   re=file_info('notepad.exe')
+
+   spawn, 'where notepad.exe', Result
+   print, Result
+
+
+   if Result[0] ne '' and re0.exists eq 1 then $
+   begin
+     spawn, Result[0]+' '+file, /NOSHELL
+    endif
+
+end
+
+'Add series to batch':$
+begin
+   if n_elements(res) ne 0 then $
+   begin
+   file=dir+'batch.txt'
+   widget_control, wid_text_12, get_value=f0
+   widget_control, wid_text_11, get_value=f1
+
+   re0=file_info(file)
+   print, file
+   get_lun, ln
+   if re0.exists eq 1 then openu, ln, file, /append else openw, ln, file
+   printf, ln, string(1, format='(F6.2)')+'  '+string(f0, format='(I6)')+'  '+string(f1, format='(I6)')+'  '+res.base
+   close,ln
+
+   ;widget_control, wid_text_7, set_value=string(f0, format='(I4)')
+
+
+   free_lun, ln
+   endif
 end
 
  ;******************************** NEW CODE **********************
@@ -1245,13 +1372,40 @@ end
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
    endif else begin
-   	ok = Dialog_Message (['No associated cal file found', $
-                      'You may want to assign current', $
-                      'calibration to that series',$
-                      'See Calibration -> Save option"'], $
-                    /CENTER, $
+   	ok = Dialog_Message (['No associated .cal file found', $
+                      'Do you want to assign current', $
+                      'calibration to that series?'], $
+                    /CENTER,  /question, $
                     TITLE = 'No Associaated Cal File Found')
+
+   if ok eq 'Yes' then $
+   begin
+   outfileTmp = res.base+'.cal'
+   ;stop
+   fn=dialog_pickfile(/write, filter='*.cal', File=outfileTmp, DEFAULT_EXTENSION='.cal') ;, path=out_dir)
+   if fn ne '' then $
+   begin
+    capture_calibration, oadetector, wv
+    save_cal, fn, oadetector, wv
+    save_cal, 'last_calibration.cal', oadetector, wv
+   end
+   end
+
+
    	endelse
+
+
+   	; then check for ub file
+   	ubFileSpecific = res.base+'.ub'
+   	if FILE_TEST(ubFileSpecific) then begin
+
+   	 UB=open_UB(ubFileSpecific)
+     lp=lp_from_ub(UB)
+     Wid_Image_simulation->print_UB,UB
+     Wid_Image_simulation->print_lp,lp
+
+  	endif
+
 
    ;oimage->append_image, fn, oadetector
 
@@ -2001,6 +2155,15 @@ end
   print_peak_list, opt, wid_list_3
 
  end
+ 'Unselect all':$
+begin
+  opt->unselect_all
+  plot_image, oimage
+  update_peakno, opt->peakno()
+  plot_peaks, draw0, opt, arr1, arr2
+  print_peak_list, opt, wid_list_3
+
+end
  'Clear peaktable':$
  begin
    re=dialog_message('Are you sure?', /question)
@@ -4568,6 +4731,7 @@ common datas
  WIDGET_CONTROL,WID_BUTTON_413b, SET_UVALUE=''
  WIDGET_CONTROL,WID_BUTTON_412b, SET_BUTTON=1
  WIDGET_CONTROL,WID_BUTTON_47b, SET_UVALUE='Int. from series'
+ WIDGET_CONTROL, WID_BUTTON_SAVEPROJ, SET_UVALUE='SaveProj'
 
 ; WIDGET_CONTROL, WID_BUTTON_1c, SET_UVALUE='SubtrImg'
 ; WIDGET_CONTROL, WID_BUTTON_1d, SET_UVALUE='AddImg'
@@ -4836,6 +5000,7 @@ contextBase = WIDGET_BASE(WID_DRAW_0, /CONTEXT_MENU)
 button0 = WIDGET_BUTTON(contextBase, VALUE='Zoom', UVALUE='CM Zoom')
 button1 = WIDGET_BUTTON(contextBase, VALUE='Select', UVALUE='CM Select')
 button2 = WIDGET_BUTTON(contextBase, VALUE='Unselect', UVALUE='CM Unselect')
+button2a = WIDGET_BUTTON(contextBase, VALUE='Unselect all', UVALUE='Unselect all')
 button3 = WIDGET_BUTTON(contextBase, VALUE='Selections off', UVALUE='Selections off')
 button4 = WIDGET_BUTTON(contextBase, VALUE='Define exclusion', UVALUE='Define exclusion')
 button5 = WIDGET_BUTTON(contextBase, VALUE='Add peak', UVALUE='Add peak')
@@ -4945,11 +5110,11 @@ selecting_status=0
  WIDGET_CONTROL, WID_TEXT_14_da5, SET_UVALUE='0.1013460'
  WIDGET_CONTROL, WID_TEXT_14_da6, SET_UVALUE='0.0'
 
- WIDGET_CONTROL, WID_TEXT_14_da1, SET_VALUE='2.600'
+ WIDGET_CONTROL, WID_TEXT_14_da1, SET_VALUE='2.100'
  WIDGET_CONTROL, WID_TEXT_14_da2, SET_VALUE='5.800'
  WIDGET_CONTROL, WID_TEXT_14_da3, SET_VALUE='4.000'
  WIDGET_CONTROL, WID_TEXT_14_da4, SET_VALUE='0.705'
- WIDGET_CONTROL, WID_TEXT_14_da5, SET_VALUE='0.1313460'
+ WIDGET_CONTROL, WID_TEXT_14_da5, SET_VALUE='0.1013460'
  WIDGET_CONTROL, WID_TEXT_14_da6, SET_VALUE='0.0'
 
  WIDGET_CONTROL, WID_BUTTON_412a, SET_UVALUE=''

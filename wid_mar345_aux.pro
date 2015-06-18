@@ -1262,6 +1262,63 @@ begin
        endelse
        device, decomposed=0
 end
+'Process batch':$
+begin
+	print, 'Process batch'
+	ba=read_batch(dir+'batch.txt')
+	for i=0, n_ellements(ba) do $
+	begin
+     fname=ba[*].fname
+     ; open first image
+
+     ; open cal
+     ; open ub
+   	 re=file_info(fname+'ub')
+     endfor
+
+
+end
+
+'Open batch file':$
+begin
+   print, 'Open batch file'
+   file=dir+'batch.txt'
+
+   re0=file_info(file)
+   re=file_info('notepad.exe')
+
+   spawn, 'where notepad.exe', Result
+   print, Result
+
+
+   if Result[0] ne '' and re0.exists eq 1 then $
+   begin
+     spawn, Result[0]+' '+file, /NOSHELL
+    endif
+
+end
+
+'Add series to batch':$
+begin
+   if n_elements(res) ne 0 then $
+   begin
+   file=dir+'batch.txt'
+   widget_control, wid_text_12, get_value=f0
+   widget_control, wid_text_11, get_value=f1
+
+   re0=file_info(file)
+   print, file
+   get_lun, ln
+   if re0.exists eq 1 then openu, ln, file, /append else openw, ln, file
+   printf, ln, string(1, format='(F6.2)')+'  '+string(f0, format='(I6)')+'  '+string(f1, format='(I6)')+'  '+res.base
+   close,ln
+
+   ;widget_control, wid_text_7, set_value=string(f0, format='(I4)')
+
+
+   free_lun, ln
+   endif
+end
 
  ;******************************** NEW CODE **********************
  'Open':$
@@ -1310,13 +1367,29 @@ end
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
    endif else begin
-   	ok = Dialog_Message (['No associated cal file found', $
-                      'You may want to assign current', $
-                      'calibration to that series',$
-                      'See Calibration -> Save option"'], $
-                    /CENTER, $
+   	ok = Dialog_Message (['No associated .cal file found', $
+                      'Do you want to assign current', $
+                      'calibration to that series?'], $
+                    /CENTER,  /question, $
                     TITLE = 'No Associaated Cal File Found')
+
+   if ok eq 'Yes' then $
+   begin
+   outfileTmp = res.base+'.cal'
+   ;stop
+   fn=dialog_pickfile(/write, filter='*.cal', File=outfileTmp, DEFAULT_EXTENSION='.cal') ;, path=out_dir)
+   if fn ne '' then $
+   begin
+    capture_calibration, oadetector, wv
+    save_cal, fn, oadetector, wv
+    save_cal, 'last_calibration.cal', oadetector, wv
+   end
+   end
+
+
    	endelse
+
+
    	; then check for ub file
    	ubFileSpecific = res.base+'.ub'
    	if FILE_TEST(ubFileSpecific) then begin
@@ -2077,6 +2150,15 @@ end
   print_peak_list, opt, wid_list_3
 
  end
+ 'Unselect all':$
+begin
+  opt->unselect_all
+  plot_image, oimage
+  update_peakno, opt->peakno()
+  plot_peaks, draw0, opt, arr1, arr2
+  print_peak_list, opt, wid_list_3
+
+end
  'Clear peaktable':$
  begin
    re=dialog_message('Are you sure?', /question)
@@ -4913,6 +4995,7 @@ contextBase = WIDGET_BASE(WID_DRAW_0, /CONTEXT_MENU)
 button0 = WIDGET_BUTTON(contextBase, VALUE='Zoom', UVALUE='CM Zoom')
 button1 = WIDGET_BUTTON(contextBase, VALUE='Select', UVALUE='CM Select')
 button2 = WIDGET_BUTTON(contextBase, VALUE='Unselect', UVALUE='CM Unselect')
+button2a = WIDGET_BUTTON(contextBase, VALUE='Unselect all', UVALUE='Unselect all')
 button3 = WIDGET_BUTTON(contextBase, VALUE='Selections off', UVALUE='Selections off')
 button4 = WIDGET_BUTTON(contextBase, VALUE='Define exclusion', UVALUE='Define exclusion')
 button5 = WIDGET_BUTTON(contextBase, VALUE='Add peak', UVALUE='Add peak')

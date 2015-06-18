@@ -1,6 +1,6 @@
 HEADER
 ; IDL Visual Widget Builder Resource file. Version 1
-; Generated on:	05/06/2015 07:26.43
+; Generated on:	06/04/2015 08:47.13
 VERSION 1
 END
 
@@ -13,7 +13,7 @@ SPACE = 3
 BEGIN
   WID_DRAW_0 DRAW 7 60 600 600
   END
-  WID_TAB_0 TAB 614 56 539 603
+  WID_TAB_0 TAB 614 57 539 603
   BEGIN
     WID_BASE_1 BASE 0 0 531 577
     XPAD = 3
@@ -157,7 +157,7 @@ BEGIN
     BEGIN
       WID_DRAW_1 DRAW 0 2 190 190
       END
-      WID_DRAW_2 DRAW 0 193 190 190
+      WID_DRAW_2 DRAW 0 194 190 190
       END
       WID_DRAW_3 DRAW 0 385 190 190
       END
