@@ -1637,7 +1637,7 @@ begin
    if test_write(out_dir) eq 1 then $
    begin
     lp=PS_Series()
-    merge_peak_tables_in_series
+    if lp[0] ne 0 then merge_peak_tables_in_series
    endif
  end
 

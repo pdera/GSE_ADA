@@ -1954,7 +1954,7 @@ end
          		widget_control, wid_text_20, set_value=string(om[1], format='(F6.1)')
          		widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
         	endif
-     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1, read_box_size(wid_text_37,wid_text_37)
+     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1
 
      		plot_image, oimage
      		update_peakno, opt->peakno()
