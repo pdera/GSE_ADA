@@ -236,11 +236,30 @@ function read_settings_file, fname
   begin
     free_lun, 6
     openr, 6, fname
-    readf, 6,al,om1, format='(A11,F13.4)'
-    readf, 6,al,om2, format='(A11,F13.4)'
-    readf, 6,al,ch1, format='(A11,F16.10)'
-    readf, 6,al,tth, format='(A11,F16.10)'
-    readf, 6,al,time, format='(A11,F13.4)'
+    if re.size eq 136 then $ ;ccd
+    begin
+      readf, 6,al,om1, format='(A11,F13.4)'
+      readf, 6,al,om2, format='(A11,F13.4)'
+      readf, 6,al,ch1, format='(A11,F16.10)'
+      readf, 6,al,tth, format='(A11,F16.10)'
+      readf, 6,al,time, format='(A11,F13.4)'
+    end
+
+    if re.size eq 130 then $ ;self generate
+    begin
+      readf, 6,al,om1, format='(A11,F13.4)'
+      readf, 6,al,om2, format='(A11,F13.4)'
+      readf, 6,al,ch1, format='(A11,F16.10)'
+      readf, 6,al,tth, format='(A11,F16.10)'
+      readf, 6,al,time, format='(A11,F13.4)'
+    end
+
+    if re.size eq 314 then $ ; mar345 HPCAT
+    begin
+     readf, 6,al,om1, format='(A20,F13.4)'
+     readf, 6,al,ome, format='(A20,F10.5)'
+     om2=ome-om1
+    end
     close, 6
     free_lun, 6
   endif
@@ -505,6 +524,7 @@ end
 
 pro WID_MAR345_L_event, ev
 @COMMON_DATAS
+@COMMON_DATAS2
 COMMON WID_MAR345_elements
 COMMON image_type_and_arrays
 COMMON cont
@@ -859,7 +879,6 @@ begin
     x1=x[[ii[s]]]
     y1=y[[ii[s]]]
     a=interval_nodes(x1 , y1, fcf_spline())
-    x=pt.peaks[*].gonio[3]
     s=sort(x)
     x2=x[s]
     bb = SPLINE( a[*,0], a[*,1], x2)
@@ -878,8 +897,17 @@ begin
 
        for i=0, pt.peakno do $
        begin
-         xa=pt.peaks[i].gonio[3]
-         f=where(x2 eq xa)
+
+
+ case ch of
+     	 1: xa=pt.peaks[i].gonio[3] ; ---- omega from peak table
+     	 2: xa=get_tth_from_xyz(pt.peaks[i].xyz)
+     	 3: xa=oadetector->get_nu_from_pix(pt.peaks[i].DetXY)
+     	 4: xa=oadetector->calculate_psi_angles(pt.peaks[i].gonio, pt.peaks[i].DetXY)
+     	 endcase
+     	 ma=abs(x2-xa[0])
+     	 mi=min(ma, f)
+         ;f=where(x2 eq xa)
          m=bb[f[0]]
          pt.peaks[i].intad[0]=pt.peaks[i].intad[0]*(1.0-m)
          pt.peaks[i].intad[1]=pt.peaks[i].intad[1]*(1.0-m)
@@ -942,25 +970,24 @@ begin
        wset, wid_draw_6
        device, decomposed=1
        case ch of
-       1: $
-       begin
-         xxx=pt.peaks[n[ii]].gonio[3]
+ 		1: xxx=pt.peaks[n[ii]].gonio[3]
+        2: xxx=get_tth_from_xyz(pt.peaks[n[ii]].xyz)
+        3: xxx=oadetector->get_nu_from_pix(pt.peaks[n[ii]].DetXY)
+        4: xxx=oadetector->calculate_psi_angles(pt.peaks[n[ii]].gonio, pt.peaks[n[ii]].DetXY)
+       endcase
          yyy=(pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]]
-         plot, pt.peaks[n[ii]].gonio[3], (pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]], thick=0, symsize=0.5, psym=6, background='FFFFFF'xl, color='000000'xl
+         plot, xxx, (pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]], thick=0, symsize=0.5, psym=6, background='FFFFFF'xl, color='000000'xl
          hh=read_fcf_select_th()
          w1=where (yyy gt  hh[0])
          w2=where (yyy lt  hh[1])
          if w1[0] ne -1 then pt.peaks[n[ii[w1]]].selected[0]=1
          if w2[0] ne -1 then pt.peaks[n[ii[w2]]].selected[0]=1
          opt->set_object, pt
-         if w1[0] ne -1 then oplot, [pt.peaks[n[ii[w1]]].gonio[3]], [(pt.peaks[n[ii[w1]]].intad[0]/sc-ff[n[ii[w1]]])/ff[n[ii[w1]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
-         if w2[0] ne -1 then oplot, [pt.peaks[n[ii[w2]]].gonio[3]], [(pt.peaks[n[ii[w2]]].intad[0]/sc-ff[n[ii[w2]]])/ff[n[ii[w2]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
-
-       endcase
+         if w1[0] ne -1 then oplot, xxx[w1], [(pt.peaks[n[ii[w1]]].intad[0]/sc-ff[n[ii[w1]]])/ff[n[ii[w1]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
+         if w2[0] ne -1 then oplot, xxx[w2], [(pt.peaks[n[ii[w2]]].intad[0]/sc-ff[n[ii[w2]]])/ff[n[ii[w2]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
        end ; ii[0] ne -1
      end ; peak table not empty
      end ; fcf ok
-     end
    end; filename ok
 end
 
@@ -1928,6 +1955,7 @@ end
          		widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
         	endif
      		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1
+
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
@@ -1949,12 +1977,13 @@ end
     			med=median(pic)
     			if (max(pic)-med)  lt obs then opt->select_peak, pn
   			endfor
+
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
      		print_peak_list, opt, wid_list_3
   			opt->delete_selected
-  			opt->write_object_to_file, pt_file
+;  			opt->write_object_to_file, pt_file
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
@@ -1968,11 +1997,27 @@ end
    			plot_peaks, draw0, opt, arr1, arr2
    			update_peakno, opt->peakno()
   			opt->delete_selected
+
+            ; filter one more time
+ 			pt=opt->get_object()
+  			for pn=0, opt->peakno()-1 do $
+  			begin
+  				bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+    			xy=pt.peaks[pn].detXY
+ 	 			bs=[2,2]
+         		pic=oimage->get_zoomin(XY, bs, maskarr)
+    			med=median(pic)
+    			if (max(pic)-med)  lt obs then opt->select_peak, pn
+  			endfor
+
+  			opt->delete_selected
   			opt->write_object_to_file, pt_file
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
      		print_peak_list, opt, wid_list_3
+
+
 
              IF cgProgressBar -> CheckCancel() THEN BEGIN
                 ok = Dialog_Message('Operation canceled')
@@ -3582,7 +3627,7 @@ begin
 
   ;--- make array for profiles
    profiles=fltarr(pt.peakno, ni[0])
-   widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
+   ;widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
    for i=0, ni[0]-1 do $
    begin
 
@@ -3680,7 +3725,7 @@ begin
 
   ;--- make array for profiles
    profiles=fltarr(pt.peakno, ni[0])
-   widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
+   ;widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
    for i=0, ni[0]-1 do $
    begin
 
@@ -4153,7 +4198,7 @@ end
 begin
   cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
   cgProgressBar -> Start
-
+  bx0=read_box_size(wid_text_37,wid_text_37)
   a=oimage->calculate_local_background(0)
   widget_control, wid_text_48, get_value=obs
   obs=float(obs)
@@ -4183,8 +4228,7 @@ begin
      	 pic=pic1[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
     endelse
     med=median(pic)
-
-    if       (max(pic)-med)  lt obs then opt->select_peak, pn
+    if (max(pic)-med)  lt obs then opt->select_peak, pn
   endfor
 
   plot_peaks, draw0, opt, arr1, arr2
@@ -4574,16 +4618,34 @@ begin
        m3=median(pic)
        m6=max(pic)    ; maximum in the box
 
+       spic=pic[szi-3:szi+3,szi-3:szi+3]
+       spic9=pic9[szi-3:szi+3,szi-3:szi+3]
+       spic22=spic-spic9
+
        m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
 
-       print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
-       if (m1/m6 gt 0.5) or (m1/m3 gt 10) or (m7/m3) lt 5 then $
-       begin
-          print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
-       endif
 
+ tf=total(pic9)-median(pic9)*n_elements(pic22)
+       tp=total(pic)-median(pic)*n_elements(pic22)
+       stf=total(spic9)-median(pic9)*n_elements(spic22)
+       stp=total(spic)-median(pic)*n_elements(spic22)
 
+          print, '------------------------ '
+          print, '----- ', pn, '  max pic=           ', m6-median(pic)
+          print, '----- ', pn, '  total fit=         ', tf
+          print, '----- ', pn, '  total pic=         ', tp
+          print, '----- ', pn, '  total sfit=         ', stf
+          print, '----- ', pn, '  total spic=         ', stp
+          print, '----- ', pn, '  median pic=        ', m3
+          print, '----- ', pn, '  median fit=        ', median(pic9)
+          print, '----- ', pn, '  max difference=    ', m1
+          print, '----- ', pn, '  total difference=  ', long(total(abs(pic22)))
+          print, '----- ', pn, '  total median=      ', m3*n_elements(pic22)
+          print, '------------------------ '
 
+    if total(pic9)-median(pic9)*n_elements(pic22) eq 0 then print, '========= fit failed'
+    ;if abs(tp-tf)/tp gt 0.2 then print, '========= large differnce bix', abs(tp-tf)/tp
+    if abs(stp-stf)/stp gt 0.25 then print, '========= large differnce small', abs(stp-stf)/stp
 
 
     pic1=congrid(pic, 210, 210)
@@ -5144,11 +5206,11 @@ selecting_status=0
  WIDGET_CONTROL, WID_DROPLIST_aab, set_droplist_select=1
 
 ;peak filtering
- WIDGET_CONTROL, aWID_TEXT_0, SET_VALUE='0.0'; min I
- WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='0.0'; max I
- WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='0.0'; Max width
- WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='0.0'; Max diff
- WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.0'; Total diff
+ WIDGET_CONTROL, aWID_TEXT_0, SET_VALUE='100'; min I
+ WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='40000'; max I
+ WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='5.0'; Max width
+ WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='1.0'; Max diff
+ WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.1'; Total diff
 
  WIDGET_CONTROL,  aWID_BUTTON_0, set_button=1
  WIDGET_CONTROL,  aWID_BUTTON_1, set_button=1

@@ -25,7 +25,7 @@ endif
 
   WID_MAR345 = Widget_Base( GROUP_LEADER=wGroup, UNAME='WID_MAR345'  $
       ,XOFFSET=5 ,YOFFSET=5 ,SCR_XSIZE=1189 ,SCR_YSIZE=708  $
-      ,TITLE='ATREX ver 1.0, May 26, 2015' ,SPACE=3 ,XPAD=3 ,YPAD=3)
+      ,TITLE='ATREX ver 1.0, June 17, 2015' ,SPACE=3 ,XPAD=3 ,YPAD=3)
 
 
   WID_BUTTON_0 = Widget_Button(WID_MAR345, UNAME='WID_BUTTON_0'  $
@@ -314,7 +314,7 @@ WIDGET_CONTROL, WID_BUTTON_20aa1, SET_BUTTON=1
 
   WID_BUTTON_51M = Widget_Button(WID_BASE_2, UNAME='WID_BUTTON_51M'  $
       ,XOFFSET=30 ,YOFFSET=111 ,SCR_XSIZE=176 ,SCR_YSIZE=30  $
-      ,/ALIGN_CENTER ,VALUE='Pilatus 1M')
+      ,/ALIGN_CENTER ,VALUE='Pilatus 1M', sensitive=0)
 
   WID_TEXT_18 = Widget_Text(WID_BASE_2, UNAME='WID_TEXT_18'  $
       ,XOFFSET=310 ,YOFFSET=307 ,SCR_XSIZE=60 ,SCR_YSIZE=21 ,XSIZE=20  $
@@ -813,7 +813,7 @@ WIDGET_CONTROL, WID_BUTTON_20aa1, SET_BUTTON=1
       ,XSIZE=20 ,YSIZE=1)
 
   WID_droplist_var1 =  Widget_droplist(WID_base_omg, UNAME='WID_button_var1', $
-      VALUE=['omega'],XOFFSET=170 ,YOFFSET=140, $
+      VALUE=['omega', '2theta', 'azimuth','DAC angle'],XOFFSET=170 ,YOFFSET=140, $
       uvalue='fcf x variable')
       ;,'2theta','azimuth','downstr. ang'
 

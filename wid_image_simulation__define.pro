@@ -8,11 +8,11 @@ begin
   opt->zero
   DAC_open=float(DAC_open)
   read_predict_settings, pred
-  oadetector->generate_all_peaks, ub, opt, wv, pred, brav, DAC_open
+  oadetector->generate_all_peaks, ub, opt, wv, pred, brav, DAC_open, read_box_size()
+  bx=read_box_size()
   if exclude_corners() eq 1 then $
      opt->remove_peaks_outside_aa, oadetector
-  bx=read_box_size()
-  opt->set_zero_peak_box_size, bx
+  opt->set_box_size, bx
   gg=read_overlap_limites()
   opt->select_close_overlaps,gg[0]
 
@@ -157,6 +157,7 @@ end
 pro WID_Image_simulation::generate_mono
 COMMON draws,DRAWA,wid_list_3a
 @COMMON_DATAS
+@WID_GSE_ADA_COMMON
 COMMON image_type_and_arrays, imt, arr1, arr2,cenx, ceny, rad, rad1
 
 

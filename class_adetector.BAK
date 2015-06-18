@@ -136,7 +136,7 @@ COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
              ref_peak.gonio=gonio
              ref_peak.xyz=xyz
              ref_peak.hkl=hkl
-             ref_peak.intssd[0:1]=[box[0],box[0]]
+             ref_peak.intssd[0:1]=[bx[0],bx[0]]
              optable->appendpeak,ref_peak
           endif
         endif else if om[1] ge pred.om_start and om[1] le pred.om_start+pred.om_range then $
@@ -152,7 +152,7 @@ COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
              ref_peak.gonio=gonio
              ref_peak.xyz=xyz
              ref_peak.hkl=hkl
-             ref_peak.intssd[0:1]=[box[0],box[0]]
+             ref_peak.intssd[0:1]=[bx[0],bx[0]]
              optable->appendpeak,ref_peak
           endif
         endif

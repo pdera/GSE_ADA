@@ -143,7 +143,8 @@ end
 
 function omega_or_energy
 COMMON WID_MAR345_elements
-re=widget_info(wid_button_7, /button_set)
+;re=widget_info(wid_button_7, /button_set)
+re=widget_info(WID_DROPLIST_aab, /droplist_select)
 return, re ; 1=om, 0=en
 end
 

@@ -236,11 +236,30 @@ function read_settings_file, fname
   begin
     free_lun, 6
     openr, 6, fname
-    readf, 6,al,om1, format='(A11,F13.4)'
-    readf, 6,al,om2, format='(A11,F13.4)'
-    readf, 6,al,ch1, format='(A11,F16.10)'
-    readf, 6,al,tth, format='(A11,F16.10)'
-    readf, 6,al,time, format='(A11,F13.4)'
+    if re.size eq 136 then $ ;ccd
+    begin
+      readf, 6,al,om1, format='(A11,F13.4)'
+      readf, 6,al,om2, format='(A11,F13.4)'
+      readf, 6,al,ch1, format='(A11,F16.10)'
+      readf, 6,al,tth, format='(A11,F16.10)'
+      readf, 6,al,time, format='(A11,F13.4)'
+    end
+
+    if re.size eq 130 then $ ;self generate
+    begin
+      readf, 6,al,om1, format='(A11,F13.4)'
+      readf, 6,al,om2, format='(A11,F13.4)'
+      readf, 6,al,ch1, format='(A11,F16.10)'
+      readf, 6,al,tth, format='(A11,F16.10)'
+      readf, 6,al,time, format='(A11,F13.4)'
+    end
+
+    if re.size eq 314 then $ ; mar345 HPCAT
+    begin
+     readf, 6,al,om1, format='(A20,F13.4)'
+     readf, 6,al,ome, format='(A20,F10.5)'
+     om2=ome-om1
+    end
     close, 6
     free_lun, 6
   endif
@@ -505,6 +524,7 @@ end
 
 pro WID_MAR345_L_event, ev
 @COMMON_DATAS
+@COMMON_DATAS2
 COMMON WID_MAR345_elements
 COMMON image_type_and_arrays
 COMMON cont
@@ -519,6 +539,7 @@ common calib_ref, zeroref
 common closing, Wid_Image_simulation
 
  WIDGET_CONTROL, ev.id, GET_UVALUE=uv
+ if ev.id eq WID_LIST_TASK then return
  if n_elements(uv)  ne 0 then case uv of
  ;******************************** NEW CODE **********************
  'Omega Start Event': $
@@ -703,6 +724,70 @@ end
    endelse ;spline
    end; filename ok
 end
+
+'SaveProj' :$
+	begin
+		print, 'in here'
+		zeroOff = gonio_zero_offset()
+		omRotation = read_om_rotation_dir()
+		resVal = read_inversions ()
+		case resVal of
+			1: begin
+				rex = 0
+				rey = 1
+				tra = 1
+				end
+			2 : begin
+				rex = 1
+				rey = 1
+				tra = 0
+				end
+			3 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			4 : begin
+				rex = 0
+				rey = 0
+				tra = 1
+				end
+			5 : begin
+				rex = 1
+				rey = 0
+				tra = 0
+				end
+			6 : begin
+				rex = 1
+				rey = 1
+				tra = 1
+				end
+			7 : begin
+				rex = 0
+				rey = 1
+				tra = 0
+				end
+		endcase
+
+		widget_control, Wid_Image_simulation->wid_text_14(), get_value=DAC_open
+  		DAC_open=float(DAC_open)
+  		cor = I_corrections()
+  		DAC_abs = cor(0)
+  		outFile = res.base+'_projset.txt'
+		outFile = dialog_pickfile (/write, File=outFile, filter='*.txt')
+		openw,lun, outFile, /get_lun
+		printf,lun, 'Zero Offset    : '+string(zeroOff)
+		printf,lun, 'Omega Rotation : '+string(omRotation)
+		printf,lun, 'X inversion    : '+string(rex)
+		printf,lun, 'Y inversion    : '+string(rey)
+		printf,lun, 'Transpose      : '+string(tra)
+		printf,lun, 'DAC Opening    : '+string(DAC_open)
+		printf,lun, 'DAC abs status : '+string(DAC_abs)
+		close,lun
+		;stop
+	end
+
+
 ;---------------------------------------
   'WID_BUTTON_fcf_appl':$
 begin
@@ -794,7 +879,6 @@ begin
     x1=x[[ii[s]]]
     y1=y[[ii[s]]]
     a=interval_nodes(x1 , y1, fcf_spline())
-    x=pt.peaks[*].gonio[3]
     s=sort(x)
     x2=x[s]
     bb = SPLINE( a[*,0], a[*,1], x2)
@@ -813,8 +897,17 @@ begin
 
        for i=0, pt.peakno do $
        begin
-         xa=pt.peaks[i].gonio[3]
-         f=where(x2 eq xa)
+
+
+ case ch of
+     	 1: xa=pt.peaks[i].gonio[3] ; ---- omega from peak table
+     	 2: xa=get_tth_from_xyz(pt.peaks[i].xyz)
+     	 3: xa=oadetector->get_nu_from_pix(pt.peaks[i].DetXY)
+     	 4: xa=oadetector->calculate_psi_angles(pt.peaks[i].gonio, pt.peaks[i].DetXY)
+     	 endcase
+     	 ma=abs(x2-xa[0])
+     	 mi=min(ma, f)
+         ;f=where(x2 eq xa)
          m=bb[f[0]]
          pt.peaks[i].intad[0]=pt.peaks[i].intad[0]*(1.0-m)
          pt.peaks[i].intad[1]=pt.peaks[i].intad[1]*(1.0-m)
@@ -877,25 +970,24 @@ begin
        wset, wid_draw_6
        device, decomposed=1
        case ch of
-       1: $
-       begin
-         xxx=pt.peaks[n[ii]].gonio[3]
+ 		1: xxx=pt.peaks[n[ii]].gonio[3]
+        2: xxx=get_tth_from_xyz(pt.peaks[n[ii]].xyz)
+        3: xxx=oadetector->get_nu_from_pix(pt.peaks[n[ii]].DetXY)
+        4: xxx=oadetector->calculate_psi_angles(pt.peaks[n[ii]].gonio, pt.peaks[n[ii]].DetXY)
+       endcase
          yyy=(pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]]
-         plot, pt.peaks[n[ii]].gonio[3], (pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]], thick=0, symsize=0.5, psym=6, background='FFFFFF'xl, color='000000'xl
+         plot, xxx, (pt.peaks[n[ii]].intad[0]/sc-ff[n[ii]])/ff[n[ii]], thick=0, symsize=0.5, psym=6, background='FFFFFF'xl, color='000000'xl
          hh=read_fcf_select_th()
          w1=where (yyy gt  hh[0])
          w2=where (yyy lt  hh[1])
          if w1[0] ne -1 then pt.peaks[n[ii[w1]]].selected[0]=1
          if w2[0] ne -1 then pt.peaks[n[ii[w2]]].selected[0]=1
          opt->set_object, pt
-         if w1[0] ne -1 then oplot, [pt.peaks[n[ii[w1]]].gonio[3]], [(pt.peaks[n[ii[w1]]].intad[0]/sc-ff[n[ii[w1]]])/ff[n[ii[w1]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
-         if w2[0] ne -1 then oplot, [pt.peaks[n[ii[w2]]].gonio[3]], [(pt.peaks[n[ii[w2]]].intad[0]/sc-ff[n[ii[w2]]])/ff[n[ii[w2]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
-
-       endcase
+         if w1[0] ne -1 then oplot, xxx[w1], [(pt.peaks[n[ii[w1]]].intad[0]/sc-ff[n[ii[w1]]])/ff[n[ii[w1]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
+         if w2[0] ne -1 then oplot, xxx[w2], [(pt.peaks[n[ii[w2]]].intad[0]/sc-ff[n[ii[w2]]])/ff[n[ii[w2]]]], thick=0, symsize=0.5, psym=6, color='00ff00'xl
        end ; ii[0] ne -1
      end ; peak table not empty
      end ; fcf ok
-     end
    end; filename ok
 end
 
@@ -1180,6 +1272,8 @@ if refine_twist() eq 0 then $
       en:
      end
 
+
+
 'Dac absorption':$
 begin
        wset, wid_draw_6
@@ -1252,6 +1346,17 @@ end
                     /CENTER, $
                     TITLE = 'No Associaated Cal File Found')
    	endelse
+   	; then check for ub file
+   	ubFileSpecific = res.base+'.ub'
+   	if FILE_TEST(ubFileSpecific) then begin
+
+   	 UB=open_UB(ubFileSpecific)
+     lp=lp_from_ub(UB)
+     Wid_Image_simulation->print_UB,UB
+     Wid_Image_simulation->print_lp,lp
+
+  	endif
+
 
    ;oimage->append_image, fn, oadetector
 
@@ -1849,7 +1954,8 @@ end
          		widget_control, wid_text_20, set_value=string(om[1], format='(F6.1)')
          		widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
         	endif
-     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1
+     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1, read_box_size(wid_text_37,wid_text_37)
+
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
@@ -1871,12 +1977,13 @@ end
     			med=median(pic)
     			if (max(pic)-med)  lt obs then opt->select_peak, pn
   			endfor
+
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
      		print_peak_list, opt, wid_list_3
   			opt->delete_selected
-  			opt->write_object_to_file, pt_file
+;  			opt->write_object_to_file, pt_file
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
@@ -1890,11 +1997,27 @@ end
    			plot_peaks, draw0, opt, arr1, arr2
    			update_peakno, opt->peakno()
   			opt->delete_selected
+
+            ; filter one more time
+ 			pt=opt->get_object()
+  			for pn=0, opt->peakno()-1 do $
+  			begin
+  				bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+    			xy=pt.peaks[pn].detXY
+ 	 			bs=[2,2]
+         		pic=oimage->get_zoomin(XY, bs, maskarr)
+    			med=median(pic)
+    			if (max(pic)-med)  lt obs then opt->select_peak, pn
+  			endfor
+
+  			opt->delete_selected
   			opt->write_object_to_file, pt_file
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2
      		print_peak_list, opt, wid_list_3
+
+
 
              IF cgProgressBar -> CheckCancel() THEN BEGIN
                 ok = Dialog_Message('Operation canceled')
@@ -3504,7 +3627,7 @@ begin
 
   ;--- make array for profiles
    profiles=fltarr(pt.peakno, ni[0])
-   widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
+   ;widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
    for i=0, ni[0]-1 do $
    begin
 
@@ -3602,7 +3725,7 @@ begin
 
   ;--- make array for profiles
    profiles=fltarr(pt.peakno, ni[0])
-   widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
+   ;widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
    for i=0, ni[0]-1 do $
    begin
 
@@ -4075,7 +4198,7 @@ end
 begin
   cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
   cgProgressBar -> Start
-
+  bx0=read_box_size(wid_text_37,wid_text_37)
   a=oimage->calculate_local_background(0)
   widget_control, wid_text_48, get_value=obs
   obs=float(obs)
@@ -4105,8 +4228,7 @@ begin
      	 pic=pic1[20-bs[0]:20+bs[0],20-bs[1]:20+bs[1]]
     endelse
     med=median(pic)
-
-    if       (max(pic)-med)  lt obs then opt->select_peak, pn
+    if (max(pic)-med)  lt obs then opt->select_peak, pn
   endfor
 
   plot_peaks, draw0, opt, arr1, arr2
@@ -4231,7 +4353,109 @@ begin
   endelse
 
 end
+'AddIm2Task': $ ; add current image to task list...
+begin
+	myim = res.name0
+	; now check for ub file
+	; and check for
+	calfile = res.base + '.cal'
+	fileexists = FILE_TEST (calfile)
+	if (fileexists eq 0) then begin
+		ok= dialog_message (/Error, "Corresponding .cal file does not exist. Image is not added to task list")
+		return
+	endif
+	ubfile = res.base + '.ub'
+	fileexists = FILE_TEST (ubfile)
+	if (fileexists eq 0) then begin
+		ok= dialog_message (/Error, "Corresponding .ub file does not exist. Image is not added to task list")
+		return
+	endif
 
+	; ok to add to the task list
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if numims gt 0 then begin
+		widget_control, WID_LIST_TASK, get_uvalue=tasklist
+		if (tasklist(0) eq 'EMPTY') then begin
+			tasklist=strarr(1)
+			tasklist(0)=res.path+res.name0
+		endif else $
+			tasklist=[tasklist,res.path+res.name0]
+	endif else begin
+		tasklist=strarr(1)
+		tasklist(0)=res.path+res.name0
+	endelse
+	widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+
+
+end
+'ClearTask' : $ ; clear all from task list widget
+begin
+	tasklist=strarr(1)
+	tasklist(0)='EMPTY'
+	widget_control, WID_LIST_TASK, set_value='', set_uvalue=tasklist
+end
+'SaveTask' : $ ; save to file
+begin
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if (numims le 0) then return
+	outfile = DIALOG_PICKFILE (title='Save Tasks To Output File',filter=['*.txt','*.*'])
+	openw,lun, outfile,/get_lun
+	widget_control, WID_LIST_TASK, get_uvalue=tasklist
+	printf, lun, tasklist
+	close,lun
+	free_lun,lun
+end
+'ReadTask' : $ ; read tasks from file
+begin
+
+
+	tfile = DIALOG_PICKFILE (title='Load Tasks from  File',filter=['*.txt','*.*'])
+	status = FILE_TEST(tfile)
+	if (status lt 0) then return
+	nlines = FILE_LINES(tfile)
+	tasklist = strarr(nlines)
+	openr,lun, tfile,/get_lun
+	readf, lun, tasklist
+	close,lun
+	free_lun,lun
+	widget_control, WID_LIST_TASK, set_uvalue=tasklist, set_value=tasklist
+end
+
+
+'DeleteTask': $ ; add current image to task list...
+begin
+
+	numims = widget_info (WID_LIST_TASK, /LIST_NUMBER)
+	if numims le 0 then return
+	widget_control, WID_LIST_TASK, get_uvalue=tasklist
+	if numims eq 1 then begin
+		tasklist=strarr(1)
+		tasklist(0)='EMPTY'
+		widget_control, WID_LIST_TASK, set_value='', set_uvalue=tasklist
+		return
+	endif
+
+	selind = widget_info( WID_LIST_TASK, /LIST_SELECT)
+	if selind lt 0 then return
+	if selind eq 0 then begin
+		tasklist = tasklist (1:*)
+		widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+		return
+	endif
+	if selind eq numims -1 then begin
+		tasklist = tasklist(0:selind -1)
+		widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+		return
+	endif
+	tasklist = [tasklist(0:selind-1), tasklist(selind+1:*)]
+	widget_control, WID_LIST_TASK, set_value=tasklist, set_uvalue=tasklist
+
+
+
+
+
+
+end
 'Max filter':$ ;--- calculate maximum threshold filter
 begin
   re=WIDGET_INFO(WID_BUTTON_33a, /BUTTON_SET)
@@ -4394,16 +4618,34 @@ begin
        m3=median(pic)
        m6=max(pic)    ; maximum in the box
 
+       spic=pic[szi-3:szi+3,szi-3:szi+3]
+       spic9=pic9[szi-3:szi+3,szi-3:szi+3]
+       spic22=spic-spic9
+
        m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
 
-       print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
-       if (m1/m6 gt 0.5) or (m1/m3 gt 10) or (m7/m3) lt 5 then $
-       begin
-          print, '----- ', pn, m1, m1/m6, m1/m3, m7/m3
-       endif
 
+ tf=total(pic9)-median(pic9)*n_elements(pic22)
+       tp=total(pic)-median(pic)*n_elements(pic22)
+       stf=total(spic9)-median(pic9)*n_elements(spic22)
+       stp=total(spic)-median(pic)*n_elements(spic22)
 
+          print, '------------------------ '
+          print, '----- ', pn, '  max pic=           ', m6-median(pic)
+          print, '----- ', pn, '  total fit=         ', tf
+          print, '----- ', pn, '  total pic=         ', tp
+          print, '----- ', pn, '  total sfit=         ', stf
+          print, '----- ', pn, '  total spic=         ', stp
+          print, '----- ', pn, '  median pic=        ', m3
+          print, '----- ', pn, '  median fit=        ', median(pic9)
+          print, '----- ', pn, '  max difference=    ', m1
+          print, '----- ', pn, '  total difference=  ', long(total(abs(pic22)))
+          print, '----- ', pn, '  total median=      ', m3*n_elements(pic22)
+          print, '------------------------ '
 
+    if total(pic9)-median(pic9)*n_elements(pic22) eq 0 then print, '========= fit failed'
+    ;if abs(tp-tf)/tp gt 0.2 then print, '========= large differnce bix', abs(tp-tf)/tp
+    if abs(stp-stf)/stp gt 0.25 then print, '========= large differnce small', abs(stp-stf)/stp
 
 
     pic1=congrid(pic, 210, 210)
@@ -4568,6 +4810,7 @@ common datas
  WIDGET_CONTROL,WID_BUTTON_413b, SET_UVALUE=''
  WIDGET_CONTROL,WID_BUTTON_412b, SET_BUTTON=1
  WIDGET_CONTROL,WID_BUTTON_47b, SET_UVALUE='Int. from series'
+ WIDGET_CONTROL, WID_BUTTON_SAVEPROJ, SET_UVALUE='SaveProj'
 
 ; WIDGET_CONTROL, WID_BUTTON_1c, SET_UVALUE='SubtrImg'
 ; WIDGET_CONTROL, WID_BUTTON_1d, SET_UVALUE='AddImg'
@@ -4666,6 +4909,11 @@ WIDGET_CONTROL, WID_BUTTON_52, set_button=1
  ;WIDGET_CONTROL, WID_BUTTON_48, SET_UVALUE='Save UB'
  WIDGET_CONTROL, WID_BUTTON_49, SET_UVALUE='Simulate'
  WIDGET_CONTROL, WID_BUTTON_50, SET_UVALUE='Cake'
+ WIDGET_CONTROL, WID_BUTTON_IM2TASK, SET_UVALUE='AddIm2Task'
+ WIDGET_CONTROL, WID_BUTTON_DELTASK, SET_UVALUE='DeleteTask'
+ WIDGET_CONTROL, WID_BUTTON_CLEARTASK, SET_UVALUE='ClearTask'
+ WIDGET_CONTROL, WID_BUTTON_SAVETASK, SET_UVALUE='SaveTask'
+ WIDGET_CONTROL, WID_BUTTON_READTASK, SET_UVALUE='ReadTask'
  WIDGET_CONTROL, WID_TEXT_0, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_1, SET_UVALUE=''
  WIDGET_CONTROL, WID_TEXT_2, SET_UVALUE=''
@@ -4945,11 +5193,11 @@ selecting_status=0
  WIDGET_CONTROL, WID_TEXT_14_da5, SET_UVALUE='0.1013460'
  WIDGET_CONTROL, WID_TEXT_14_da6, SET_UVALUE='0.0'
 
- WIDGET_CONTROL, WID_TEXT_14_da1, SET_VALUE='2.600'
+ WIDGET_CONTROL, WID_TEXT_14_da1, SET_VALUE='2.100'
  WIDGET_CONTROL, WID_TEXT_14_da2, SET_VALUE='5.800'
  WIDGET_CONTROL, WID_TEXT_14_da3, SET_VALUE='4.000'
  WIDGET_CONTROL, WID_TEXT_14_da4, SET_VALUE='0.705'
- WIDGET_CONTROL, WID_TEXT_14_da5, SET_VALUE='0.1313460'
+ WIDGET_CONTROL, WID_TEXT_14_da5, SET_VALUE='0.1013460'
  WIDGET_CONTROL, WID_TEXT_14_da6, SET_VALUE='0.0'
 
  WIDGET_CONTROL, WID_BUTTON_412a, SET_UVALUE=''
@@ -4958,11 +5206,11 @@ selecting_status=0
  WIDGET_CONTROL, WID_DROPLIST_aab, set_droplist_select=1
 
 ;peak filtering
- WIDGET_CONTROL, aWID_TEXT_0, SET_VALUE='0.0'; min I
- WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='0.0'; max I
- WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='0.0'; Max width
- WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='0.0'; Max diff
- WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.0'; Total diff
+ WIDGET_CONTROL, aWID_TEXT_0, SET_VALUE='100'; min I
+ WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='40000'; max I
+ WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='5.0'; Max width
+ WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='1.0'; Max diff
+ WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.1'; Total diff
 
  WIDGET_CONTROL,  aWID_BUTTON_0, set_button=1
  WIDGET_CONTROL,  aWID_BUTTON_1, set_button=1
