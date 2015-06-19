@@ -1324,7 +1324,7 @@ end
        		wid_settings_gen_dlg,fileparms
        endelse
    ;--------------
-   ; check for ub file
+   ; check for ub file and give option to open existing ub file
    ubfile = res.base + '.ub'
    FExists = FILE_TEST(ubfile)
    if FExists ne 1 then begin
