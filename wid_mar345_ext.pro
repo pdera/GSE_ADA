@@ -659,7 +659,7 @@ goto, ror
       opt->write_object_to_file, fn+'_ic.pks'
     endelse
     return, [[lpo],[lpc]]
-    ror: return, [0,0]
+    ror: return, [1,1]
 end
 ;---------------------------
 
