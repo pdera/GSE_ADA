@@ -1324,11 +1324,12 @@ end
        		wid_settings_gen_dlg,fileparms
        endelse
    ;--------------
-   ; check for ub file and give option to open existing ub file
+   ; check for ub file and give option to open existing ub files
    ubfile = res.base + '.ub'
    FExists = FILE_TEST(ubfile)
    if FExists ne 1 then begin
-   		status = dialog_message ("Would you like to associate a '.ub' file", /question)
+   		; ask user if they wish to associate an existing UB file
+   		status = dialog_message ("Would you like to associate an existing 'UB' file", /question)
    		if status eq 'Yes' then begin
    			ubFileSpecific = Dialog_Pickfile (/read, Filter='*.ub', Title='Select associated .ub file')
    		 	UB=open_UB(ubFileSpecific)
@@ -1337,6 +1338,8 @@ end
      		Wid_Image_simulation->print_lp,lp
 	 		; then save to the associated file name
 	 		save_UB, UB, ubfile
+	 		message_string = 'Wrote UB File : '+ubfile
+	 		status = dialog_message (message_string, /Information)
 	 	endif
 	endif
 
@@ -1356,12 +1359,20 @@ end
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
    endif else begin
-   	ok = Dialog_Message (['No associated cal file found', $
-                      'You may want to assign current', $
-                      'calibration to that series',$
-                      'See Calibration -> Save option"'], $
-                    /CENTER, $
+   		ok = Dialog_Message (['No associated cal file found', $
+                      'Do you want to associate current', $
+                      'calibration to that series'], $
+                    /CENTER, /question, $
                     TITLE = 'No Associaated Cal File Found')
+		if ok eq 'Yes' then begin
+   				outfileTmp = res.base+'.cal'
+
+
+   				capture_calibration, oadetector, wv
+   				save_cal, 'last_calibration.cal', oadetector, wv
+    			save_cal, outfileTmp, oadetector, wv
+   		endif
+
    	endelse
    	; then check for ub file
    	ubFileSpecific = res.base+'.ub'
