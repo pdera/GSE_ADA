@@ -295,6 +295,7 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
 @COMMON_DATAS2
 
        opt->unselect_all
+       re=peak_filtering_settings()
 
        pic2=pic-pic9
        m1=max(pic2)   ; maximum difference
@@ -307,6 +308,22 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
        szi=(sz-1)/2
 
        m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
+       if n_elements (pic) ge 25 then $
+	   begin
+       spic=pic[szi-3:szi+3,szi-3:szi+3]
+       spic9=pic9[szi-3:szi+3,szi-3:szi+3]
+       spic22=spic-spic9
+
+       tf=total(pic9)-median(pic9)*n_elements(pic22)
+       tp=total(pic)-median(pic)*n_elements(pic22)
+       stf=total(spic9)-median(pic9)*n_elements(spic22)
+       stp=total(spic)-median(pic)*n_elements(spic22)
+
+
+    if tf eq 0 then print, '========= fit failed'
+    ;if abs(tp-tf)/tp gt 0.2 then print, '========= large differnce bix', abs(tp-tf)/tp
+    if abs(stp-stf)/stp gt 0.25 then print, '========= large differnce small', abs(stp-stf)/stp
+
 
      ;---------------------------------------------------------------------------
 
@@ -314,8 +331,13 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
 
      ;---------------------------------------------------------------------------
 
-
-       if (m1/m6 gt 0.2) or (m7/m3 lt 3) or (a[2] gt 2.0) or (a[3] gt 2.0)  then $
+endif else $
+begin
+ stp=1
+ stf=100
+ tf=0
+endelse
+       if tf eq 0 or abs(stp-stf)/stp gt 0.25 or (a[2] gt 15.0) or (a[3] gt 15.0)  then $
        begin
         print, '----- ', pni, m1/m6, m1/m3, m7/m3     , a[2], a[3]
         pt.peaks[pni].selected[0]=1
@@ -1289,7 +1311,7 @@ function one_profile_fitting, i1
  mtx=[[cos(t),sin(t)],[-sin(t),cos(t)]]
  XYa=[aaa[5],aaa[6]]
  ea=transpose(mtx ## XYa)
- pt.peaks[i1].detXY=x1+[-ea[1],-ea[0]]
+ pt.peaks[i1].detXY=x1+[ea[1],ea[0]]
  opt->set_object, pt
  return, aaa
 
@@ -2058,7 +2080,7 @@ pro fit_all_peaks, prog=prog
 goto, hhh
 
    ; check for improper peak
-   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
+   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] le 0 or $
                                   pt.peaks[i].DetXY[0] lt 0 or $
                                   pt.peaks[i].DetXY[0] gt arr1 or $
                                   pt.peaks[i].DetXY[1] lt 0 or $

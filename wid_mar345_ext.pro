@@ -12,6 +12,22 @@ pro WID_MAR345_ext_commons
 end
 
 
+function peak_filtering_settings
+COMMON WID_MAR345_elements
+  widget_control, aWID_TEXT_0, get_value=a0
+  widget_control, aWID_TEXT_1, get_value=a1
+  widget_control, aWID_TEXT_2, get_value=a2
+  widget_control, aWID_TEXT_3, get_value=a3
+  widget_control, aWID_TEXT_4, get_value=a4
+  re0=widget_info(aWID_BUTTON_0, /button_set)
+  re1=widget_info(aWID_BUTTON_1, /button_set)
+  re2=widget_info(aWID_BUTTON_2, /button_set)
+  re3=widget_info(aWID_BUTTON_3, /button_set)
+  re4=widget_info(aWID_BUTTON_4, /button_set)
+  return, [re0*a0, re1*a1, re2*a2, re3*a3]
+
+end
+
 ;********************************** NEW CODE ****************
 function read_om_rotation_dir
 COMMON WID_MAR345_elements
@@ -643,7 +659,7 @@ goto, ror
       opt->write_object_to_file, fn+'_ic.pks'
     endelse
     return, [[lpo],[lpc]]
-    ror: return, [0,0]
+    ror: return, [1,1]
 end
 ;---------------------------
 
@@ -665,6 +681,42 @@ function Refine_B_against_d, ub, optable1, sym
        hkls=optable1->BUILD_hkls()
        lp=lp_from_ub(ub)
        lp1=automatic_lp_refinement3(lp, ds, hkls, sym)
+       lp=lp_from_ub(ub)
+       ;change ub matrix
+       b1=b_from_lp(lp1)
+       b0=b_from_lp(lp)
+       u0=ub ## invert(b0)
+       ub=u0 ## b1
+       lp1[0:5]=lp_from_ub(ub)
+       print, 'refined cell parameters', lp1
+       ddd=[-0.005, 0.005] ;$$$$$$$$$$$$$$$$$$$$$
+       lp=lp_from_ub(ub)
+       pt=optable1->get_object()
+       N=pt.peakno
+       ds=fltarr(N)
+       dsc=fltarr(N)
+       a=fltarr(N)
+       ss=optable1->calculate_Ddd(lp)
+       sel1=where(ss le ddd[0])
+       sel2=where(ss ge ddd[1])
+       if sel1[0] ne -1 then optable1->select_peaks, sel1
+       if sel2[0] ne -1 then optable1->select_peaks, sel2
+       print, n_elements(sel1)+n_elements(sel2), 'peaks selected'
+       return, lp1
+
+end
+
+;---------------------------
+
+function Refine_B_and_twist_against_d, ub, optable1, sym
+
+       ;sym=2 for orthorhombic
+
+       ds=optable1->BUILD_d_list()
+       hkls=optable1->BUILD_hkls()
+
+       lp=lp_from_ub(ub)
+       lp1=automatic_lp_refinement_twist(lp, ds, hkls, sym)
        lp=lp_from_ub(ub)
        ;change ub matrix
        b1=b_from_lp(lp1)
