@@ -1324,6 +1324,23 @@ end
        		wid_settings_gen_dlg,fileparms
        endelse
    ;--------------
+   ; check for ub file
+   ubfile = res.base + '.ub'
+   FExists = FILE_TEST(ubfile)
+   if FExists ne 1 then begin
+   		status = dialog_message ("Would you like to associate a '.ub' file", /question)
+   		if status eq 'Yes' then begin
+   			ubFileSpecific = Dialog_Pickfile (/read, Filter='*.ub', Title='Select associated .ub file')
+   		 	UB=open_UB(ubFileSpecific)
+     		lp=lp_from_ub(UB)
+     		Wid_Image_simulation->print_UB,UB
+     		Wid_Image_simulation->print_lp,lp
+	 		; then save to the associated file name
+	 		save_UB, UB, ubfile
+	 	endif
+	endif
+
+
 
    widget_control, wid_text_17, set_value=res.name0
    widget_control, wid_text_9, set_value=res.name0
