@@ -1327,16 +1327,10 @@ end
    ; check for ub file and give option to open existing ub files
    ubfile = res.base + '.ub'
    FExists = FILE_TEST(ubfile)
-   if FExists ne 1 then begin
+   if max(ub) gt 0 and  FExists ne 1 then begin
    		; ask user if they wish to associate an existing UB file
-   		status = dialog_message ("Would you like to associate an existing 'UB' file", /question)
+   		status = dialog_message ("Would you like to associate the current UB with this file series", /question)
    		if status eq 'Yes' then begin
-   			ubFileSpecific = Dialog_Pickfile (/read, Filter='*.ub', Title='Select associated .ub file')
-   		 	UB=open_UB(ubFileSpecific)
-     		lp=lp_from_ub(UB)
-     		Wid_Image_simulation->print_UB,UB
-     		Wid_Image_simulation->print_lp,lp
-	 		; then save to the associated file name
 	 		save_UB, UB, ubfile
 	 		message_string = 'Wrote UB File : '+ubfile
 	 		status = dialog_message (message_string, /Information)
@@ -2057,6 +2051,7 @@ end
    		endfor
         cgProgressBar -> Destroy
         merge_peak_tables_in_series
+        print_R_int, Rint(get_laue_class(), opt)
         re=dialog_message('Whole series peak prediction completed')
   	 endif
    end else re=dialog_message('UB matrix has not yet been defined')
@@ -2108,6 +2103,7 @@ end
       update_peakno, opt->peakno()
       plot_peaks, draw0, opt, arr1, arr2
       print_peak_list, opt, wid_list_3
+      print_R_int, Rint(get_laue_class(), opt)
       peaktable_file=fn
    end
  end
@@ -3331,6 +3327,7 @@ begin
        plot_peaks, draw0, opt, arr1, arr2
        print_peak_list, opt, wid_list_3
        update_peakno, opt->peakno()
+       print_R_int, Rint(get_laue_class(), opt)
        if pn ne 0 then $
            if pn ne opt->peakno() then set_peak_selected,wid_list_3, pn else  set_peak_selected,wid_list_3, pn-1
 

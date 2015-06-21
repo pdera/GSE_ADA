@@ -1,0 +1,157 @@
+$
+$ This file is the PRIMARY vessel for storing crystallographic information
+$ in WinGX. This file should NEVER be edited by hand.
+$
+$ Use the utility program  "Edit Project INFO" to make any changes.
+#
+Project_ID                    : demo
+#
+Date/Time of last update      : 2015-06-20T23:32:59-00:00
+#
+#  ----- Unit Cell Data
+#
+Direct_cell_a                 :     9.35169
+Direct_cell_b                 :     8.58117
+Direct_cell_c                 :     5.15974
+Direct_cell_alpha             :    90.00000
+Direct_cell_beta              :   106.28800
+Direct_cell_gamma             :    90.00000
+Direct_cell_a_error           :     0.00480
+Direct_cell_b_error           :     0.00300
+Direct_cell_c_error           :     0.00100
+Direct_cell_alpha_error       :     0.00000
+Direct_cell_beta_error        :     0.02600
+Direct_cell_gamma_error       :     0.00000
+Direct_cell_volume            :   397.44235
+Direct_cell_volume_error      :     0.25863
+Direct_cell_d1                :    87.45411
+Direct_cell_d2                :    73.63648
+Direct_cell_d3                :    26.62292
+Direct_cell_d4                :    -0.00001
+Direct_cell_d5                :   -27.06623
+Direct_cell_d6                :    -0.00001
+Direct_cell_metric_tensor_11  :    87.45411
+Direct_cell_metric_tensor_12  :    -0.00001
+Direct_cell_metric_tensor_13  :   -13.53312
+Direct_cell_metric_tensor_21  :    -0.00001
+Direct_cell_metric_tensor_22  :    73.63648
+Direct_cell_metric_tensor_23  :     0.00000
+Direct_cell_metric_tensor_31  :   -13.53312
+Direct_cell_metric_tensor_32  :     0.00000
+Direct_cell_metric_tensor_33  :    26.62292
+Reciprocal_cell_a             :    0.111404
+Reciprocal_cell_b             :    0.116534
+Reciprocal_cell_c             :    0.201912
+Reciprocal_cell_alpha         :     0.00000
+Reciprocal_cell_beta          :     0.28047
+Reciprocal_cell_gamma         :     0.00000
+Cell_refinement_reflections   :           0
+Cell_refinement_theta_max     :        0.00
+Cell_refinement_theta_min     :        0.00
+Wavelength_cell               :     0.33440
+Temperature_cell              :   298.00000
+Temperature_cell_error        :     2.00000
+#
+# ----- Data Collection & Reduction
+#
+Wavelength_dcol               :     0.33440
+Temperature_dcol              :   298.00000
+Temperature_dcol_error        :     2.00000
+Radiation_probe               : x-ray
+Diffrn_radiation_type         :
+Diffrn_measurement_device     :
+Diffrn_measurement_type       :
+Diffrn_measurement_method     :
+Diffrn_monochromator          :
+Diffrn_source                 :
+Diffrn_detect                 :
+Diffrn_sigI_I                 :    0.000614
+Diffrn_reflns_number          :         767
+Diffrn_reflns_abs_corr_number :           0
+Diffrn_reflns_extinct_number  :           0
+Diffrn_reflns_rejected_number :           0
+Diffrn_reflns_accepted_number :         767
+Diffrn_r_merge                :       0.000
+Diffrn_theta_min              :       1.545
+Diffrn_theta_max              :      18.480
+Diffrn_limits_h_min           :         -12
+Diffrn_limits_h_max           :          11
+Diffrn_limits_k_min           :         -13
+Diffrn_limits_k_max           :          12
+Diffrn_limits_l_min           :          -9
+Diffrn_limits_l_max           :           8
+Diffrn_sigI_I_full            :    0.000614
+Diffrn_reflns_number_full     :         767
+Diffrn_r_merge_full           :       0.000
+Diffrn_theta_min_full         :       1.545
+Diffrn_theta_max_full         :      18.480
+Diffrn_limits_h_min_full      :         -12
+Diffrn_limits_h_max_full      :          11
+Diffrn_limits_k_min_full      :         -13
+Diffrn_limits_k_max_full      :          12
+Diffrn_limits_l_min_full      :          -9
+Diffrn_limits_l_max_full      :           8
+HKLF_format                   :           4
+Absorption_correction_type    : ?
+Absorption_coefficient        :       0.171
+Absorption_correction_tmax    :       0.000
+Absorption_correction_tmin    :       0.000
+Absorption_transmission_max   :       0.000
+Absorption_transmission_min   :       0.000
+#
+# ----- Crystal & Chemical Information
+#
+Crystal_colour                : ?
+Crystal_description           : ?
+Crystal_size_min              :       0.000
+Crystal_size_mid              :       0.000
+Crystal_size_max              :       0.000
+Crystal_density               :       0.000
+Crystal_density_method        : ?
+Crystal_F000                  :      104.00
+Chemical_source               : ?
+Chemical_formula              : Si0  Mg0  Fe0  Al0  Ca0  Na0  O0
+Chemical_moiety               : Si0  Mg0  Fe0  Al0  Ca0  Na0  O0
+Formula_units_in_cell         :           2
+Atom_type_symbol              : Si
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :       38.92
+Atom_type_symbol              : Mg
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :       22.79
+Atom_type_symbol              : Fe
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :      413.35
+Atom_type_symbol              : Al
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :       30.09
+Atom_type_symbol              : Ca
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :      148.43
+Atom_type_symbol              : Na
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :       17.52
+Atom_type_symbol              : O
+Atom_type_cell_number         :        1.00
+Atom_type_abscoeff            :        7.70
+#
+# ----- Space Group & Symmetry
+#
+Crystal_system                : ?
+Spacegroup_symbol_hm          :
+Spacegroup_symbol_hall        : ?
+Spacegroup_number             :           0
+Spacegroup_SHELX_latt         : LATT    1
+Spacegroup_SHELX_symm         : SYMM   -X,1/2+Y,1/2-Z
+#
+# ----- Computing Software & Structure Solution
+#
+Computing_data_collection     : ?
+Computing_cell_refinement     : ?
+Computing_data_reduction      : ?
+Computing_structure_solution  : ?
+Computing_structure_refinement: SHELXL (Sheldrick, 2008)
+Computing_graphics            : Ortep for Windows (Farrugia, 2012)
+Computing_publication         : WinGX publication routines (Farrugia, 2012)
+Solution_primary              : ?
+Solution_secondary            : ?

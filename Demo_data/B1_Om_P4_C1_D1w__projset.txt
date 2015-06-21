@@ -1,0 +1,7 @@
+Zero Offset    :      -90.0000
+Omega Rotation :        1
+X inversion    :        0
+Y inversion    :        1
+Transpose      :        0
+DAC Opening    :       18.0000
+DAC abs status :            0

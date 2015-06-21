@@ -9,6 +9,7 @@ begin
   DAC_open=float(DAC_open)
   read_predict_settings, pred
   oadetector->generate_all_peaks, ub, opt, wv, pred, brav, DAC_open, read_box_size()
+  bx=read_box_size()
   if exclude_corners() eq 1 then $
      opt->remove_peaks_outside_aa, oadetector
   opt->set_box_size, bx
@@ -251,7 +252,7 @@ common uc_selection, sel, li
 
     if opt->peakno() gt 0 then $
     begin
-
+     dir0=dir
    print, '---- Indexing'
 
  ;---------- determine UB matrix with
@@ -301,13 +302,33 @@ common uc_selection, sel, li
     lp=Refine_B_against_d(ub, opt, symm)
     ;opt->delete_selected
 
-    self->print_UB, UB
-    self->print_lp, lp
+     self->print_UB, UB
+     self->print_lp, lp
 
      plot_image, oimage
      plot_peaks, drawA, opt, arr1, arr2
      print_peak_list, opt, wid_list_3a
      update_peakno, opt->peakno()
+
+
+; check for ub file and give option to open existing ub files
+   		; ask user if they wish to associate an existing UB file
+   		status = dialog_message ("Associate this new UB matrix with the current image series?", /question)
+   		if status eq 'Yes' then begin
+   			ubFileSpecific = Dialog_Pickfile (/read, Filter='*.ub', Title='Select associated .ub file')
+   		 	UB=open_UB(ubFileSpecific)
+     		lp=lp_from_ub(UB)
+     		Wid_Image_simulation->print_UB,UB
+     		Wid_Image_simulation->print_lp,lp
+	 		; then save to the associated file name
+	 		save_UB, UB, ubfile
+	 		message_string = 'Wrote UB File : '+ubfile
+	 		status = dialog_message (message_string, /Information)
+	 	endif
+
+
+
+     dir=dir0
      return, 1
      endelse
      endif else return, -1; no cell_now

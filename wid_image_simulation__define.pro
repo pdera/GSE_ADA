@@ -252,7 +252,7 @@ common uc_selection, sel, li
 
     if opt->peakno() gt 0 then $
     begin
-
+     dir0=dir
    print, '---- Indexing'
 
  ;---------- determine UB matrix with
@@ -302,13 +302,28 @@ common uc_selection, sel, li
     lp=Refine_B_against_d(ub, opt, symm)
     ;opt->delete_selected
 
-    self->print_UB, UB
-    self->print_lp, lp
+     self->print_UB, UB
+     self->print_lp, lp
 
      plot_image, oimage
      plot_peaks, drawA, opt, arr1, arr2
      print_peak_list, opt, wid_list_3a
      update_peakno, opt->peakno()
+
+     dir=dir0
+
+; check for ub file and give option to open existing ub files
+   		; ask user if they wish to associate an existing UB file
+   		status = dialog_message ("Associate this new UB matrix with the current image series?", /question)
+   		if status eq 'Yes' then begin
+   			ubFile = res.base+'.ub'
+	 		save_UB, UB, ubfile
+	 		message_string = 'Wrote UB File : '+ubfile
+	 		status = dialog_message (message_string, /Information)
+	 	endif
+
+
+
      return, 1
      endelse
      endif else return, -1; no cell_now

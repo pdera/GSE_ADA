@@ -1,0 +1,1942 @@
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:34:04 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.3526 before cycle   1 for     317 data and     49 /     49 parameters
+ GooF = S =     2.354;     Restrained GooF =      2.354 for       0 restraints
+ Mean shift/esd =   0.417  Maximum =    -2.182 for  OSF            at 23:34:04
+ Max. shift = 0.256 A for O5      Max. dU =-0.015 for O6
+ wR2 = 0.3503 before cycle   2 for     317 data and     49 /     49 parameters
+ GooF = S =     2.353;     Restrained GooF =      2.353 for       0 restraints
+ Mean shift/esd =   0.431  Maximum =     2.744 for  U11 O6         at 23:34:04
+ Max. shift = 0.076 A for O5      Max. dU =-0.010 for Na3
+ wR2 = 0.2445 before cycle   3 for     317 data and     49 /     49 parameters
+ GooF = S =     1.609;     Restrained GooF =      1.609 for       0 restraints
+ Mean shift/esd =   0.542  Maximum =     3.279 for   x  O6         at 23:34:04
+ Max. shift = 0.106 A for O6      Max. dU = 0.008 for O6
+ wR2 = 0.1748 before cycle   4 for     317 data and     49 /     49 parameters
+ GooF = S =     1.134;     Restrained GooF =      1.134 for       0 restraints
+ Mean shift/esd =   0.237  Maximum =     1.766 for   x  O6         at 23:34:04
+ Max. shift = 0.050 A for O6      Max. dU =-0.003 for O4
+ wR2 = 0.1894 before cycle   5 for     317 data and     49 /     49 parameters
+ GooF = S =     1.258;     Restrained GooF =      1.258 for       0 restraints
+ Mean shift/esd =   0.124  Maximum =    -0.727 for  U11 O6         at 23:34:04
+ Max. shift = 0.009 A for O5      Max. dU =-0.004 for O6
+ wR2 = 0.2151 before cycle   6 for     317 data and     49 /     49 parameters
+ GooF = S =     1.450;     Restrained GooF =      1.450 for       0 restraints
+ Mean shift/esd =   0.100  Maximum =    -0.482 for  U11 Ca4        at 23:34:04
+ Max. shift = 0.009 A for O6      Max. dU =-0.003 for Ca4
+ wR2 = 0.2564 before cycle   7 for     317 data and     49 /     49 parameters
+ GooF = S =     1.774;     Restrained GooF =      1.774 for       0 restraints
+ Mean shift/esd =   0.112  Maximum =     0.493 for FVAR  4         at 23:34:04
+ Max. shift = 0.008 A for O3      Max. dU =-0.003 for Ca4
+ wR2 = 0.3762 before cycle   8 for     317 data and     49 /     49 parameters
+ GooF = S =     2.856;     Restrained GooF =      2.856 for       0 restraints
+ Mean shift/esd =   0.186  Maximum =     0.687 for  U11 O3         at 23:34:04
+ Max. shift = 0.044 A for O4      Max. dU =-0.007 for O4
+ wR2 = 0.4952 before cycle   9 for     317 data and     49 /     49 parameters
+ GooF = S =     4.513;     Restrained GooF =      4.513 for       0 restraints
+ Mean shift/esd =   0.298  Maximum =    -1.993 for  OSF            at 23:34:04
+ Max. shift = 0.094 A for O3      Max. dU =-0.012 for Si1
+ wR2 = 0.6663 before cycle  10 for     317 data and     49 /     49 parameters
+ GooF = S =     8.554;     Restrained GooF =      8.554 for       0 restraints
+ Mean shift/esd =   0.372  Maximum =    -3.580 for  OSF            at 23:34:04
+ Max. shift = 0.111 A for O3      Max. dU =-0.062 for O3
+ wR2 = 0.7323 before cycle  11 for     317 data and      0 /     49 parameters
+ GooF = S =    10.674;     Restrained GooF =     10.674 for       0 restraints
+ R1 =  0.4336 for     315 Fo > 4sig(Fo)  and  0.4382 for all     317 data
+ wR2 =  0.7323,  GooF = S =  10.674,  Restrained GooF =   10.674  for all data
+ ** Warning:     0  atoms may be split and     6  atoms NPD **
+ R1 =  0.3811 for    317 unique reflections after merging for Fourier
+ Highest peak   21.25  at  0.5354  0.3489  0.2312  [  0.05 A from SI1 ]
+ Deepest hole  -14.16  at  0.2621  0.5425  0.2273  [  0.20 A from CA3 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:34:04   Total elapsed time:      0.12 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:35:02 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.3526 before cycle   1 for     317 data and     49 /     49 parameters
+ GooF = S =     2.354;     Restrained GooF =      2.354 for       0 restraints
+ Mean shift/esd =   0.417  Maximum =    -2.182 for  OSF            at 23:35:02
+ Max. shift = 0.256 A for O5      Max. dU =-0.015 for O6
+ wR2 = 0.3503 before cycle   2 for     317 data and     49 /     49 parameters
+ GooF = S =     2.353;     Restrained GooF =      2.353 for       0 restraints
+ Mean shift/esd =   0.431  Maximum =     2.744 for  U11 O6         at 23:35:02
+ Max. shift = 0.076 A for O5      Max. dU =-0.010 for Na3
+ wR2 = 0.2445 before cycle   3 for     317 data and     49 /     49 parameters
+ GooF = S =     1.609;     Restrained GooF =      1.609 for       0 restraints
+ Mean shift/esd =   0.542  Maximum =     3.279 for   x  O6         at 23:35:02
+ Max. shift = 0.106 A for O6      Max. dU = 0.008 for O6
+ wR2 = 0.1748 before cycle   4 for     317 data and     49 /     49 parameters
+ GooF = S =     1.134;     Restrained GooF =      1.134 for       0 restraints
+ Mean shift/esd =   0.237  Maximum =     1.766 for   x  O6         at 23:35:02
+ Max. shift = 0.050 A for O6      Max. dU =-0.003 for O4
+ wR2 = 0.1894 before cycle   5 for     317 data and     49 /     49 parameters
+ GooF = S =     1.258;     Restrained GooF =      1.258 for       0 restraints
+ Mean shift/esd =   0.124  Maximum =    -0.727 for  U11 O6         at 23:35:02
+ Max. shift = 0.009 A for O5      Max. dU =-0.004 for O6
+ wR2 = 0.2151 before cycle   6 for     317 data and     49 /     49 parameters
+ GooF = S =     1.450;     Restrained GooF =      1.450 for       0 restraints
+ Mean shift/esd =   0.100  Maximum =    -0.482 for  U11 Ca4        at 23:35:02
+ Max. shift = 0.009 A for O6      Max. dU =-0.003 for Ca4
+ wR2 = 0.2564 before cycle   7 for     317 data and     49 /     49 parameters
+ GooF = S =     1.774;     Restrained GooF =      1.774 for       0 restraints
+ Mean shift/esd =   0.112  Maximum =     0.493 for FVAR  4         at 23:35:02
+ Max. shift = 0.008 A for O3      Max. dU =-0.003 for Ca4
+ wR2 = 0.3762 before cycle   8 for     317 data and     49 /     49 parameters
+ GooF = S =     2.856;     Restrained GooF =      2.856 for       0 restraints
+ Mean shift/esd =   0.186  Maximum =     0.687 for  U11 O3         at 23:35:02
+ Max. shift = 0.044 A for O4      Max. dU =-0.007 for O4
+ wR2 = 0.4952 before cycle   9 for     317 data and     49 /     49 parameters
+ GooF = S =     4.513;     Restrained GooF =      4.513 for       0 restraints
+ Mean shift/esd =   0.298  Maximum =    -1.993 for  OSF            at 23:35:02
+ Max. shift = 0.094 A for O3      Max. dU =-0.012 for Si1
+ wR2 = 0.6663 before cycle  10 for     317 data and     49 /     49 parameters
+ GooF = S =     8.554;     Restrained GooF =      8.554 for       0 restraints
+ Mean shift/esd =   0.372  Maximum =    -3.580 for  OSF            at 23:35:02
+ Max. shift = 0.111 A for O3      Max. dU =-0.062 for O3
+ wR2 = 0.7323 before cycle  11 for     317 data and      0 /     49 parameters
+ GooF = S =    10.674;     Restrained GooF =     10.674 for       0 restraints
+ R1 =  0.4336 for     315 Fo > 4sig(Fo)  and  0.4382 for all     317 data
+ wR2 =  0.7323,  GooF = S =  10.674,  Restrained GooF =   10.674  for all data
+ ** Warning:     0  atoms may be split and     6  atoms NPD **
+ R1 =  0.3811 for    317 unique reflections after merging for Fourier
+ Highest peak   21.25  at  0.5354  0.3489  0.2312  [  0.05 A from SI1 ]
+ Deepest hole  -14.16  at  0.2621  0.5425  0.2273  [  0.20 A from CA3 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:35:02   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:35:18 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.3526 before cycle   1 for     317 data and     49 /     49 parameters
+ GooF = S =     2.354;     Restrained GooF =      2.354 for       0 restraints
+ Mean shift/esd =   0.417  Maximum =    -2.182 for  OSF            at 23:35:18
+ Max. shift = 0.256 A for O5      Max. dU =-0.015 for O6
+ wR2 = 0.3503 before cycle   2 for     317 data and     49 /     49 parameters
+ GooF = S =     2.353;     Restrained GooF =      2.353 for       0 restraints
+ Mean shift/esd =   0.431  Maximum =     2.744 for  U11 O6         at 23:35:18
+ Max. shift = 0.076 A for O5      Max. dU =-0.010 for Na3
+ wR2 = 0.2445 before cycle   3 for     317 data and     49 /     49 parameters
+ GooF = S =     1.609;     Restrained GooF =      1.609 for       0 restraints
+ Mean shift/esd =   0.542  Maximum =     3.279 for   x  O6         at 23:35:18
+ Max. shift = 0.106 A for O6      Max. dU = 0.008 for O6
+ wR2 = 0.1748 before cycle   4 for     317 data and     49 /     49 parameters
+ GooF = S =     1.134;     Restrained GooF =      1.134 for       0 restraints
+ Mean shift/esd =   0.237  Maximum =     1.766 for   x  O6         at 23:35:18
+ Max. shift = 0.050 A for O6      Max. dU =-0.003 for O4
+ wR2 = 0.1894 before cycle   5 for     317 data and     49 /     49 parameters
+ GooF = S =     1.258;     Restrained GooF =      1.258 for       0 restraints
+ Mean shift/esd =   0.124  Maximum =    -0.727 for  U11 O6         at 23:35:18
+ Max. shift = 0.009 A for O5      Max. dU =-0.004 for O6
+ wR2 = 0.2151 before cycle   6 for     317 data and     49 /     49 parameters
+ GooF = S =     1.450;     Restrained GooF =      1.450 for       0 restraints
+ Mean shift/esd =   0.100  Maximum =    -0.482 for  U11 Ca4        at 23:35:19
+ Max. shift = 0.009 A for O6      Max. dU =-0.003 for Ca4
+ wR2 = 0.2564 before cycle   7 for     317 data and     49 /     49 parameters
+ GooF = S =     1.774;     Restrained GooF =      1.774 for       0 restraints
+ Mean shift/esd =   0.112  Maximum =     0.493 for FVAR  4         at 23:35:19
+ Max. shift = 0.008 A for O3      Max. dU =-0.003 for Ca4
+ wR2 = 0.3762 before cycle   8 for     317 data and     49 /     49 parameters
+ GooF = S =     2.856;     Restrained GooF =      2.856 for       0 restraints
+ Mean shift/esd =   0.186  Maximum =     0.687 for  U11 O3         at 23:35:19
+ Max. shift = 0.044 A for O4      Max. dU =-0.007 for O4
+ wR2 = 0.4952 before cycle   9 for     317 data and     49 /     49 parameters
+ GooF = S =     4.513;     Restrained GooF =      4.513 for       0 restraints
+ Mean shift/esd =   0.298  Maximum =    -1.993 for  OSF            at 23:35:19
+ Max. shift = 0.094 A for O3      Max. dU =-0.012 for Si1
+ wR2 = 0.6663 before cycle  10 for     317 data and     49 /     49 parameters
+ GooF = S =     8.554;     Restrained GooF =      8.554 for       0 restraints
+ Mean shift/esd =   0.372  Maximum =    -3.580 for  OSF            at 23:35:19
+ Max. shift = 0.111 A for O3      Max. dU =-0.062 for O3
+ wR2 = 0.7323 before cycle  11 for     317 data and      0 /     49 parameters
+ GooF = S =    10.674;     Restrained GooF =     10.674 for       0 restraints
+ R1 =  0.4336 for     315 Fo > 4sig(Fo)  and  0.4382 for all     317 data
+ wR2 =  0.7323,  GooF = S =  10.674,  Restrained GooF =   10.674  for all data
+ ** Warning:     0  atoms may be split and     6  atoms NPD **
+ R1 =  0.3811 for    317 unique reflections after merging for Fourier
+ Highest peak   21.25  at  0.5354  0.3489  0.2312  [  0.05 A from SI1 ]
+ Deepest hole  -14.16  at  0.2621  0.5425  0.2273  [  0.20 A from CA3 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:35:19   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:36:28 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ 
+ ** UNSET FREE VARIABLE FOR ATOM FE1  **
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:36:28   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:36:55 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.5810 before cycle   1 for     317 data and     48 /     48 parameters
+ GooF = S =     4.432;     Restrained GooF =      4.432 for       0 restraints
+ Mean shift/esd =   0.269  Maximum =    -1.183 for   y  Ca4        at 23:36:55
+ Max. shift = 0.398 A for O5      Max. dU =-0.055 for Na3
+ wR2 = 0.5654 before cycle   2 for     317 data and     48 /     48 parameters
+ GooF = S =     4.071;     Restrained GooF =      4.071 for       0 restraints
+ Mean shift/esd =   0.526  Maximum =     2.483 for  U11 O5         at 23:36:55
+ Max. shift = 0.260 A for Al1      Max. dU =-0.065 for Mg2
+ wR2 = 0.5555 before cycle   3 for     317 data and     48 /     48 parameters
+ GooF = S =     3.604;     Restrained GooF =      3.604 for       0 restraints
+ Mean shift/esd =   0.482  Maximum =    -2.249 for   y  O5         at 23:36:55
+ Max. shift =37.449 A for Al1      Max. dU =-0.399 for Al1
+ wR2 = 0.6064 before cycle   4 for     317 data and     48 /     48 parameters
+ GooF = S =     4.508;     Restrained GooF =      4.508 for       0 restraints
+ Mean shift/esd =   0.456  Maximum =    -3.971 for  U11 Fe1        at 23:36:55
+ Max. shift =55.809 A for Al1      Max. dU = 2.001 for Al1
+ wR2 = 0.5491 before cycle   5 for     317 data and     48 /     48 parameters
+ GooF = S =     4.054;     Restrained GooF =      4.054 for       0 restraints
+ Mean shift/esd =   0.384  Maximum =     2.804 for   y  Fe1        at 23:36:55
+ Max. shift = 4.937 A for Al1      Max. dU = 0.008 for Fe1
+ wR2 = 0.4208 before cycle   6 for     317 data and     48 /     48 parameters
+ GooF = S =     2.797;     Restrained GooF =      2.797 for       0 restraints
+ Mean shift/esd =   0.377  Maximum =     2.869 for FVAR  6         at 23:36:55
+ Max. shift = 1.419 A for Al1      Max. dU =-1.210 for Al1
+ wR2 = 0.2462 before cycle   7 for     317 data and     48 /     48 parameters
+ GooF = S =     1.569;     Restrained GooF =      1.569 for       0 restraints
+ Mean shift/esd =   0.420  Maximum =    -1.364 for  OSF            at 23:36:55
+ Max. shift =10.409 A for Al1      Max. dU =-0.140 for Al1
+ wR2 = 0.1998 before cycle   8 for     317 data and     48 /     48 parameters
+ GooF = S =     1.267;     Restrained GooF =      1.267 for       0 restraints
+ Mean shift/esd =   0.525  Maximum =    -1.490 for   z  Si2        at 23:36:55
+ Max. shift =38.795 A for Al1      Max. dU =-0.049 for Al1
+ wR2 = 0.1787 before cycle   9 for     317 data and     48 /     48 parameters
+ GooF = S =     1.131;     Restrained GooF =      1.131 for       0 restraints
+ Mean shift/esd =   0.495  Maximum =    -1.156 for  U11 Ca4        at 23:36:55
+ Max. shift =18.749 A for Al1      Max. dU =-0.239 for Al1
+ wR2 = 0.1867 before cycle  10 for     317 data and     48 /     48 parameters
+ GooF = S =     1.213;     Restrained GooF =      1.213 for       0 restraints
+ Mean shift/esd =   0.486  Maximum =     2.643 for FVAR  6         at 23:36:55
+ Max. shift = 5.942 A for Al1      Max. dU =-0.065 for Mg2
+ wR2 = 0.1773 before cycle  11 for     317 data and      0 /     48 parameters
+ GooF = S =     1.144;     Restrained GooF =      1.144 for       0 restraints
+ R1 =  0.0626 for     315 Fo > 4sig(Fo)  and  0.0627 for all     317 data
+ wR2 =  0.1773,  GooF = S =   1.144,  Restrained GooF =    1.144  for all data
+ ** Warning:     0  atoms may be split and     1  atoms NPD **
+ R1 =  0.0628 for    317 unique reflections after merging for Fourier
+ Highest peak    1.01  at  0.3032  0.5528  0.2473  [  0.50 A from NA3 ]
+ Deepest hole   -0.95  at  0.0195  0.8103  0.0139  [  0.94 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:36:55   Total elapsed time:      0.12 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:37:52 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.6252 before cycle   1 for     317 data and     49 /     49 parameters
+ GooF = S =     9.617;     Restrained GooF =      9.617 for       0 restraints
+ Mean shift/esd =   0.490  Maximum =    -2.033 for  OSF            at 23:37:53
+ Max. shift = 0.324 A for O5      Max. dU =-0.057 for O6
+ wR2 = 0.6767 before cycle   2 for     317 data and     49 /     49 parameters
+ GooF = S =    10.116;     Restrained GooF =     10.116 for       0 restraints
+ Mean shift/esd =   0.504  Maximum =    -1.978 for   y  O5         at 23:37:53
+ Max. shift = 3.331 A for Mg2      Max. dU =-0.374 for Mg2
+ wR2 = 0.6710 before cycle   3 for     317 data and     49 /     49 parameters
+ GooF = S =    10.200;     Restrained GooF =     10.200 for       0 restraints
+ Mean shift/esd =   0.527  Maximum =    -2.738 for  U11 Fe1        at 23:37:53
+ Max. shift =24.742 A for Mg2      Max. dU =-0.399 for Al1
+ wR2 = 0.6377 before cycle   4 for     317 data and     49 /     49 parameters
+ GooF = S =     9.095;     Restrained GooF =      9.095 for       0 restraints
+ Mean shift/esd =   0.641  Maximum =    -5.188 for   y  Fe1        at 23:37:53
+ Max. shift = 0.514 A for Na3      Max. dU =-0.102 for Mg2
+ wR2 = 0.4911 before cycle   5 for     317 data and     49 /     49 parameters
+ GooF = S =     6.337;     Restrained GooF =      6.337 for       0 restraints
+ Mean shift/esd =   0.450  Maximum =     1.640 for   y  O5         at 23:37:53
+ Max. shift = 1.484 A for Na3      Max. dU = 0.025 for Na3
+ wR2 = 0.4157 before cycle   6 for     317 data and     49 /     49 parameters
+ GooF = S =     5.111;     Restrained GooF =      5.111 for       0 restraints
+ Mean shift/esd =   0.616  Maximum =    -2.279 for   y  Ca4        at 23:37:53
+ Max. shift = 1.666 A for Na3      Max. dU = 0.093 for Na3
+ wR2 = 0.3553 before cycle   7 for     317 data and     49 /     49 parameters
+ GooF = S =     4.265;     Restrained GooF =      4.265 for       0 restraints
+ Mean shift/esd =   0.386  Maximum =    -1.537 for   y  Fe1        at 23:37:53
+ Max. shift = 2.596 A for Na3      Max. dU = 0.140 for Na3
+ wR2 = 0.3558 before cycle   8 for     317 data and     49 /     49 parameters
+ GooF = S =     4.278;     Restrained GooF =      4.278 for       0 restraints
+ Mean shift/esd =   0.464  Maximum =     3.205 for  U11 Na3        at 23:37:53
+ Max. shift = 0.196 A for Na3      Max. dU = 1.309 for Na3
+ wR2 = 0.3397 before cycle   9 for     317 data and     49 /     49 parameters
+ GooF = S =     4.040;     Restrained GooF =      4.040 for       0 restraints
+ Mean shift/esd =   0.499  Maximum =     3.133 for FVAR  4         at 23:37:53
+ Max. shift = 3.456 A for Na3      Max. dU = 0.043 for Al1
+ wR2 = 0.3328 before cycle  10 for     317 data and     49 /     49 parameters
+ GooF = S =     3.959;     Restrained GooF =      3.959 for       0 restraints
+ Mean shift/esd =   0.411  Maximum =    -2.915 for   y  Na3        at 23:37:53
+ Max. shift = 0.416 A for Na3      Max. dU =-0.230 for Na3
+ wR2 = 0.3231 before cycle  11 for     317 data and      0 /     49 parameters
+ GooF = S =     3.814;     Restrained GooF =      3.814 for       0 restraints
+ R1 =  0.0999 for     315 Fo > 4sig(Fo)  and  0.1000 for all     317 data
+ wR2 =  0.3231,  GooF = S =   3.814,  Restrained GooF =    3.814  for all data
+ ** Warning:     0  atoms may be split and     2  atoms NPD **
+ R1 =  0.0996 for    317 unique reflections after merging for Fourier
+ Highest peak    1.72  at  0.7922  0.2540  0.2581  [  1.34 A from O5 ]
+ Deepest hole   -2.10  at  0.2185  0.3216  0.1781  [  1.30 A from MG2 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:37:53   Total elapsed time:      0.12 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:39:27 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.5987 before cycle   1 for     317 data and     47 /     47 parameters
+ GooF = S =     7.099;     Restrained GooF =      7.099 for       0 restraints
+ Mean shift/esd =   0.448  Maximum =    -1.871 for  U11 Si1        at 23:39:27
+ Max. shift = 0.174 A for O3      Max. dU =-0.048 for O5
+ wR2 = 0.5238 before cycle   2 for     317 data and     47 /     47 parameters
+ GooF = S =     6.576;     Restrained GooF =      6.576 for       0 restraints
+ Mean shift/esd =   0.492  Maximum =    -2.102 for  U11 O6         at 23:39:27
+ Max. shift = 0.090 A for O6      Max. dU =-0.043 for O6
+ wR2 = 0.3786 before cycle   3 for     317 data and     47 /     47 parameters
+ GooF = S =     4.554;     Restrained GooF =      4.554 for       0 restraints
+ Mean shift/esd =   0.463  Maximum =    -1.761 for  U11 Si1        at 23:39:27
+ Max. shift = 0.049 A for O3      Max. dU = 0.008 for Si2
+ wR2 = 0.3387 before cycle   4 for     317 data and     47 /     47 parameters
+ GooF = S =     3.948;     Restrained GooF =      3.948 for       0 restraints
+ Mean shift/esd =   0.382  Maximum =    -2.481 for  U11 Si1        at 23:39:27
+ Max. shift = 0.042 A for Na3      Max. dU = 0.007 for Mg2
+ wR2 = 0.3031 before cycle   5 for     317 data and     47 /     47 parameters
+ GooF = S =     3.484;     Restrained GooF =      3.484 for       0 restraints
+ Mean shift/esd =   0.258  Maximum =    -3.117 for  U11 Si1        at 23:39:27
+ Max. shift = 0.029 A for O4      Max. dU = 0.006 for O4
+ wR2 = 0.2946 before cycle   6 for     317 data and     47 /     47 parameters
+ GooF = S =     3.370;     Restrained GooF =      3.370 for       0 restraints
+ Mean shift/esd =   0.304  Maximum =    -3.495 for  U11 Si1        at 23:39:27
+ Max. shift = 0.069 A for Na3      Max. dU = 0.017 for Na3
+ wR2 = 0.3113 before cycle   7 for     317 data and     47 /     47 parameters
+ GooF = S =     3.635;     Restrained GooF =      3.635 for       0 restraints
+ Mean shift/esd =   0.250  Maximum =    -3.522 for  U11 Si1        at 23:39:27
+ Max. shift = 0.057 A for Na3      Max. dU =-0.008 for Na3
+ wR2 = 0.2957 before cycle   8 for     317 data and     47 /     47 parameters
+ GooF = S =     3.416;     Restrained GooF =      3.416 for       0 restraints
+ Mean shift/esd =   0.165  Maximum =    -3.752 for  U11 Si1        at 23:39:27
+ Max. shift = 0.056 A for Na3      Max. dU =-0.011 for Na3
+ wR2 = 0.2902 before cycle   9 for     317 data and     47 /     47 parameters
+ GooF = S =     3.319;     Restrained GooF =      3.319 for       0 restraints
+ Mean shift/esd =   0.171  Maximum =    -3.936 for  U11 Si1        at 23:39:27
+ Max. shift = 0.019 A for Na3      Max. dU = 0.020 for Na3
+ wR2 = 0.2948 before cycle  10 for     317 data and     47 /     47 parameters
+ GooF = S =     3.403;     Restrained GooF =      3.403 for       0 restraints
+ Mean shift/esd =   0.131  Maximum =    -3.824 for  U11 Si1        at 23:39:27
+ Max. shift = 0.047 A for Na3      Max. dU =-0.007 for Na3
+ wR2 = 0.2935 before cycle  11 for     317 data and      0 /     47 parameters
+ GooF = S =     3.371;     Restrained GooF =      3.371 for       0 restraints
+ R1 =  0.0824 for     315 Fo > 4sig(Fo)  and  0.0826 for all     317 data
+ wR2 =  0.2935,  GooF = S =   3.371,  Restrained GooF =    3.371  for all data
+ ** Warning:     0  atoms may be split and     1  atoms NPD **
+ R1 =  0.0773 for    317 unique reflections after merging for Fourier
+ Highest peak    1.33  at  0.0536  0.8477  0.2485  [  0.19 A from SI2 ]
+ Deepest hole   -1.18  at  0.5463  0.3287  0.1366  [  0.52 A from SI1 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:39:27   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 23:39:51 on 20-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     317 unique,      0 suppressed   R(int) = 0.0699   R(sigma) = 0.0420
+ Systematic absence violations:    1    Bad equivalents:  211
+ wR2 = 0.8161 before cycle   1 for     317 data and     43 /     43 parameters
+ GooF = S =    13.618;     Restrained GooF =     13.618 for       0 restraints
+ Mean shift/esd =   0.625  Maximum =    -5.549 for  U11 Si2        at 23:39:51
+ Max. shift = 0.692 A for Na3      Max. dU =-0.077 for Mg2
+ wR2 = 0.7717 before cycle   2 for     317 data and     43 /     43 parameters
+ GooF = S =    12.102;     Restrained GooF =     12.102 for       0 restraints
+ Mean shift/esd =   0.609  Maximum =    -1.643 for   z  O5         at 23:39:51
+ Max. shift = 2.114 A for Mg2      Max. dU =-0.238 for Mg2
+ wR2 = 0.7043 before cycle   3 for     317 data and     43 /     43 parameters
+ GooF = S =    10.430;     Restrained GooF =     10.430 for       0 restraints
+ Mean shift/esd =   0.504  Maximum =     2.471 for  U11 Na3        at 23:39:51
+ Max. shift =37.542 A for Mg2      Max. dU =-0.399 for Mg2
+ wR2 = 0.5887 before cycle   4 for     317 data and     43 /     43 parameters
+ GooF = S =     7.834;     Restrained GooF =      7.834 for       0 restraints
+ Mean shift/esd =   0.592  Maximum =     2.215 for  U11 Na3        at 23:39:51
+ Max. shift = 0.078 A for O4      Max. dU =-0.399 for Mg2
+ wR2 = 0.5305 before cycle   5 for     317 data and     43 /     43 parameters
+ GooF = S =     6.778;     Restrained GooF =      6.778 for       0 restraints
+ Mean shift/esd =   0.583  Maximum =    -2.219 for   y  Al1        at 23:39:51
+ Max. shift = 0.073 A for O5      Max. dU =-0.399 for Mg2
+ wR2 = 0.5024 before cycle   6 for     317 data and     43 /     43 parameters
+ GooF = S =     6.367;     Restrained GooF =      6.367 for       0 restraints
+ Mean shift/esd =   0.558  Maximum =     1.968 for  U11 O2         at 23:39:51
+ Max. shift =16.985 A for Mg2      Max. dU =-0.399 for Mg2
+ wR2 = 0.4890 before cycle   7 for     317 data and     43 /     43 parameters
+ GooF = S =     6.194;     Restrained GooF =      6.194 for       0 restraints
+ Mean shift/esd =   0.598  Maximum =     2.011 for  U11 O2         at 23:39:51
+ Max. shift =11.757 A for Mg2      Max. dU = 0.609 for Mg2
+ wR2 = 0.4735 before cycle   8 for     317 data and     43 /     43 parameters
+ GooF = S =     5.933;     Restrained GooF =      5.933 for       0 restraints
+ Mean shift/esd =   0.493  Maximum =    -1.826 for   z  O5         at 23:39:51
+ Max. shift = 1.346 A for Mg2      Max. dU = 0.039 for O2
+ wR2 = 0.4599 before cycle   9 for     317 data and     43 /     43 parameters
+ GooF = S =     5.709;     Restrained GooF =      5.709 for       0 restraints
+ Mean shift/esd =   0.441  Maximum =     1.686 for   y  Na3        at 23:39:51
+ Max. shift = 1.113 A for Mg2      Max. dU = 0.044 for O2
+ wR2 = 0.4325 before cycle  10 for     317 data and     43 /     43 parameters
+ GooF = S =     5.315;     Restrained GooF =      5.315 for       0 restraints
+ Mean shift/esd =   0.656  Maximum =     2.345 for   x  O1         at 23:39:51
+ Max. shift = 0.420 A for Mg2      Max. dU = 0.045 for O2
+ wR2 = 0.3631 before cycle  11 for     317 data and      0 /     43 parameters
+ GooF = S =     4.344;     Restrained GooF =      4.344 for       0 restraints
+ R1 =  0.1092 for     315 Fo > 4sig(Fo)  and  0.1092 for all     317 data
+ wR2 =  0.3631,  GooF = S =   4.344,  Restrained GooF =    4.344  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.1094 for    317 unique reflections after merging for Fourier
+ Highest peak    1.30  at  0.0411  0.8521  0.2194  [  0.09 A from SI2 ]
+ Deepest hole   -0.94  at  0.4243  0.6634  0.0804  [  0.19 A from O5 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 23:39:51   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:26:10 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     421 unique,      0 suppressed   R(int) = 0.0880   R(sigma) = 0.0571
+ Systematic absence violations:    1    Bad equivalents:  257
+ wR2 = 0.9328 before cycle   1 for     421 data and     43 /     43 parameters
+ GooF = S =    36.403;     Restrained GooF =     36.403 for       0 restraints
+ Mean shift/esd =   1.289  Maximum =   -11.294 for  OSF            at 08:26:10
+ Max. shift = 0.120 A for O3      Max. dU =-0.039 for O2
+ wR2 = 0.8011 before cycle   2 for     421 data and     43 /     43 parameters
+ GooF = S =    15.772;     Restrained GooF =     15.772 for       0 restraints
+ Mean shift/esd =   0.845  Maximum =    -6.316 for  OSF            at 08:26:10
+ Max. shift = 0.069 A for O4      Max. dU =-0.020 for AL1
+ wR2 = 0.7486 before cycle   3 for     421 data and     43 /     43 parameters
+ GooF = S =    10.163;     Restrained GooF =     10.163 for       0 restraints
+ Mean shift/esd =   0.915  Maximum =    -4.556 for  U11 Si2        at 08:26:10
+ Max. shift = 0.067 A for O2      Max. dU =-0.021 for Si2
+ wR2 = 0.7711 before cycle   4 for     421 data and     43 /     43 parameters
+ GooF = S =     9.449;     Restrained GooF =      9.449 for       0 restraints
+ Mean shift/esd =   0.915  Maximum =    -5.003 for  U11 AL1        at 08:26:10
+ Max. shift = 0.042 A for O5      Max. dU =-0.028 for AL1
+ wR2 = 0.7946 before cycle   5 for     421 data and     43 /     43 parameters
+ GooF = S =     8.984;     Restrained GooF =      8.984 for       0 restraints
+ Mean shift/esd =   0.908  Maximum =    -4.920 for  U11 AL1        at 08:26:10
+ Max. shift = 0.061 A for O6      Max. dU =-0.040 for AL1
+ wR2 = 0.8099 before cycle   6 for     421 data and     43 /     43 parameters
+ GooF = S =     8.766;     Restrained GooF =      8.766 for       0 restraints
+ Mean shift/esd =   0.726  Maximum =    -3.984 for  U11 AL1        at 08:26:10
+ Max. shift = 0.051 A for O6      Max. dU =-0.049 for AL1
+ wR2 = 0.8199 before cycle   7 for     421 data and     43 /     43 parameters
+ GooF = S =     9.269;     Restrained GooF =      9.269 for       0 restraints
+ Mean shift/esd =   0.581  Maximum =    -3.361 for  U11 AL1        at 08:26:10
+ Max. shift = 0.067 A for O3      Max. dU =-0.059 for AL1
+ wR2 = 0.8258 before cycle   8 for     421 data and     43 /     43 parameters
+ GooF = S =    10.165;     Restrained GooF =     10.165 for       0 restraints
+ Mean shift/esd =   0.620  Maximum =    -3.584 for  U11 AL1        at 08:26:10
+ Max. shift = 0.092 A for O3      Max. dU =-0.087 for AL1
+ wR2 = 0.8281 before cycle   9 for     421 data and     43 /     43 parameters
+ GooF = S =     9.930;     Restrained GooF =      9.930 for       0 restraints
+ Mean shift/esd =   0.630  Maximum =    -2.949 for  U11 AL1        at 08:26:10
+ Max. shift = 0.088 A for O4      Max. dU =-0.178 for AL1
+ wR2 = 0.8272 before cycle  10 for     421 data and     43 /     43 parameters
+ GooF = S =     9.319;     Restrained GooF =      9.319 for       0 restraints
+ Mean shift/esd =   0.629  Maximum =    -2.477 for  U11 O2         at 08:26:10
+ Max. shift = 0.270 A for AL1      Max. dU =-0.361 for AL1
+ wR2 = 0.8228 before cycle  11 for     421 data and      0 /     43 parameters
+ GooF = S =     8.582;     Restrained GooF =      8.582 for       0 restraints
+ R1 =  0.6589 for     418 Fo > 4sig(Fo)  and  0.6606 for all     421 data
+ wR2 =  0.8228,  GooF = S =   8.582,  Restrained GooF =    8.582  for all data
+ ** Warning:     0  atoms may be split and    11  atoms NPD **
+ R1 =  0.6050 for    421 unique reflections after merging for Fourier
+ Highest peak   63.10  at  0.7500  0.6461  0.2500  [  0.19 A from AL1 ]
+ Deepest hole  -15.31  at  0.6572  0.1857  0.0812  [  0.89 A from O5 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:26:10   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:27:28 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ 
+ ** UNSET FREE VARIABLE FOR ATOM NA3  **
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:27:28   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:28:52 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     421 unique,      0 suppressed   R(int) = 0.0880   R(sigma) = 0.0571
+ Systematic absence violations:    1    Bad equivalents:  257
+ wR2 = 0.7144 before cycle   1 for     421 data and     41 /     41 parameters
+ GooF = S =    10.625;     Restrained GooF =     10.625 for       0 restraints
+ Mean shift/esd =   1.876  Maximum =    -9.054 for  OSF            at 08:28:53
+ Max. shift = 0.055 A for O6      Max. dU =-0.020 for Mg2
+ wR2 = 0.4732 before cycle   2 for     421 data and     41 /     41 parameters
+ GooF = S =     4.899;     Restrained GooF =      4.899 for       0 restraints
+ Mean shift/esd =   0.759  Maximum =    -2.198 for  U11 Si2        at 08:28:53
+ Max. shift = 0.026 A for O6      Max. dU =-0.004 for O5
+ wR2 = 0.4536 before cycle   3 for     421 data and     41 /     41 parameters
+ GooF = S =     4.559;     Restrained GooF =      4.559 for       0 restraints
+ Mean shift/esd =   0.315  Maximum =    -1.704 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.014 A for O1      Max. dU =-0.002 for Mg2
+ wR2 = 0.4477 before cycle   4 for     421 data and     41 /     41 parameters
+ GooF = S =     4.469;     Restrained GooF =      4.469 for       0 restraints
+ Mean shift/esd =   0.194  Maximum =    -1.890 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.005 A for O1      Max. dU =-0.003 for Mg2
+ wR2 = 0.4458 before cycle   5 for     421 data and     41 /     41 parameters
+ GooF = S =     4.433;     Restrained GooF =      4.433 for       0 restraints
+ Mean shift/esd =   0.155  Maximum =    -2.015 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.003 A for O1      Max. dU =-0.003 for Mg2
+ wR2 = 0.4455 before cycle   6 for     421 data and     41 /     41 parameters
+ GooF = S =     4.431;     Restrained GooF =      4.431 for       0 restraints
+ Mean shift/esd =   0.158  Maximum =    -2.083 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.003 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4448 before cycle   7 for     421 data and     41 /     41 parameters
+ GooF = S =     4.419;     Restrained GooF =      4.419 for       0 restraints
+ Mean shift/esd =   0.211  Maximum =    -2.158 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.004 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4418 before cycle   8 for     421 data and     41 /     41 parameters
+ GooF = S =     4.380;     Restrained GooF =      4.380 for       0 restraints
+ Mean shift/esd =   0.328  Maximum =    -2.263 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.007 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4322 before cycle   9 for     421 data and     41 /     41 parameters
+ GooF = S =     4.263;     Restrained GooF =      4.263 for       0 restraints
+ Mean shift/esd =   0.232  Maximum =    -2.361 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.006 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4287 before cycle  10 for     421 data and     41 /     41 parameters
+ GooF = S =     4.224;     Restrained GooF =      4.224 for       0 restraints
+ Mean shift/esd =   0.138  Maximum =    -2.320 for  U11 Mg2        at 08:28:53
+ Max. shift = 0.002 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4278 before cycle  11 for     421 data and      0 /     41 parameters
+ GooF = S =     4.216;     Restrained GooF =      4.216 for       0 restraints
+ R1 =  0.1981 for     418 Fo > 4sig(Fo)  and  0.1987 for all     421 data
+ wR2 =  0.4278,  GooF = S =   4.216,  Restrained GooF =    4.216  for all data
+ ** Warning:     0  atoms may be split and     2  atoms NPD **
+ R1 =  0.1974 for    421 unique reflections after merging for Fourier
+ Highest peak    7.49  at  0.2843  0.1409  0.2182  [  0.43 A from MG2 ]
+ Deepest hole   -5.90  at  0.3055  0.1403  0.0225  [  1.42 A from MG2 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:28:53   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:29:30 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     420 unique,      0 suppressed   R(int) = 0.0880   R(sigma) = 0.0742
+ Systematic absence violations:    1    Bad equivalents:  257
+ wR2 = 0.7047 before cycle   1 for     420 data and     41 /     41 parameters
+ GooF = S =    10.351;     Restrained GooF =     10.351 for       0 restraints
+ Mean shift/esd =   1.926  Maximum =    -9.293 for  OSF            at 08:29:30
+ Max. shift = 0.055 A for O6      Max. dU =-0.020 for Mg2
+ wR2 = 0.4520 before cycle   2 for     420 data and     41 /     41 parameters
+ GooF = S =     4.628;     Restrained GooF =      4.628 for       0 restraints
+ Mean shift/esd =   0.803  Maximum =    -2.326 for  U11 Si2        at 08:29:30
+ Max. shift = 0.026 A for O6      Max. dU =-0.004 for O5
+ wR2 = 0.4317 before cycle   3 for     420 data and     41 /     41 parameters
+ GooF = S =     4.292;     Restrained GooF =      4.292 for       0 restraints
+ Mean shift/esd =   0.334  Maximum =    -1.810 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.014 A for O1      Max. dU =-0.002 for Mg2
+ wR2 = 0.4255 before cycle   4 for     420 data and     41 /     41 parameters
+ GooF = S =     4.202;     Restrained GooF =      4.202 for       0 restraints
+ Mean shift/esd =   0.207  Maximum =    -2.010 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.005 A for O1      Max. dU =-0.003 for Mg2
+ wR2 = 0.4235 before cycle   5 for     420 data and     41 /     41 parameters
+ GooF = S =     4.167;     Restrained GooF =      4.167 for       0 restraints
+ Mean shift/esd =   0.165  Maximum =    -2.143 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.003 A for O1      Max. dU =-0.003 for Mg2
+ wR2 = 0.4232 before cycle   6 for     420 data and     41 /     41 parameters
+ GooF = S =     4.165;     Restrained GooF =      4.165 for       0 restraints
+ Mean shift/esd =   0.168  Maximum =    -2.216 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.003 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4225 before cycle   7 for     420 data and     41 /     41 parameters
+ GooF = S =     4.153;     Restrained GooF =      4.153 for       0 restraints
+ Mean shift/esd =   0.224  Maximum =    -2.296 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.004 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4192 before cycle   8 for     420 data and     41 /     41 parameters
+ GooF = S =     4.113;     Restrained GooF =      4.113 for       0 restraints
+ Mean shift/esd =   0.349  Maximum =    -2.410 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.007 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4088 before cycle   9 for     420 data and     41 /     41 parameters
+ GooF = S =     3.989;     Restrained GooF =      3.989 for       0 restraints
+ Mean shift/esd =   0.248  Maximum =    -2.522 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.006 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4049 before cycle  10 for     420 data and     41 /     41 parameters
+ GooF = S =     3.946;     Restrained GooF =      3.946 for       0 restraints
+ Mean shift/esd =   0.148  Maximum =    -2.483 for  U11 Mg2        at 08:29:30
+ Max. shift = 0.002 A for O2      Max. dU =-0.003 for Mg2
+ wR2 = 0.4038 before cycle  11 for     420 data and      0 /     41 parameters
+ GooF = S =     3.937;     Restrained GooF =      3.937 for       0 restraints
+ R1 =  0.1604 for     417 Fo > 4sig(Fo)  and  0.1611 for all     420 data
+ wR2 =  0.4038,  GooF = S =   3.937,  Restrained GooF =    3.937  for all data
+ ** Warning:     0  atoms may be split and     2  atoms NPD **
+ R1 =  0.1597 for    420 unique reflections after merging for Fourier
+ Highest peak    3.58  at  0.2500  0.1602  0.2500  [  0.00 A from MG2 ]
+ Deepest hole   -1.33  at  0.2785  0.1864  0.1147  [  0.84 A from MG2 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:29:30   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:30:04 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     420 unique,      0 suppressed   R(int) = 0.0880   R(sigma) = 0.0742
+ Systematic absence violations:    1    Bad equivalents:  257
+ wR2 = 0.9141 before cycle   1 for     420 data and     46 /     46 parameters
+ GooF = S =    32.161;     Restrained GooF =     32.161 for       0 restraints
+ Mean shift/esd =   1.347  Maximum =   -11.486 for  OSF            at 08:30:04
+ Max. shift = 0.175 A for O5      Max. dU =-0.037 for O2
+ wR2 = 0.7431 before cycle   2 for     420 data and     46 /     46 parameters
+ GooF = S =    12.234;     Restrained GooF =     12.234 for       0 restraints
+ Mean shift/esd =   0.814  Maximum =    -3.052 for FVAR  5         at 08:30:04
+ Max. shift = 0.068 A for O4      Max. dU = 0.006 for O5
+ wR2 = 0.6280 before cycle   3 for     420 data and     46 /     46 parameters
+ GooF = S =     7.213;     Restrained GooF =      7.213 for       0 restraints
+ Mean shift/esd =   0.909  Maximum =    -3.726 for FVAR  5         at 08:30:04
+ Max. shift = 0.085 A for O5      Max. dU = 0.010 for Na3
+ wR2 = 0.5647 before cycle   4 for     420 data and     46 /     46 parameters
+ GooF = S =     6.005;     Restrained GooF =      6.005 for       0 restraints
+ Mean shift/esd =   0.953  Maximum =    -2.903 for FVAR  5         at 08:30:04
+ Max. shift = 0.051 A for O5      Max. dU =-0.003 for O5
+ wR2 = 0.4886 before cycle   5 for     420 data and     46 /     46 parameters
+ GooF = S =     4.985;     Restrained GooF =      4.985 for       0 restraints
+ Mean shift/esd =   0.917  Maximum =    -4.033 for FVAR  5         at 08:30:04
+ Max. shift = 0.057 A for O3      Max. dU = 0.003 for O1
+ wR2 = 0.4143 before cycle   6 for     420 data and     46 /     46 parameters
+ GooF = S =     4.070;     Restrained GooF =      4.070 for       0 restraints
+ Mean shift/esd =   0.517  Maximum =    -2.708 for FVAR  5         at 08:30:04
+ Max. shift = 0.013 A for O1      Max. dU = 0.002 for O4
+ wR2 = 0.3866 before cycle   7 for     420 data and     46 /     46 parameters
+ GooF = S =     3.775;     Restrained GooF =      3.775 for       0 restraints
+ Mean shift/esd =   0.321  Maximum =    -0.981 for FVAR  5         at 08:30:04
+ Max. shift = 0.012 A for O1      Max. dU = 0.002 for O4
+ wR2 = 0.3794 before cycle   8 for     420 data and     46 /     46 parameters
+ GooF = S =     3.709;     Restrained GooF =      3.709 for       0 restraints
+ Mean shift/esd =   0.083  Maximum =     0.341 for   z  O4         at 08:30:04
+ Max. shift = 0.004 A for O4      Max. dU = 0.000 for O6
+ wR2 = 0.3784 before cycle   9 for     420 data and     46 /     46 parameters
+ GooF = S =     3.698;     Restrained GooF =      3.698 for       0 restraints
+ Mean shift/esd =   0.027  Maximum =    -0.182 for   z  O2         at 08:30:04
+ Max. shift = 0.002 A for O2      Max. dU = 0.000 for Mg2
+ wR2 = 0.3780 before cycle  10 for     420 data and     46 /     46 parameters
+ GooF = S =     3.694;     Restrained GooF =      3.694 for       0 restraints
+ Mean shift/esd =   0.013  Maximum =    -0.050 for   z  O2         at 08:30:04
+ Max. shift = 0.001 A for O1      Max. dU = 0.000 for Na3
+ wR2 = 0.3779 before cycle  11 for     420 data and      0 /     46 parameters
+ GooF = S =     3.693;     Restrained GooF =      3.693 for       0 restraints
+ R1 =  0.1374 for     417 Fo > 4sig(Fo)  and  0.1376 for all     420 data
+ wR2 =  0.3779,  GooF = S =   3.693,  Restrained GooF =    3.693  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.1375 for    420 unique reflections after merging for Fourier
+ Highest peak    1.31  at  0.3466  0.3040  0.1882  [  0.47 A from O1 ]
+ Deepest hole   -1.18  at  0.0331  0.8143  0.0261  [  0.82 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:30:04   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:30:37 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     419 unique,      0 suppressed   R(int) = 0.0724   R(sigma) = 0.0432
+ Systematic absence violations:    1    Bad equivalents:  256
+ wR2 = 0.9133 before cycle   1 for     419 data and     46 /     46 parameters
+ GooF = S =    32.041;     Restrained GooF =     32.041 for       0 restraints
+ Mean shift/esd =   1.352  Maximum =   -11.529 for  OSF            at 08:30:37
+ Max. shift = 0.175 A for O5      Max. dU =-0.037 for O2
+ wR2 = 0.7424 before cycle   2 for     419 data and     46 /     46 parameters
+ GooF = S =    12.222;     Restrained GooF =     12.222 for       0 restraints
+ Mean shift/esd =   0.815  Maximum =    -3.055 for FVAR  5         at 08:30:37
+ Max. shift = 0.068 A for O4      Max. dU = 0.006 for O5
+ wR2 = 0.6272 before cycle   3 for     419 data and     46 /     46 parameters
+ GooF = S =     7.207;     Restrained GooF =      7.207 for       0 restraints
+ Mean shift/esd =   0.910  Maximum =    -3.728 for FVAR  5         at 08:30:37
+ Max. shift = 0.085 A for O5      Max. dU = 0.010 for Na3
+ wR2 = 0.5637 before cycle   4 for     419 data and     46 /     46 parameters
+ GooF = S =     5.998;     Restrained GooF =      5.998 for       0 restraints
+ Mean shift/esd =   0.954  Maximum =    -2.907 for FVAR  5         at 08:30:37
+ Max. shift = 0.051 A for O5      Max. dU =-0.003 for O5
+ wR2 = 0.4872 before cycle   5 for     419 data and     46 /     46 parameters
+ GooF = S =     4.972;     Restrained GooF =      4.972 for       0 restraints
+ Mean shift/esd =   0.920  Maximum =    -4.043 for FVAR  5         at 08:30:37
+ Max. shift = 0.057 A for O3      Max. dU = 0.003 for O1
+ wR2 = 0.4124 before cycle   6 for     419 data and     46 /     46 parameters
+ GooF = S =     4.052;     Restrained GooF =      4.052 for       0 restraints
+ Mean shift/esd =   0.519  Maximum =    -2.720 for FVAR  5         at 08:30:37
+ Max. shift = 0.013 A for O1      Max. dU = 0.002 for O4
+ wR2 = 0.3844 before cycle   7 for     419 data and     46 /     46 parameters
+ GooF = S =     3.754;     Restrained GooF =      3.754 for       0 restraints
+ Mean shift/esd =   0.323  Maximum =    -0.987 for FVAR  5         at 08:30:37
+ Max. shift = 0.012 A for O1      Max. dU = 0.002 for O4
+ wR2 = 0.3771 before cycle   8 for     419 data and     46 /     46 parameters
+ GooF = S =     3.687;     Restrained GooF =      3.687 for       0 restraints
+ Mean shift/esd =   0.083  Maximum =     0.343 for   z  O4         at 08:30:37
+ Max. shift = 0.004 A for O4      Max. dU = 0.000 for O6
+ wR2 = 0.3761 before cycle   9 for     419 data and     46 /     46 parameters
+ GooF = S =     3.676;     Restrained GooF =      3.676 for       0 restraints
+ Mean shift/esd =   0.027  Maximum =    -0.183 for   z  O2         at 08:30:37
+ Max. shift = 0.002 A for O2      Max. dU = 0.000 for Mg2
+ wR2 = 0.3757 before cycle  10 for     419 data and     46 /     46 parameters
+ GooF = S =     3.672;     Restrained GooF =      3.672 for       0 restraints
+ Mean shift/esd =   0.013  Maximum =    -0.050 for   z  O2         at 08:30:37
+ Max. shift = 0.001 A for O1      Max. dU = 0.000 for Na3
+ wR2 = 0.3756 before cycle  11 for     419 data and      0 /     46 parameters
+ GooF = S =     3.671;     Restrained GooF =      3.671 for       0 restraints
+ R1 =  0.0841 for     416 Fo > 4sig(Fo)  and  0.0845 for all     419 data
+ wR2 =  0.3756,  GooF = S =   3.671,  Restrained GooF =    3.671  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0844 for    419 unique reflections after merging for Fourier
+ Highest peak    1.31  at  0.3466  0.3040  0.1882  [  0.47 A from O1 ]
+ Deepest hole   -1.18  at  0.0331  0.8143  0.0261  [  0.82 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:30:37   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:31:18 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     419 unique,      0 suppressed   R(int) = 0.0724   R(sigma) = 0.0432
+ Systematic absence violations:    1    Bad equivalents:  256
+ wR2 = 0.3756 before cycle   1 for     419 data and     45 /     45 parameters
+ GooF = S =     3.667;     Restrained GooF =      3.667 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =    -0.020 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.3756 before cycle   2 for     419 data and     45 /     45 parameters
+ GooF = S =     3.666;     Restrained GooF =      3.666 for       0 restraints
+ Mean shift/esd =   0.004  Maximum =    -0.016 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.3755 before cycle   3 for     419 data and     45 /     45 parameters
+ GooF = S =     3.666;     Restrained GooF =      3.666 for       0 restraints
+ Mean shift/esd =   0.002  Maximum =    -0.008 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   4 for     419 data and     45 /     45 parameters
+ GooF = S =     3.666;     Restrained GooF =      3.666 for       0 restraints
+ Mean shift/esd =   0.001  Maximum =    -0.004 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   5 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =    -0.002 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   6 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =    -0.001 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   7 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   z  Si1        at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   8 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   z  O2         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   9 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   z  Si1        at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle  10 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for  U11 O1         at 08:31:18
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle  11 for     419 data and      0 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ R1 =  0.0841 for     416 Fo > 4sig(Fo)  and  0.0845 for all     419 data
+ wR2 =  0.3755,  GooF = S =   3.665,  Restrained GooF =    3.665  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0844 for    419 unique reflections after merging for Fourier
+ Highest peak    1.31  at  0.3466  0.3040  0.1883  [  0.47 A from O1 ]
+ Deepest hole   -1.18  at  0.0331  0.8143  0.0259  [  0.82 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:31:18   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:31:46 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     419 unique,      0 suppressed   R(int) = 0.0724   R(sigma) = 0.0432
+ Systematic absence violations:    1    Bad equivalents:  256
+ wR2 = 0.3755 before cycle   1 for     419 data and     64 /     64 parameters
+ GooF = S =     3.762;     Restrained GooF =      3.762 for       0 restraints
+ Mean shift/esd =   0.568  Maximum =    -2.199 for  U12 Si1        at 08:31:46
+ Max. shift = 0.011 A for O5      Max. dU =-0.005 for Na3
+ wR2 = 0.3439 before cycle   2 for     419 data and     64 /     64 parameters
+ GooF = S =     3.408;     Restrained GooF =      3.408 for       0 restraints
+ Mean shift/esd =   0.326  Maximum =    -1.590 for  U11 Si1        at 08:31:46
+ Max. shift = 0.010 A for O5      Max. dU =-0.002 for Na3
+ wR2 = 0.3398 before cycle   3 for     419 data and     64 /     64 parameters
+ GooF = S =     3.352;     Restrained GooF =      3.352 for       0 restraints
+ Mean shift/esd =   0.143  Maximum =    -1.696 for  U11 Si1        at 08:31:46
+ Max. shift = 0.003 A for O5      Max. dU =-0.002 for Si1
+ wR2 = 0.3393 before cycle   4 for     419 data and     64 /     64 parameters
+ GooF = S =     3.347;     Restrained GooF =      3.347 for       0 restraints
+ Mean shift/esd =   0.107  Maximum =    -1.756 for  U11 Si1        at 08:31:46
+ Max. shift = 0.001 A for O5      Max. dU =-0.002 for Si1
+ wR2 = 0.3392 before cycle   5 for     419 data and     64 /     64 parameters
+ GooF = S =     3.346;     Restrained GooF =      3.346 for       0 restraints
+ Mean shift/esd =   0.095  Maximum =    -1.768 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3391 before cycle   6 for     419 data and     64 /     64 parameters
+ GooF = S =     3.344;     Restrained GooF =      3.344 for       0 restraints
+ Mean shift/esd =   0.089  Maximum =    -1.773 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3390 before cycle   7 for     419 data and     64 /     64 parameters
+ GooF = S =     3.344;     Restrained GooF =      3.344 for       0 restraints
+ Mean shift/esd =   0.087  Maximum =    -1.776 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3390 before cycle   8 for     419 data and     64 /     64 parameters
+ GooF = S =     3.343;     Restrained GooF =      3.343 for       0 restraints
+ Mean shift/esd =   0.086  Maximum =    -1.777 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3390 before cycle   9 for     419 data and     64 /     64 parameters
+ GooF = S =     3.343;     Restrained GooF =      3.343 for       0 restraints
+ Mean shift/esd =   0.086  Maximum =    -1.778 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3390 before cycle  10 for     419 data and     64 /     64 parameters
+ GooF = S =     3.343;     Restrained GooF =      3.343 for       0 restraints
+ Mean shift/esd =   0.086  Maximum =    -1.778 for  U11 Si1        at 08:31:46
+ Max. shift = 0.000 A for O1      Max. dU =-0.002 for Si1
+ wR2 = 0.3390 before cycle  11 for     419 data and      0 /     64 parameters
+ GooF = S =     3.343;     Restrained GooF =      3.343 for       0 restraints
+ R1 =  0.0834 for     416 Fo > 4sig(Fo)  and  0.0836 for all     419 data
+ wR2 =  0.3390,  GooF = S =   3.343,  Restrained GooF =    3.343  for all data
+ ** Warning:     0  atoms may be split and     1  atoms NPD **
+ R1 =  0.0831 for    419 unique reflections after merging for Fourier
+ Highest peak    1.35  at  0.3650  0.3045  0.2092  [  0.48 A from O1 ]
+ Deepest hole   -1.05  at  0.3964  0.8988  0.0349  [  1.22 A from O4 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:31:46   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:32:07 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     419 unique,      0 suppressed   R(int) = 0.0724   R(sigma) = 0.0432
+ Systematic absence violations:    1    Bad equivalents:  256
+ wR2 = 0.3755 before cycle   1 for     419 data and     45 /     45 parameters
+ GooF = S =     3.666;     Restrained GooF =      3.666 for       0 restraints
+ Mean shift/esd =   0.001  Maximum =     0.003 for  U11 Si2        at 08:32:07
+ Max. shift = 0.000 A for O3      Max. dU = 0.000 for Si2
+ wR2 = 0.3755 before cycle   2 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.001 for  U11 Si2        at 08:32:07
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for Mg2
+ wR2 = 0.3755 before cycle   3 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for  U11 O2         at 08:32:07
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O2
+ wR2 = 0.3755 before cycle   4 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for  U11 O1         at 08:32:07
+ Max. shift = 0.000 A for O4      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle   5 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   z  Si2        at 08:32:07
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O2
+ wR2 = 0.3755 before cycle   6 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   y  O3         at 08:32:07
+ Max. shift = 0.000 A for O3      Max. dU = 0.000 for O2
+ wR2 = 0.3755 before cycle   7 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   x  Si2        at 08:32:07
+ Max. shift = 0.000 A for O4      Max. dU = 0.000 for O2
+ wR2 = 0.3755 before cycle   8 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   x  Si2        at 08:32:07
+ Max. shift = 0.000 A for O1      Max. dU = 0.000 for Na3
+ wR2 = 0.3755 before cycle   9 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   x  Si2        at 08:32:07
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.3755 before cycle  10 for     419 data and     45 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   x  Si2        at 08:32:07
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.3755 before cycle  11 for     419 data and      0 /     45 parameters
+ GooF = S =     3.665;     Restrained GooF =      3.665 for       0 restraints
+ R1 =  0.0841 for     416 Fo > 4sig(Fo)  and  0.0845 for all     419 data
+ wR2 =  0.3755,  GooF = S =   3.665,  Restrained GooF =    3.665  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0844 for    419 unique reflections after merging for Fourier
+ Highest peak    1.31  at  0.3466  0.3040  0.1883  [  0.47 A from O1 ]
+ Deepest hole   -1.18  at  0.0331  0.8143  0.0259  [  0.82 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:32:07   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:32:23 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     419 unique,      0 suppressed   R(int) = 0.0724   R(sigma) = 0.0432
+ Systematic absence violations:    1    Bad equivalents:  256
+ wR2 = 0.2239 before cycle   1 for     419 data and     45 /     45 parameters
+ GooF = S =     1.221;     Restrained GooF =      1.221 for       0 restraints
+ Mean shift/esd =   0.587  Maximum =    -1.631 for FVAR  2         at 08:32:23
+ Max. shift = 0.016 A for O3      Max. dU =-0.003 for Na3
+ wR2 = 0.2125 before cycle   2 for     419 data and     45 /     45 parameters
+ GooF = S =     1.141;     Restrained GooF =      1.141 for       0 restraints
+ Mean shift/esd =   0.328  Maximum =     0.967 for   y  Si1        at 08:32:23
+ Max. shift = 0.009 A for O2      Max. dU =-0.002 for Na3
+ wR2 = 0.2111 before cycle   3 for     419 data and     45 /     45 parameters
+ GooF = S =     1.130;     Restrained GooF =      1.130 for       0 restraints
+ Mean shift/esd =   0.224  Maximum =     0.800 for   y  O2         at 08:32:23
+ Max. shift = 0.011 A for O2      Max. dU =-0.002 for Na3
+ wR2 = 0.2100 before cycle   4 for     419 data and     45 /     45 parameters
+ GooF = S =     1.124;     Restrained GooF =      1.124 for       0 restraints
+ Mean shift/esd =   0.343  Maximum =    -1.229 for  U11 Na3        at 08:32:23
+ Max. shift = 0.015 A for O2      Max. dU =-0.004 for Na3
+ wR2 = 0.2032 before cycle   5 for     419 data and     45 /     45 parameters
+ GooF = S =     1.087;     Restrained GooF =      1.087 for       0 restraints
+ Mean shift/esd =   0.615  Maximum =    -2.302 for  U11 Na3        at 08:32:23
+ Max. shift = 0.022 A for O4      Max. dU =-0.006 for Na3
+ wR2 = 0.1889 before cycle   6 for     419 data and     45 /     45 parameters
+ GooF = S =     1.011;     Restrained GooF =      1.011 for       0 restraints
+ Mean shift/esd =   0.284  Maximum =     0.951 for   y  Si2        at 08:32:23
+ Max. shift = 0.007 A for O4      Max. dU =-0.001 for Na3
+ wR2 = 0.1869 before cycle   7 for     419 data and     45 /     45 parameters
+ GooF = S =     0.999;     Restrained GooF =      0.999 for       0 restraints
+ Mean shift/esd =   0.202  Maximum =    -0.640 for   y  O1         at 08:32:23
+ Max. shift = 0.005 A for O4      Max. dU = 0.000 for Na3
+ wR2 = 0.1861 before cycle   8 for     419 data and     45 /     45 parameters
+ GooF = S =     0.995;     Restrained GooF =      0.995 for       0 restraints
+ Mean shift/esd =   0.074  Maximum =    -0.222 for   y  O1         at 08:32:23
+ Max. shift = 0.002 A for O1      Max. dU = 0.000 for Na3
+ wR2 = 0.1861 before cycle   9 for     419 data and     45 /     45 parameters
+ GooF = S =     0.995;     Restrained GooF =      0.995 for       0 restraints
+ Mean shift/esd =   0.043  Maximum =     0.121 for   y  Si1        at 08:32:23
+ Max. shift = 0.001 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1861 before cycle  10 for     419 data and     45 /     45 parameters
+ GooF = S =     0.995;     Restrained GooF =      0.995 for       0 restraints
+ Mean shift/esd =   0.036  Maximum =     0.085 for   y  Si1        at 08:32:23
+ Max. shift = 0.001 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.1861 before cycle  11 for     419 data and      0 /     45 parameters
+ GooF = S =     0.995;     Restrained GooF =      0.995 for       0 restraints
+ R1 =  0.0683 for     416 Fo > 4sig(Fo)  and  0.0687 for all     419 data
+ wR2 =  0.1861,  GooF = S =   0.995,  Restrained GooF =    0.995  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0677 for    419 unique reflections after merging for Fourier
+ Highest peak    1.12  at  0.7500  0.9780  0.2500  [  0.64 A from CA4 ]
+ Deepest hole   -1.06  at  0.0166  0.8112  0.0261  [  0.95 A from O6 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:32:23   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:33:32 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     416 unique,      0 suppressed   R(int) = 0.0725   R(sigma) = 0.0471
+ Systematic absence violations:    1    Bad equivalents:  255
+ wR2 = 0.2076 before cycle   1 for     416 data and     45 /     45 parameters
+ GooF = S =     1.121;     Restrained GooF =      1.121 for       0 restraints
+ Mean shift/esd =   0.632  Maximum =    -1.845 for FVAR  2         at 08:33:32
+ Max. shift = 0.019 A for O1      Max. dU =-0.004 for Na3
+ wR2 = 0.1938 before cycle   2 for     416 data and     45 /     45 parameters
+ GooF = S =     1.032;     Restrained GooF =      1.032 for       0 restraints
+ Mean shift/esd =   0.362  Maximum =     1.148 for   y  Si1        at 08:33:32
+ Max. shift = 0.009 A for O1      Max. dU =-0.002 for Na3
+ wR2 = 0.1922 before cycle   3 for     416 data and     45 /     45 parameters
+ GooF = S =     1.020;     Restrained GooF =      1.020 for       0 restraints
+ Mean shift/esd =   0.237  Maximum =     0.874 for   y  O2         at 08:33:32
+ Max. shift = 0.011 A for O2      Max. dU =-0.002 for Na3
+ wR2 = 0.1908 before cycle   4 for     416 data and     45 /     45 parameters
+ GooF = S =     1.012;     Restrained GooF =      1.012 for       0 restraints
+ Mean shift/esd =   0.389  Maximum =     1.419 for   y  O2         at 08:33:32
+ Max. shift = 0.016 A for O2      Max. dU =-0.004 for Na3
+ wR2 = 0.1818 before cycle   5 for     416 data and     45 /     45 parameters
+ GooF = S =     0.964;     Restrained GooF =      0.964 for       0 restraints
+ Mean shift/esd =   0.702  Maximum =    -2.643 for  U11 Na3        at 08:33:32
+ Max. shift = 0.022 A for O4      Max. dU =-0.006 for Na3
+ wR2 = 0.1662 before cycle   6 for     416 data and     45 /     45 parameters
+ GooF = S =     0.882;     Restrained GooF =      0.882 for       0 restraints
+ Mean shift/esd =   0.260  Maximum =     0.774 for   y  Si2        at 08:33:32
+ Max. shift = 0.006 A for O4      Max. dU =-0.001 for O6
+ wR2 = 0.1646 before cycle   7 for     416 data and     45 /     45 parameters
+ GooF = S =     0.872;     Restrained GooF =      0.872 for       0 restraints
+ Mean shift/esd =   0.241  Maximum =    -0.844 for   y  O1         at 08:33:32
+ Max. shift = 0.006 A for O1      Max. dU = 0.000 for Na3
+ wR2 = 0.1635 before cycle   8 for     416 data and     45 /     45 parameters
+ GooF = S =     0.867;     Restrained GooF =      0.867 for       0 restraints
+ Mean shift/esd =   0.103  Maximum =    -0.315 for   y  O1         at 08:33:32
+ Max. shift = 0.002 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.1633 before cycle   9 for     416 data and     45 /     45 parameters
+ GooF = S =     0.866;     Restrained GooF =      0.866 for       0 restraints
+ Mean shift/esd =   0.056  Maximum =     0.171 for   y  Si1        at 08:33:32
+ Max. shift = 0.001 A for O1      Max. dU = 0.000 for O4
+ wR2 = 0.1633 before cycle  10 for     416 data and     45 /     45 parameters
+ GooF = S =     0.865;     Restrained GooF =      0.865 for       0 restraints
+ Mean shift/esd =   0.046  Maximum =     0.124 for   y  Si1        at 08:33:32
+ Max. shift = 0.001 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1633 before cycle  11 for     416 data and      0 /     45 parameters
+ GooF = S =     0.865;     Restrained GooF =      0.865 for       0 restraints
+ R1 =  0.0615 for     413 Fo > 4sig(Fo)  and  0.0619 for all     416 data
+ wR2 =  0.1633,  GooF = S =   0.865,  Restrained GooF =    0.865  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0614 for    416 unique reflections after merging for Fourier
+ Highest peak    0.74  at  0.3032  0.5577  0.2472  [  0.50 A from NA3 ]
+ Deepest hole   -0.73  at  0.1871  0.9216  0.1530  [  1.47 A from O4 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:33:32   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:33:57 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     416 unique,      0 suppressed   R(int) = 0.0725   R(sigma) = 0.0471
+ Systematic absence violations:    1    Bad equivalents:  255
+ wR2 = 0.1449 before cycle   1 for     416 data and     45 /     45 parameters
+ GooF = S =     1.249;     Restrained GooF =      1.249 for       0 restraints
+ Mean shift/esd =   0.073  Maximum =    -0.294 for  OSF            at 08:33:57
+ Max. shift = 0.001 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.1447 before cycle   2 for     416 data and     45 /     45 parameters
+ GooF = S =     1.248;     Restrained GooF =      1.248 for       0 restraints
+ Mean shift/esd =   0.039  Maximum =    -0.116 for  U11 O1         at 08:33:57
+ Max. shift = 0.001 A for O2      Max. dU = 0.000 for O1
+ wR2 = 0.1447 before cycle   3 for     416 data and     45 /     45 parameters
+ GooF = S =     1.248;     Restrained GooF =      1.248 for       0 restraints
+ Mean shift/esd =   0.023  Maximum =     0.052 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.1447 before cycle   4 for     416 data and     45 /     45 parameters
+ GooF = S =     1.248;     Restrained GooF =      1.248 for       0 restraints
+ Mean shift/esd =   0.020  Maximum =     0.045 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for Na3
+ wR2 = 0.1447 before cycle   5 for     416 data and     45 /     45 parameters
+ GooF = S =     1.248;     Restrained GooF =      1.248 for       0 restraints
+ Mean shift/esd =   0.016  Maximum =     0.041 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for Na3
+ wR2 = 0.1447 before cycle   6 for     416 data and     45 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ Mean shift/esd =   0.013  Maximum =     0.034 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1446 before cycle   7 for     416 data and     45 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ Mean shift/esd =   0.010  Maximum =     0.027 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1446 before cycle   8 for     416 data and     45 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ Mean shift/esd =   0.008  Maximum =     0.021 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1446 before cycle   9 for     416 data and     45 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ Mean shift/esd =   0.006  Maximum =     0.017 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1446 before cycle  10 for     416 data and     45 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.013 for   y  Si1        at 08:33:57
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1446 before cycle  11 for     416 data and      0 /     45 parameters
+ GooF = S =     1.247;     Restrained GooF =      1.247 for       0 restraints
+ R1 =  0.0617 for     413 Fo > 4sig(Fo)  and  0.0621 for all     416 data
+ wR2 =  0.1446,  GooF = S =   1.247,  Restrained GooF =    1.247  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0618 for    416 unique reflections after merging for Fourier
+ Highest peak    0.75  at  0.3030  0.5577  0.2473  [  0.50 A from NA3 ]
+ Deepest hole   -0.73  at  0.6190  0.3608  0.1697  [  0.88 A from SI1 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:33:57   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:34:28 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     416 unique,      0 suppressed   R(int) = 0.0725   R(sigma) = 0.0471
+ Systematic absence violations:    1    Bad equivalents:  255
+ wR2 = 0.1449 before cycle   1 for     416 data and     67 /     67 parameters
+ GooF = S =     1.288;     Restrained GooF =      1.288 for       0 restraints
+ Mean shift/esd =   0.288  Maximum =    -1.497 for  U13 Na3        at 08:34:28
+ Max. shift = 0.005 A for O5      Max. dU =-0.001 for O4
+ wR2 = 0.1380 before cycle   2 for     416 data and     67 /     67 parameters
+ GooF = S =     1.224;     Restrained GooF =      1.224 for       0 restraints
+ Mean shift/esd =   0.164  Maximum =    -0.655 for  U13 Na3        at 08:34:28
+ Max. shift = 0.004 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1368 before cycle   3 for     416 data and     67 /     67 parameters
+ GooF = S =     1.212;     Restrained GooF =      1.212 for       0 restraints
+ Mean shift/esd =   0.067  Maximum =     0.201 for  U22 Mg2        at 08:34:28
+ Max. shift = 0.002 A for O5      Max. dU = 0.000 for O4
+ wR2 = 0.1365 before cycle   4 for     416 data and     67 /     67 parameters
+ GooF = S =     1.210;     Restrained GooF =      1.210 for       0 restraints
+ Mean shift/esd =   0.034  Maximum =     0.117 for   x  O6         at 08:34:28
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for O4
+ wR2 = 0.1364 before cycle   5 for     416 data and     67 /     67 parameters
+ GooF = S =     1.209;     Restrained GooF =      1.209 for       0 restraints
+ Mean shift/esd =   0.018  Maximum =     0.080 for   x  O6         at 08:34:28
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1363 before cycle   6 for     416 data and     67 /     67 parameters
+ GooF = S =     1.208;     Restrained GooF =      1.208 for       0 restraints
+ Mean shift/esd =   0.012  Maximum =     0.055 for   x  O6         at 08:34:28
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1363 before cycle   7 for     416 data and     67 /     67 parameters
+ GooF = S =     1.208;     Restrained GooF =      1.208 for       0 restraints
+ Mean shift/esd =   0.010  Maximum =     0.043 for   x  O6         at 08:34:29
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1363 before cycle   8 for     416 data and     67 /     67 parameters
+ GooF = S =     1.208;     Restrained GooF =      1.208 for       0 restraints
+ Mean shift/esd =   0.008  Maximum =     0.035 for   x  O6         at 08:34:29
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1363 before cycle   9 for     416 data and     67 /     67 parameters
+ GooF = S =     1.208;     Restrained GooF =      1.208 for       0 restraints
+ Mean shift/esd =   0.007  Maximum =     0.030 for   x  O6         at 08:34:29
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1363 before cycle  10 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.006  Maximum =     0.026 for   x  O6         at 08:34:29
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle  11 for     416 data and      0 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ R1 =  0.0592 for     413 Fo > 4sig(Fo)  and  0.0595 for all     416 data
+ wR2 =  0.1362,  GooF = S =   1.207,  Restrained GooF =    1.207  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0589 for    416 unique reflections after merging for Fourier
+ Highest peak    0.69  at  0.4131  0.3631  0.2338  [  0.66 A from O1 ]
+ Deepest hole   -0.75  at  0.2500  0.9805  0.2500  [  1.50 A from O4 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:34:29   Total elapsed time:      0.00 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:35:14 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     416 unique,      0 suppressed   R(int) = 0.0725   R(sigma) = 0.0471
+ Systematic absence violations:    1    Bad equivalents:  255
+ wR2 = 0.1362 before cycle   1 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.004  Maximum =     0.017 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O5      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   2 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.022 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   3 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.020 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   4 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.019 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   5 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.019 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   6 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.018 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   7 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.018 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   8 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.019 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Na3
+ wR2 = 0.1362 before cycle   9 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.020 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Al1
+ wR2 = 0.1362 before cycle  10 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.022 for   x  O6         at 08:35:14
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for Al1
+ wR2 = 0.1362 before cycle  11 for     416 data and      0 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ R1 =  0.0594 for     413 Fo > 4sig(Fo)  and  0.0597 for all     416 data
+ wR2 =  0.1362,  GooF = S =   1.207,  Restrained GooF =    1.207  for all data
+     0  atoms may be split and     0  atoms NPD
+ R1 =  0.0593 for    416 unique reflections after merging for Fourier
+ Highest peak    0.69  at  0.4131  0.3633  0.2338  [  0.66 A from O1 ]
+ Deepest hole   -0.75  at  0.2500  0.9796  0.2500  [  1.50 A from O4 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:35:14   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:35:43 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ wR2 = 0.3550 before cycle   1 for     969 data and     67 /     67 parameters
+ GooF = S =     4.145;     Restrained GooF =      4.145 for       0 restraints
+ Mean shift/esd =   0.118  Maximum =     0.508 for  OSF            at 08:35:43
+ Max. shift = 0.008 A for O5      Max. dU = 0.002 for Na3
+ wR2 = 0.3554 before cycle   2 for     969 data and     67 /     67 parameters
+ GooF = S =     4.112;     Restrained GooF =      4.112 for       0 restraints
+ Mean shift/esd =   0.053  Maximum =     0.227 for  OSF            at 08:35:43
+ Max. shift = 0.003 A for O5      Max. dU = 0.001 for Na3
+ wR2 = 0.3561 before cycle   3 for     969 data and     67 /     67 parameters
+ GooF = S =     4.104;     Restrained GooF =      4.104 for       0 restraints
+ Mean shift/esd =   0.010  Maximum =     0.038 for  U11 Si2        at 08:35:43
+ Max. shift = 0.001 A for Na3      Max. dU = 0.000 for Na3
+ wR2 = 0.3562 before cycle   4 for     969 data and     67 /     67 parameters
+ GooF = S =     4.104;     Restrained GooF =      4.104 for       0 restraints
+ Mean shift/esd =   0.003  Maximum =    -0.012 for   y  Ca4        at 08:35:43
+ Max. shift = 0.000 A for Na3      Max. dU = 0.000 for Na3
+ wR2 = 0.3563 before cycle   5 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.001  Maximum =    -0.004 for   y  Si1        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Na3
+ wR2 = 0.3563 before cycle   6 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.001  Maximum =    -0.002 for   y  Si1        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.3563 before cycle   7 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =    -0.001 for   y  Si1        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.3563 before cycle   8 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   y  Si1        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.3563 before cycle   9 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for  U22 Mg2        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.3563 before cycle  10 for     969 data and     67 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ Mean shift/esd =   0.000  Maximum =     0.000 for   y  Si1        at 08:35:43
+ Max. shift = 0.000 A for O2      Max. dU = 0.000 for Al1
+ wR2 = 0.3563 before cycle  11 for     969 data and      0 /     67 parameters
+ GooF = S =     4.105;     Restrained GooF =      4.105 for       0 restraints
+ R1 =  0.0877 for     965 Fo > 4sig(Fo)  and  0.0878 for all     969 data
+ wR2 =  0.3563,  GooF = S =   4.105,  Restrained GooF =    4.105  for all data
+ ** Warning:     0  atoms may be split and     1  atoms NPD **
+ R1 =  0.1244 for    420 unique reflections after merging for Fourier
+ Highest peak    2.15  at  0.4948  0.3974  0.2565  [  0.64 A from SI1 ]
+ Deepest hole   -2.05  at  0.9756  0.8207  0.0337  [  1.03 A from SI2 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:35:43   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  SHELXL -  CRYSTAL STRUCTURE REFINEMENT  -   MULTI-CPU VERSION  +
+ +  Copyright(C) George M. Sheldrick 1993-2014     Version 2014/7  +
+ +  shelx                      started at 08:36:32 on 21-Jun-2015  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ Command line parameters: shelx -a50000 -b3000 -c624 -t8
+ 
+ -a sets the approximate maximum number of atoms including hydrogens.
+ -b sets the maximum number of full-matrix parameters (leave unchanged for
+ CGLS). For example -b9000 allows refinement of 1000 anisotropic atoms or
+ 3000 with BLOC 1. For a 32-bit version, -b times the square root of the
+ number of threads should not exceed about 65500. -c sets the reflection
+ buffer size. This depends on the CPU cache size but will rarely need
+ changing. -t sets the number of threads, otherwise the multi-CPU version
+ sets this equal to the number of available CPUs. For optimal performance
+ on systems with hyperthreading, usually the hyperthreading should be
+ switched off or -t used to halve the number of threads; e.g. -t4 rather
+ than -t8 for an Intel i7 processor.
+ 
+ Running  8 threads on  8 processors
+ 
+ Read instructions and data
+ 
+ ** Warning: DISP instructions may be required for this wavelength **
+ Data:     416 unique,      0 suppressed   R(int) = 0.0725   R(sigma) = 0.0471
+ Systematic absence violations:    1    Bad equivalents:  255
+ wR2 = 0.1362 before cycle   1 for     416 data and     67 /     67 parameters
+ GooF = S =     1.207;     Restrained GooF =      1.207 for       0 restraints
+ Mean shift/esd =   0.005  Maximum =     0.018 for   x  O6         at 08:36:32
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1362 before cycle   2 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.007  Maximum =     0.027 for   x  O6         at 08:36:32
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1361 before cycle   3 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.008  Maximum =     0.033 for   x  O6         at 08:36:32
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1361 before cycle   4 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.011  Maximum =     0.043 for   x  O6         at 08:36:32
+ Max. shift = 0.000 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1361 before cycle   5 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.016  Maximum =     0.058 for   x  O6         at 08:36:32
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1361 before cycle   6 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.024  Maximum =     0.084 for   x  O6         at 08:36:32
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1361 before cycle   7 for     416 data and     67 /     67 parameters
+ GooF = S =     1.206;     Restrained GooF =      1.206 for       0 restraints
+ Mean shift/esd =   0.039  Maximum =     0.130 for   x  O6         at 08:36:32
+ Max. shift = 0.001 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1360 before cycle   8 for     416 data and     67 /     67 parameters
+ GooF = S =     1.205;     Restrained GooF =      1.205 for       0 restraints
+ Mean shift/esd =   0.060  Maximum =     0.198 for   x  O6         at 08:36:32
+ Max. shift = 0.002 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1358 before cycle   9 for     416 data and     67 /     67 parameters
+ GooF = S =     1.203;     Restrained GooF =      1.203 for       0 restraints
+ Mean shift/esd =   0.075  Maximum =     0.246 for   x  O6         at 08:36:32
+ Max. shift = 0.003 A for O6      Max. dU = 0.000 for O5
+ wR2 = 0.1355 before cycle  10 for     416 data and     67 /     67 parameters
+ GooF = S =     1.201;     Restrained GooF =      1.201 for       0 restraints
+ Mean shift/esd =   0.053  Maximum =     0.170 for   x  O6         at 08:36:32
+ Max. shift = 0.002 A for O5      Max. dU = 0.000 for O5
+ wR2 = 0.1354 before cycle  11 for     416 data and      0 /     67 parameters
+ GooF = S =     1.199;     Restrained GooF =      1.199 for       0 restraints
+ R1 =  0.0598 for     413 Fo > 4sig(Fo)  and  0.0601 for all     416 data
+ wR2 =  0.1354,  GooF = S =   1.199,  Restrained GooF =    1.199  for all data
+ ** Warning:     0  atoms may be split and     1  atoms NPD **
+ R1 =  0.0598 for    416 unique reflections after merging for Fourier
+ Highest peak    0.68  at  0.4122  0.3640  0.2344  [  0.66 A from O1 ]
+ Deepest hole   -0.71  at  0.2500  0.9761  0.2500  [  1.51 A from O4 ]
+ 
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +  shelx         finished at 08:36:32   Total elapsed time:      0.06 secs  +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+  When refining structures with SHELXL please quote the following reference :
+ 
+    G. M. Sheldrick (2008) Acta Cryst., A64, 112-122.
+ 
