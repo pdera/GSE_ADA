@@ -1656,7 +1656,7 @@ begin
 
 'PS Series':$; ---- Peak search for series of images
  begin
-   if test_write(out_dir) eq 1 then $
+   if test_write(dir) eq 1 then $
    begin
     lp=PS_Series()
     if lp[0] ne 0 then merge_peak_tables_in_series
@@ -1969,14 +1969,14 @@ end
         	oimage->load_image, fn, oadetector
         	check_mask_file
         	om=read_settings_file(dir+res.name0+'.txt')
-        	pt_file=out_dir+res.name0+'.pks'
+        	pt_file=dir+res.name0+'.pks'
         	if not(om[0] eq -100 and om[1] eq -100) then $
         	begin
          		widget_control, wid_text_16, set_value=string(om[0], format='(F6.1)')
          		widget_control, wid_text_20, set_value=string(om[1], format='(F6.1)')
          		widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
         	endif
-     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=1, check_overwrite=0, del_selected=1
+     		generate_mono, om[0],om[1],dac_open, Wid_Image_simulation->Bravais_type(), write=0, check_overwrite=0, del_selected=1
 
      		plot_image, oimage
      		update_peakno, opt->peakno()
@@ -2005,7 +2005,6 @@ end
      		plot_peaks, draw0, opt, arr1, arr2
      		print_peak_list, opt, wid_list_3
   			opt->delete_selected
-;  			opt->write_object_to_file, pt_file
      		plot_image, oimage
      		update_peakno, opt->peakno()
      		plot_peaks, draw0, opt, arr1, arr2

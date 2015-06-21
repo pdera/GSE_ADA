@@ -418,7 +418,7 @@ pro merge_peak_tables_in_series
     res.seq=i0[0]
     fn=generate_fname(res)
     res=analyse_fname(fn, dir, 3)
-    opt->read_object_from_file, out_dir+res.name0+'.pks'
+    opt->read_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    for i=1, ni[0]-1 do $
@@ -426,11 +426,11 @@ pro merge_peak_tables_in_series
     res.seq=i0[0]+i
     fn=generate_fname(res)
     res=analyse_fname(fn, dir, 3)
-    opt->APPEND_object_from_file, out_dir+res.name0+'.pks'
+    opt->APPEND_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    endfor
-   opt->write_object_to_file, out_dir+res.base0+'_merge.pks'
+   opt->write_object_to_file, out_dir+res.base0+'_merge.pks', 1
    print_peak_list, opt, wid_list_3
    peaktable_file=out_dir+res.base0+'_merge.pks'
   endif

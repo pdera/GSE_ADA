@@ -1643,10 +1643,11 @@ COMMON wavelength, wv
  END
 ;----------------------------------------------------------------------------
 
-pro CLASS_peaktable::write_object_to_file, fname
+pro CLASS_peaktable::write_object_to_file, fname, zeroint
 
             COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
 
+            if n_params() eq 1 then zeroint=0
             free_lun, 4
             OPENW, 4, fname
             A=assoc(4, ref_peak)
@@ -1655,7 +1656,7 @@ pro CLASS_peaktable::write_object_to_file, fname
             for i=0, self.peakno-1 do $
             begin
                ref_peak=self->get_element(i)
-               if ref_peak.intad[0] gt ref_peak.intad[1] then $
+               if ref_peak.intad[0] gt ref_peak.intad[1] or zeroint eq 1 then $
                begin
                 A[count]=ref_peak
                 count=count+1

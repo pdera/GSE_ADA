@@ -566,13 +566,13 @@ COMMON WID_MAR345_elements
      plot_image, oimage
      a=PS(om0+i*omD, 3, prog=0)
      plot_peaks, draw0, opt, arr1, arr2
-     fn=out_dir+res.name0+'.pks'
-     opt->write_object_to_file, fn
+     fn=dir+res.name0+'.pks'
+     opt->write_object_to_file, fn, 1
      IF cgProgressBar -> CheckCancel() THEN $
      BEGIN
      	ok = Dialog_Message('Operation canceled')
      	cgProgressBar -> Destroy
-     	RETURN, [0,0]
+     	RETURN, [1,1]
      ENDIF
      cgProgressBar -> Update, (float(i)/float(ni[0]))*100.0
    endfor

@@ -418,7 +418,7 @@ pro merge_peak_tables_in_series
     res.seq=i0[0]
     fn=generate_fname(res)
     res=analyse_fname(fn, dir, 3)
-    opt->read_object_from_file, out_dir+res.name0+'.pks'
+    opt->read_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    for i=1, ni[0]-1 do $
@@ -426,7 +426,7 @@ pro merge_peak_tables_in_series
     res.seq=i0[0]+i
     fn=generate_fname(res)
     res=analyse_fname(fn, dir, 3)
-    opt->APPEND_object_from_file, out_dir+res.name0+'.pks'
+    opt->APPEND_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    endfor
@@ -2080,7 +2080,7 @@ pro fit_all_peaks, prog=prog
 goto, hhh
 
    ; check for improper peak
-   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] lt 0 or $
+   for i=pt.peakno[0]-1, 0, -1 do if pt.peaks[i].intAD[1] le 0 or $
                                   pt.peaks[i].DetXY[0] lt 0 or $
                                   pt.peaks[i].DetXY[0] gt arr1 or $
                                   pt.peaks[i].DetXY[1] lt 0 or $
