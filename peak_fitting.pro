@@ -297,6 +297,11 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
        opt->unselect_all
        re=peak_filtering_settings()
 
+       MaxI    		   = re[1]
+       maxFWHM 		   = re[2]
+       minI			   = re[3]
+       maxTotDiffRatio = re[4]
+
        pic2=pic-pic9
        m1=max(pic2)   ; maximum difference
        m2=min(pic2)   ; minimum difference
@@ -310,36 +315,26 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
        m7=total(pic[szi-2:szi+2,szi-2:szi+2])-25.*m3
        if n_elements (pic) ge 25 then $
 	   begin
-       spic=pic[szi-3:szi+3,szi-3:szi+3]
-       spic9=pic9[szi-3:szi+3,szi-3:szi+3]
-       spic22=spic-spic9
+       		spic=pic[szi-3:szi+3,szi-3:szi+3]
+       		spic9=pic9[szi-3:szi+3,szi-3:szi+3]
+       		spic22=spic-spic9
 
-       tf=total(pic9)-median(pic9)*n_elements(pic22)
-       tp=total(pic)-median(pic)*n_elements(pic22)
-       stf=total(spic9)-median(pic9)*n_elements(spic22)
-       stp=total(spic)-median(pic)*n_elements(spic22)
+       		tf=total(pic9)-median(pic9)*n_elements(pic22)
+       		tp=total(pic)-median(pic)*n_elements(pic22)
+       		stf=total(spic9)-median(pic9)*n_elements(spic22) ; total intensity above bcgr in fitted profile [7x7]
+       		stp=total(spic)-median(pic)*n_elements(spic22)   ; total intensity above bcgr in image [7x7]
+       		str=total(spic22)   							 ; total residual intensity [7x7]
 
-
-    if tf eq 0 then print, '========= fit failed'
-    ;if abs(tp-tf)/tp gt 0.2 then print, '========= large differnce bix', abs(tp-tf)/tp
-    if abs(stp-stf)/stp gt 0.25 then print, '========= large differnce small', abs(stp-stf)/stp
-
-
-     ;---------------------------------------------------------------------------
-
-     ; Peak quality filtering
-
-     ;---------------------------------------------------------------------------
-
-endif else $
-begin
- stp=1
- stf=100
- tf=0
-endelse
-       if tf eq 0 or abs(stp-stf)/stp gt 0.25 or (a[2] gt 15.0) or (a[3] gt 15.0)  then $
+       		if abs(stp-stf)/stp gt maxTotDiffRatio then print, '========= large differnce in total intensity between fit and image', abs(stp-stf)/stp
+	   	endif else $
+		begin ;- box set too small
+ 			stp=1
+ 			stf=100
+ 			tf=0
+		endelse
+       if tf eq 0 or abs(stp-stf)/stp gt maxTotDiffRatio or (a[2] gt maxFWHM) or (a[3] gt maxFWHM) or stf gt MaxI or max((spic-median(pic9))/median(pic9)) lt minI then $
        begin
-        print, '----- ', pni, m1/m6, m1/m3, m7/m3     , a[2], a[3]
+        print, '----- peak ', pni, ' removed'
         pt.peaks[pni].selected[0]=1
        endif else  pt.peaks[pni].selected[0]=0
 

@@ -1323,7 +1323,7 @@ end
 ;plot, ds[w], xd[w], thick=0, symsize=0.5, psym=6
 
 return, ri/rit
-endif else return, 0.0
+endif else return, 0,.0
 
 end
 

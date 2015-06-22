@@ -24,7 +24,7 @@ COMMON WID_MAR345_elements
   re2=widget_info(aWID_BUTTON_2, /button_set)
   re3=widget_info(aWID_BUTTON_3, /button_set)
   re4=widget_info(aWID_BUTTON_4, /button_set)
-  return, [re0*a0, re1*a1, re2*a2, re3*a3]
+  return, [float(re0)*a0, float(re1)*a1, float(re2)*a2, float(re3)*a3, float(re4)*a4]
 
 end
 

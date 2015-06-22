@@ -567,7 +567,7 @@ COMMON WID_MAR345_elements
      a=PS(om0+i*omD, 3, prog=0)
      plot_peaks, draw0, opt, arr1, arr2
      fn=dir+res.name0+'.pks'
-     opt->write_object_to_file, fn
+     opt->write_object_to_file, fn, 1
      IF cgProgressBar -> CheckCancel() THEN $
      BEGIN
      	ok = Dialog_Message('Operation canceled')

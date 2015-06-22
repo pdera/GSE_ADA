@@ -2133,7 +2133,7 @@ end
      opt->set_energy, a_to_kev(wv)
    end
    fn=dialog_pickfile(/write, filter='*.pks', DEFAULT_EXTENSION='.pks', path=out_dir)
-   if fn ne '' then opt->write_object_to_file, fn
+   if fn ne '' then opt->write_object_to_file, fn, 1
    peaktable_file=fn
  end
 'Generate peaks':$
@@ -3438,14 +3438,40 @@ end
 ;------------------
 'Fit all peaks':$
  begin
-   fit_all_peaks, prog=1
-   opt->calculate_all_xyz_from_pix, oadetector, wv
-   print_peak_list, opt, wid_list_3
-   plot_image, oimage
-   plot_peaks, draw0, opt, arr1, arr2
-   update_peakno, opt->peakno()
-   print_R_int, Rint(get_laue_class(), opt)
-   re=dialog_message('Peak profile refinement complete')
+   			fit_all_peaks, prog=1
+  			opt->delete_selected
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+
+            ;---- filter observed
+  			a=oimage->calculate_local_background(0)
+  			widget_control, wid_text_48, get_value=obs
+  			obs=float(obs)
+  			opt->unselect_all
+  			pt=opt->get_object()
+  			for pn=0, opt->peakno()-1 do $
+  			begin
+  				bs=[long(pt.peaks[pn].intssd[0]),long(pt.peaks[pn].intssd[0])]
+    			xy=pt.peaks[pn].detXY
+ 	 			bs=[2,2]
+         		pic=oimage->get_zoomin(XY, bs, maskarr)
+    			med=median(pic)
+    			if (max(pic)-med)  lt obs then opt->select_peak, pn
+  			endfor
+
+   			opt->calculate_all_xyz_from_pix, oadetector, wv
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+  			opt->delete_selected
+     		plot_image, oimage
+     		update_peakno, opt->peakno()
+     		plot_peaks, draw0, opt, arr1, arr2
+     		print_peak_list, opt, wid_list_3
+  			print_R_int, Rint(get_laue_class(), opt)
+   		    re=dialog_message('Peak profile refinement complete')
  end
 ;-------
 
@@ -4665,6 +4691,8 @@ begin
           print, '----- ', pn, '  max difference=    ', m1
           print, '----- ', pn, '  total difference=  ', long(total(abs(pic22)))
           print, '----- ', pn, '  total median=      ', m3*n_elements(pic22)
+          print, '----- ', pn, '  abs(stp-stf)/stp=      ', abs(stp-stf)/stp
+          print, '----- ', pn, '  max((spic-median(pic9))/median(pic9))=      ', max((spic-median(pic9))/median(pic9))
           print, '------------------------ '
 
     if total(pic9)-median(pic9)*n_elements(pic22) eq 0 then print, '========= fit failed'
@@ -5231,12 +5259,12 @@ selecting_status=0
 
 ;peak filtering
  WIDGET_CONTROL, aWID_TEXT_0, SET_VALUE='100'; min I
- WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='40000'; max I
- WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='5.0'; Max width
- WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='1.0'; Max diff
- WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.1'; Total diff
+ WIDGET_CONTROL, aWID_TEXT_1, SET_VALUE='400000'; max I
+ WIDGET_CONTROL, aWID_TEXT_2, SET_VALUE='15.0'; Max width
+ WIDGET_CONTROL, aWID_TEXT_3, SET_VALUE='0.13'; Max diff
+ WIDGET_CONTROL, aWID_TEXT_4, SET_VALUE='0.25'; Total diff
 
- WIDGET_CONTROL,  aWID_BUTTON_0, set_button=1
+ WIDGET_CONTROL,  aWID_BUTTON_0, set_button=0
  WIDGET_CONTROL,  aWID_BUTTON_1, set_button=1
  WIDGET_CONTROL,  aWID_BUTTON_2, set_button=1
  WIDGET_CONTROL,  aWID_BUTTON_3, set_button=1
