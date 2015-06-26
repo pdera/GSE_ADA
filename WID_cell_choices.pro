@@ -35,7 +35,7 @@ end
 ;function recognize_crystal_system_from_lp, lp, lengtol, angtol
 
 
-pro WID_cell_choices, lps, v, l;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
+pro WID_cell_choices, lps, v, l, fom;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
 
    common uc_selection, sel, sel1, li, dl, lpss
 
@@ -77,11 +77,13 @@ pro WID_cell_choices, lps, v, l;, GROUP_LEADER=wGroup, _EXTRA=_VWBExtra_
   dl=WID_DROPLIST_symmetry
 
   st=''
+  st=st+string(fom[0],format='(F8.2)')+' '
   for j=0,5 do st=st+string(lps[j,0], format='(F10.4)')
   list=st+string(V[0],format='(F12.2)')+l[0]
   for i=1, n_elements(lps)/6-1 do $
   begin
     st=''
+    st=st+string(fom[i],format='(F8.2)')+' '
     for j=0,5 do st=st+string(lps[j,i], format='(F10.4)')
     list=[list, st+string(V[0],format='(F12.2)')+l[i]]
   endfor

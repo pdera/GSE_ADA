@@ -397,7 +397,7 @@ COMMON WID_MAR345_elements
 end
 
 ;--------------------------------
-pro read_cells_from_cellnow, lp, v, l
+pro read_cells_from_cellnow, lp, v, l, fom
 	@COMMON_DATAS
    lp=fltarr(6)
    lp0=fltarr(6)
@@ -405,6 +405,8 @@ pro read_cells_from_cellnow, lp, v, l
    L=''
    V0=0.0
    L0=''
+   fom= 0.0
+   fom0 = 0.0
    ;dir='C:\Users\przemyslaw\Dropbox (UH Mineral Physics)\software\RSV_mSXD 2.5\'
    dir = cell_now_dir
    fil=dir+'xxx._cn'
@@ -425,6 +427,7 @@ pro read_cells_from_cellnow, lp, v, l
    begin
      lp[i]=strmid(re, 18+i*8,8)
    endfor
+     FOM=strmid(re, 11,5)
      V=strmid(re, 65,10)
      L=strmid(re, 75,3)
    num=1
@@ -432,11 +435,13 @@ pro read_cells_from_cellnow, lp, v, l
    begin
     lp=[[lp],[lp0]]
     V=[V,V0]
+    fom=[fom,fom0]
     L=[L,L0]
     readf, ln, re
     for i=0, 5 do lp[i, num]=strmid(re, 18+i*8,8)
     V[num]=strmid(re, 65,10)
     L[num]=strmid(re, 75,3)
+    fom[num]=strmid(re,11,5)
     num=num+1
    endwhile
    close, ln
@@ -446,9 +451,11 @@ pro read_cells_from_cellnow, lp, v, l
    lp=lp[*,0:num-2]
    l=l[0:num-2]
    v=v[0:num-2]
+   fom=fom[0:num-1]
    print, lp
    print, v
    print, l
+   print, fom
 
 end
 

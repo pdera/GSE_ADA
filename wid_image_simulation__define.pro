@@ -274,9 +274,9 @@ common uc_selection, sel, li
     V=0.0
     L=''
 
-    read_cells_from_cellnow, lps, v, l
+    read_cells_from_cellnow, lps, v, l, fom
 
-    WID_cell_choices, lps, v, l
+    WID_cell_choices, lps, v, l, fom
 
     if sel eq -1 then re=dialog_message('You have to select one of the solutions') else $
     begin

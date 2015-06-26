@@ -1,4 +1,26 @@
-
+;
+;
+;+
+;NAME:
+;	WID_MAR345_COMMONS
+;
+;PURPOSE :
+; 	Reads the common blocks for the GSE_ADA package. This allows for the sharing and passing
+; 	of variables and controls from one routine or procedure to another.
+;
+;AUTHOR :
+; 	Przemyslaw Dera
+;
+;
+;Categories:
+; 	Event callback routine handler from the WID_MAR345 Main Window widget and
+;	associated buttons.
+;
+;Example :
+; 	This procedure takes no arguments. It is simply inserted in a line at the near top of the procedure
+; 	requiring access to the common variables and controls.
+; 	wid_mar345_commons
+;-
 pro WID_MAR345_commons
 
 @COMMON_DATAS
@@ -35,7 +57,14 @@ end
 
 
 ;/// Routines for interaction with the main GUI
-
+;+
+;NAME:
+; 	Check_mask_file
+;PURPOSE :
+; 	Checks for the presence of a mask file, that given by resname.base+.msk
+;	If the file exists, it is loaded into memory and available for use.
+;
+;-
 
 
 ;-----------------------------------
@@ -53,6 +82,22 @@ common selections, selecting_status, select, excl, unselect, addpeak, mask, mask
 end
 
 ;-----------------------------------
+;+
+;NAME:
+;	moving_detector_trajectory
+;PURPOSE:
+;	Calculate trajectory based upon peak and distance.
+;
+;CATEGORY:
+;	XRD Collection Configuration
+;
+;CALLING SEQUENCE:
+; 	dxy = moving_detector_trajectory(pp, dist)
+;INPUTS:
+; 	pp: Peak
+;	dist: Distance
+;-
+
 function moving_detector_trajectory, pp, dist
 ;pp - peak number
 common datas
