@@ -22,9 +22,9 @@
 ;==============================================================
 
 
-function read_kappa_and_ttheta
- return, [0.0,0.0]
-end
+;function read_kappa_and_ttheta
+; return, [0.0,0.0]
+;end
 
 
 
@@ -105,8 +105,9 @@ pro adetector_class::generate_all_peaks, ub, optable, wv, pred, exti, DAC_open, 
 COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
  kt=read_kappa_and_ttheta()
  gonio=fltarr(6)
- gonio[1]=kt[1] ; 2theta
- gonio[4]=pred.chi ; this should be kappa/chi
+ gonio[1]=kt[1] ; 2theta/Del
+ gonio[0]=kt[0] ; nu
+; gonio[4]=pred.chi ; this should be kappa/chi
 
  a=read_box_change()
  ref_peak.intssd[0:1]=[a,a]
@@ -122,6 +123,13 @@ COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
         begin
         xyz=UB ## hkl
         om=get_omega(A_to_kev(wv), xyz)
+
+        if om[0]+360. ge pred.om_start and om[0]+360. le pred.om_start+pred.om_range then om[0]=om[0]+360.0
+        if om[0]-360. ge pred.om_start and om[0]-360. le pred.om_start+pred.om_range then om[0]=om[0]-360.0
+
+        if om[1]+360. ge pred.om_start and om[1]+360. le pred.om_start+pred.om_range then om[1]=om[1]+360.0
+        if om[1]-360. ge pred.om_start and om[1]-360. le pred.om_start+pred.om_range then om[1]=om[1]-360.0
+
         ;om=get_omega_nonorthog(A_to_kev(wv), xyz, self.alpha)
         if om[0] ge pred.om_start and om[0] le pred.om_start+pred.om_range then $
         begin
@@ -130,13 +138,13 @@ COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
           r=(pix-[self.beamx,self.beamy])
           r=sqrt(r[0]^2+r[1]^2)
           psi2=self->calculate_psi_angles(gonio, pix)
-          if pix[0] gt 0 and pix[0] lt self.nopixx-1 and  (abs(psi2[1]) lt DAC_open) then $
+          if pix[0] gt 0 and pix[0] lt self.nopixx-1 and pix[1] gt 0 and pix[1] lt self.nopixy-1 and  (abs(psi2[1]) lt DAC_open) then $
           begin
              ref_peak.detxy=pix
              ref_peak.gonio=gonio
              ref_peak.xyz=xyz
              ref_peak.hkl=hkl
-             ref_peak.intssd[0:1]=[bx[0],bx[0]]
+             ref_peak.intssd[0:1]=[box[0],box[0]]
              optable->appendpeak,ref_peak
           endif
         endif else if om[1] ge pred.om_start and om[1] le pred.om_start+pred.om_range then $
@@ -146,13 +154,13 @@ COMMON CLASS_peaktable_reference, ref_peaktable, ref_peak
           r=(pix-[self.beamx,self.beamy])
           r=sqrt(r[0]^2+r[1]^2)
           psi2=self->calculate_psi_angles(gonio, pix)
-          if pix[0] gt 0 and pix[0] lt self.nopixx-1  and (abs(psi2[1]) lt DAC_open) then $
+          if pix[0] gt 0 and pix[0] lt self.nopixx-1 and (abs(psi2[1]) lt DAC_open) then $
           begin
              ref_peak.detxy=pix
              ref_peak.gonio=gonio
              ref_peak.xyz=xyz
              ref_peak.hkl=hkl
-             ref_peak.intssd[0:1]=[bx[0],bx[0]]
+             ref_peak.intssd[0:1]=[box[0],box[0]]
              optable->appendpeak,ref_peak
           endif
         endif
@@ -375,6 +383,8 @@ COMMON ADPV, dist,beamx,beamy,psizex,psizey,nopixx,nopixY,angle,omega0,ttheta0,t
   self.alpha  = alpha
   self.tiltom = tiltom
   self.tiltch = tiltch
+  self.nu = nu
+  self.del = del
 
 end
 ;--------------------------------------------------------------------
@@ -394,6 +404,8 @@ pro adetector_class::set_object, ad
   self.alpha  = ad.alpha
   self.tiltom = ad.tiltom
   self.tiltch = ad.tiltch
+  self.nu = ad.nu
+  self.del = ad.del
 
 end
 
@@ -414,6 +426,8 @@ COMMON class_adetector_reference, ad
   ad.alpha  = self.alpha
   ad.tiltom = self.tiltom
   ad.tiltch = self.tiltch
+  ad.nu = self.nu
+  ad.del = self.del
 
   return, ad
 
@@ -548,9 +562,13 @@ function adetector_class::calculate_sd_from_pixels, pix, gonio
      vec3=vec2+vec2a
 
      ;--- include detector roatations ---
-     GenerateR, 3,-gonio[1]
+     GenerateR, 3,gonio[1]
      tth=Mtx
      vec3=tth ## (vec3)
+
+     GenerateR, 2,gonio[0]
+     nu=Mtx
+     vec3=nu ## (vec3)
 
      ;--- normalize ----
 
@@ -582,7 +600,12 @@ function adetector_class::calculate_pixels_from_sd, sd, gonio
      sd2=sd/vlength(sd)
 
 ;--- include detector roatations ---
-     GenerateR, 3,gonio[1]
+
+     GenerateR, 2,-gonio[0]
+     nu=Mtx
+     sd2=nu ## sd2
+
+     GenerateR, 3,-gonio[1]
      tth=Mtx
      sd1=tth ## sd2
 
@@ -593,16 +616,9 @@ function adetector_class::calculate_pixels_from_sd, sd, gonio
     ;---- apply detector tilts
      det=[-1.0,0.0,0.0]
 
-     GenerateR, 2,-self.tiltch
-     omt=Mtx
-     iomt=invert(Mtx)
-     GenerateR, 1,self.tiltom
-     cht=Mtx
-     icht=invert(cht)
-
      mtx=self->tilt_mtx()
      det1=mtx##det
-     ;det1=cht##omt##det
+
      ;---------------------
      ; calculate point of intersection
      dv=line_plane_intersection(sd1, det1, [0.0,0.0,0.0], [self.dist,0.0,0.0])
@@ -645,25 +661,28 @@ end
 ; from the reciprocal vector coordinates
 ; Checked 03/04/05
 ;----------------------------------------
-function calculate_sd_from_hl, hl
+function calculate_sd_from_hl, hl,wv
+
+; hl is at diffracting position
 
 
- hl=hl/vlength(hl)
+ hl1=hl/vlength(hl)
+
  Pi=acos(-1.0)
  s0=[1.0,0.0,0.0]
- al= ang_between_vecs(hl,s0)
+ al= ang_between_vecs(hl1,s0)
  if al lt 90.0 then $
  begin
-   hl=-hl
-   al= ang_between_vecs(hl,s0)
+   hl1=-hl1
+   al= ang_between_vecs(hl1,s0)
    om=90.0-al
+   print, "inversion"
  endif
-  om=al-90
- ;if hl[1] lt 0 then tth=om*2 else tth=-om*2
- tth=om*2
- ;hle=2*sin(tth*pi/180.0);/cos(om*pi/180.0)
- hle=sin(tth*pi/180.0)/cos(om*pi/180.0)
- h=hl*hle
+ om=al-90
+ tth=om*2.0
+ ;hle=sin(tth*pi/180.0)/cos(om*pi/180.0)
+ hle=2.0*sin(om*pi/180.0)
+ h=hl1*hle
  sd=s0+h
 
  return, sd
@@ -677,13 +696,13 @@ end
 ; from diffracted beam versor (hl) coordinates
 ; Checked 03/04/05
 ;----------------------------------------
-function calculate_hl_from_sd, sd
+function calculate_hl_from_sd, sd, wv
 
- sd=sd/vlength(sd)
+ ;sd=sd/vlength(sd)
  s0=[1.0,0.0,0.0]
  hl=sd-s0
 
- return, hl
+ return, hl/wv[0] ; needs to be multiplied by lambda
 
  end
 
@@ -711,98 +730,9 @@ end
 ;--------------------------------------------------------------------
 
 function adetector_class::calculate_pixels_from_xyz, xyz, gonio
-; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
-; for now this is for an omega axis
 
-     sd=[0.0,0.0,0.0]
-     pix=[0.0,0.0]
-     xyz1=xyz/vlength(xyz)
-     common Rota, Mtx
+; this is used for recalc detxy
 
-     GenerateR, 2, self.alpha
-     al=Mtx
-     GenerateR, 3, gonio[3]
-     om=Mtx
-    ; GenerateR, 3,-self.omega0 ;not using those zeros right now
-    ; om0=Mtx
-     GenerateR, 1, gonio[4]
-     ch=Mtx
-     ;GenerateR, 1, -self.ttheta0 ;not using those zeros right now
-     ;ch0=Mtx
-     iom=invert(om)
-     ;iom0=invert(om0)
-     ich=invert(ch)
-     ;ich0=invert(ch0)
-     ial=invert(al)
-
-     hl=ial##iom##al ##ich##xyz1 ; alpha accounts for non-orthogonality, kappa should account for change in crystal oprientation
-     ;hl=ial##iom##iom0##al##ch0##ich##ich0##xyz1
-
-     sd=calculate_sd_from_hl(hl)
-
-     pix=self->calculate_pixels_from_sd(sd, gonio)
-
-     return, pix
-
- end
-
-;--------------------------------------------------------------------
-; Calculates recip. versor coordinates from pixel coordinates
-; (including non zero goinio position)
-; Back rotation is applied, so the final vector coordinates are at zero
-; goniometer position
-;---------------------------------------------------------------------
-
-
-function adetector_class::calculate_XYZ_from_pixels, xpix, ypix, gonio
-; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
-
-     common Rota, Mtx
-
-     vec1=[0.0,0.0,0.0]
-     vec2=vec1
-     sd=vec1
-     hl=vec1
-
-     ;----------------------------
-     sd=self->calculate_sd_from_pixels([xpix, ypix], gonio)
-     hl=calculate_hl_from_sd(sd)
-     hl=hl/vlength(hl)
-
-     GenerateR, 2,-self.alpha
-     al=Mtx
-     GenerateR, 3,-gonio[3]
-     om=Mtx
-     ;GenerateR, 3,-self.omega0
-     ;om0=Mtx
-     GenerateR, 1, -gonio[4]
-     ch=Mtx
-     ;GenerateR, 1, -self.ttheta0
-     ;ch0=Mtx
-     iom=invert(om)
-     ;iom0=invert(om0)
-     ich=invert(ch)
-     ;ich0=invert(ch0)
-     ial=invert(al)
-
-
-     vec2=al##om##om0##ial##ich0##ch##ch0##hl ; this takes into account nonorthogonal rotation with angle alpha
-
-     return, vec2
-
- end
-
-;----------------------------------------------------------
-
-;&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-;--------------------------------------------------------------------
-; Calculates pixel coordinates from rec. vector coordinates, allows to apply further
-; goniometer rotation gonio
-; it is assumed that the goniometer rotation is relative to the original position of xyz
-;--------------------------------------------------------------------
-
-function adetector_class::calculate_pixels_from_xyz1, xyz, gonio
 ; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
 ; for now this is for an omega axis
 
@@ -813,20 +743,19 @@ function adetector_class::calculate_pixels_from_xyz1, xyz, gonio
 
      GenerateR, 3, gonio[3]
      om=Mtx
+
      GenerateR, 1, gonio[4]
      ch=Mtx
+
      GenerateR, 3, gonio[5]
      ph=Mtx
 
+
      iom=invert(om)
      ich=invert(ch)
      iph=invert(ph)
 
-     ;--- this formula is specific for phi rotation
-     ; when this is triggered from generate peaks you are starting from a vector
-     ; already rotated by chi and omega - you are accounting only for phi
-     ;--- you are starting from
-     hl=om##ich##iph##ch##iom##xyz1
+     hl=iom##ich##iph##xyz1 ; already unit length
 
      sd=calculate_sd_from_hl(hl)
 
@@ -844,8 +773,9 @@ function adetector_class::calculate_pixels_from_xyz1, xyz, gonio
 ;---------------------------------------------------------------------
 
 
-function adetector_class::calculate_XYZ_from_pixels1, xpix, ypix, gonio
-; angle gonio[0] is used to describe alpha - deviation of the omega axis from the vertical direction
+function adetector_class::calculate_XYZ_from_pixels_mono, pix, gonio, wv
+
+;this is used for xyz from pixels
 
      common Rota, Mtx
 
@@ -853,30 +783,33 @@ function adetector_class::calculate_XYZ_from_pixels1, xpix, ypix, gonio
      vec2=vec1
      sd=vec1
      hl=vec1
-
+     gonio0=fltarr(6)
+     gonio0[0:1]=gonio[0:1]
      ;----------------------------
-     sd=self->calculate_sd_from_pixels([xpix, ypix], gonio)
-     hl=calculate_hl_from_sd(sd)
-     hl=hl/vlength(hl)
+     sd=self->calculate_sd_from_pixels(pix, gonio0)
+     ; sd has unit length
+     ; it uses detector angles from gonio
 
-     GenerateR, 3, -gonio[3]
+     tth=self->calculate_tth_from_pixels(pix, gonio0)
+     d=d_from_tth_and_en(tth, A_to_kev(wv))
+
+     hl=(calculate_hl_from_sd(sd, wv))
+     ; hl already has a proper length
+
+     GenerateR, 3,-gonio[3]
      om=Mtx
-     GenerateR, 1, -gonio[4]
+     GenerateR, 1,-gonio[4]
      ch=Mtx
-     GenerateR, 3, -gonio[5]
+     GenerateR, 3,-gonio[5]
      ph=Mtx
 
-     iom=invert(om)
-     ich=invert(ch)
-     iph=invert(ph)
-
-
-     vec2=ph##ch##om##hl ; this takes into account nonorthogonal rotation with angle alpha
-     ;vec2=al##om##om0##ial##ich0##ch##ch0##hl ; this takes into account nonorthogonal rotation with angle alpha
+     vec2=ph # ch # om # hl
 
      return, vec2
 
  end
+
+;--------------------------------------------------------------------
 
 ;----------------------------------------------------------
 
@@ -906,62 +839,36 @@ end
 ;----------------------------------------------------------
 
 
-function adetector_class::calculate_XYZ_from_pixels_mono, pix, gonio, wv
-     common Rota, Mtx
-
-     vec1=[0.0,0.0,0.0]
-     vec2=vec1
-     sd=vec1
-     hl=vec1
-
-     ;----------------------------
-     sd=self->calculate_sd_from_pixels(pix, gonio)
-
-     hl=(sd-[1.,0.,0.])/wv[0]
-     ;calculate_hl_from_sd(sd)
-     ;hl=hl/vlength(hl)
-
-     GenerateR, 3,-gonio[3]
-     om=Mtx
-     GenerateR, 1,-gonio[4]
-     ch=Mtx
-     GenerateR, 3,-gonio[5]
-     ph=Mtx
-
-
-     iom=invert(om)
-     ich=invert(ch)
-     iph=invert(ch)
-
-
-     vec2=ph # ch # om # hl
-
-     s0=[1.0,0.0,0.0]
-     tth=ang_between_vecs(sd,s0)
-     en=A_to_kev(wv)
-     d=d_from_tth_and_en(tth, en)
-     vec2=vec2/vlength(vec2)
-     vec2=vec2/d[0]
-
-     return, vec2
-
- end
-
-;--------------------------------------------------------------------
 ;--------------------------------------------------------------------
 function adetector_class::calculate_psi_angles, gonio, pix
 ; psi1 is the angle between incident beam and DAC axis,
 ; psi2 is the angle between diffracted beam and DAC axis
      common Rota, Mtx
+g=fltarr(6)
+g[0:1]=gonio[0:1]
 nn=n_elements(pix)/2
 y=fltarr(2,nn)
 for i=0,nn-1 do $
 begin
- psi1=gonio[3,i]
+ g[0:1]=gonio[0:1,i]
+ sd=self->calculate_sd_from_pixels(pix[0:1,i], g)
+
+ if gonio[3,i] lt -90 then $
+ begin
+    psi1=180.0+gonio[3,i]
+    GenerateR, 3, -psi1
+ endif else $
+ if gonio[3,i] lt 90 then $
+ begin
+    psi1=gonio[3,i]
+    GenerateR, 3, -psi1
+ endif else $
+ begin
+    psi1=gonio[3,i]-180.0
+    GenerateR, 3, -psi1
+  endelse
  e1=[1.,0.,0.]
- GenerateR, 3, -gonio[3,i]
  e1=Mtx ## e1
- sd=self->calculate_sd_from_pixels(pix[0:1,i], gonio[0:5,i])
  psi2=min([ang_between_vecs(sd,e1),ang_between_vecs(sd,-1.0*e1)])
  ;if psi2 gt 90. then psi2=psi2-90.
  y[0:1,i]=[psi1,psi2]
@@ -1053,7 +960,9 @@ ad={adetector_class, $
   alpha  : 0.0,     $
   omega0 : 0.0,     $
   ttheta0: 0.0,     $
-  tiltom : 0.0,       $
-  tiltch : 0.0}
+  tiltom : 0.0,     $
+  tiltch : 0.0,	    $
+  nu     : 0.0,     $
+  del    : 0.0}
 
 end

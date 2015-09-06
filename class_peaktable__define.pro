@@ -1673,7 +1673,8 @@ pro CLASS_peaktable::calculate_all_detXY_from_xyz, oadetector, wv
   for i=0, self.peakno-1 do $
   begin
     self.peaks[i].gonio[1]=ktth[1]
-    self.peaks[i].gonio[4]=ktth[0]
+    self.peaks[i].gonio[0]=ktth[0]
+
     self.peaks[i].detXY=oadetector->calculate_pixels_from_xyz(self.peaks[i].xyz, self.peaks[i].gonio)
   end
 end
@@ -1686,11 +1687,12 @@ ktth=read_kappa_and_ttheta()
   ; pix, gonio, lambda
     pix=[self.peaks[i].detxy[0], self.peaks[i].detxy[1]]
     gonio=self.peaks[i].gonio
+    gonio[0]=ktth[0]
     gonio[1]=ktth[1]
     ;*************************** NEW CODE ********************
-    gonio[5] = read_om_rotation_dir() * gonio[5]
+    ;gonio[3] = read_om_rotation_dir() * gonio[3]
     ;*************************** NEW CODE ********************
-    gonio[4]=ktth[0]
+    ;gonio[4]=ktth[0]
     ty=omega_or_energy()
     if ty[0] eq 1 then xyz=oadetector->calculate_XYZ_from_pixels_mono(pix, gonio, wv) else $
     xyz=oadetector->calculate_XYZ_from_pixels_mono(pix, gonio, kev_to_a(self.peaks[i].energies[0]))

@@ -278,6 +278,7 @@ common uc_selection, sel, li
 
     WID_cell_choices, lps, v, l, fom
 
+    if n_elements(sel) eq 0 then re=dialog_message('You have to select one of the solutions') else $
     if sel eq -1 then re=dialog_message('You have to select one of the solutions') else $
     begin
     ; set Bravais lattice type

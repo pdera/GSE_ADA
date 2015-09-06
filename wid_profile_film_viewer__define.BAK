@@ -1,4 +1,7 @@
 
+pro WID_profile_film_viewer_cleanup, caller
+  caller->hide
+end
 
 
 pro WID_profile_film_viewer_event, ev
@@ -44,7 +47,7 @@ function WID_profile_film_viewer::init
  self.widgets.WID_profile_film_viewer = Widget_Base(UNAME='WID_profile_film_viewer' $
       ,XOFFSET=5 ,YOFFSET=5  $
       ,SCR_XSIZE=873 ,SCR_YSIZE=300 ,TITLE='Profile film viewer'  $
-      ,SPACE=3 ,XPAD=3 ,YPAD=3, /tlb_kill_request_events)
+      ,SPACE=3 ,XPAD=3 ,YPAD=3)
 
  self.widgets.WID_DRAW_0 = Widget_Draw(self.widgets.WID_profile_film_viewer,  $
       UNAME='WID_DRAW_0' ,XOFFSET=5 ,YOFFSET=6 ,SCR_XSIZE=850, SCR_YSIZE=200  $

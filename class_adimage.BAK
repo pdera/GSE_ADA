@@ -482,10 +482,35 @@ pro adimage_CLASS::append_image, fname, oadetector, sett
      if result.exists eq 1 then $
      begin
       ima=self.img
+;     self.sts.adet.dist=247.587
+;     self.sts.adet.beamx=1033.38
+;     self.sts.adet.beamy=1017.68
+;     self.sts.adet.omega0=0.0
+;     self.sts.adet.ttheta0=0.0
+;     self.sts.adet.psizex=0.079
+;     self.sts.adet.psizey=0.079
+
+;     self.sts.adet.nopixx=2048
+;     self.sts.adet.nopixy=2048
+;     self.sts.adet.angle=0.0
+;     self.sts.adet.tiltom=0.0
+;     self.sts.adet.tiltch=0.0
+;     oadetector->set_object, self.sts.adet
+
+    ; dettype is detector type
+    ; 1 = MARCCD
+    ; 2 = Bruker / SMART
+    ; 3 = Bruker / Roper
+    ; 4 = MARCCD / tiff
+    ; 5 = MAR345
 
     dettype=self.sts.det_format ; MarCCD
     dettype=2
 
+    ;COMMON reversals, WID_BUTTON_revX, WID_BUTTON_revY,WID_BUTTON_revT
+    ;revX=WIDGET_INFO(WID_BUTTON_revX, /BUTTON_SET)
+    ;revY=WIDGET_INFO(WID_BUTTON_revY, /BUTTON_SET)
+    ;revT=WIDGET_INFO(WID_BUTTON_revT, /BUTTON_SET)
 
     case dettype of
 

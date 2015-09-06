@@ -40,7 +40,6 @@ COMMON WID_MAR345_elements,$
  WID_BUTTON_23a, $
  WID_BUTTON_23b, $
  WID_BUTTON_23c ,$
- WID_BUTTON_23d ,$
  WID_BUTTON_24, $
  WID_BUTTON_25, $
  WID_BUTTON_26, $ ; open calibration

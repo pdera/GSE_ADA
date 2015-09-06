@@ -21,6 +21,17 @@
 ; 	requiring access to the common variables and controls.
 ; 	wid_mar345_commons
 ;-
+
+
+function how_many_digits, fn
+ len=strlen(fn)
+ dot=strpos(fn,'.',/REVERSE_SEARCH)
+ und=strpos(fn,'_',/REVERSE_SEARCH)
+ if dot-und-1 le 5 and und ne -1 then return, dot-und-1 else return, 0
+end
+
+;
+
 pro WID_MAR345_commons
 
 @COMMON_DATAS
@@ -413,6 +424,7 @@ end
 pro save_cal, fn, oad, wv
 if fn ne '' then $
 begin
+ nudel=read_kappa_and_ttheta()
  ad=oad->get_object()
  free_lun,2
  openw, 2, fn
@@ -428,6 +440,8 @@ begin
  PRINTF, 2,  ad.angle ; twist
  PRINTF, 2,  ad.alpha ; alpha
 
+ PRINTF, 2,  nudel[0] ; Nu
+ PRINTF, 2,  nudel[1] ; Del
 
  close, 2
 endif
@@ -473,6 +487,19 @@ begin
   ad.alpha=0.000
  endelse
 
+
+ if not eof(2) then $ ; format including Nu and Del
+ begin
+  readF, 2,  aa
+  ad.Nu=aa
+  readF, 2,  aa
+  ad.Del=aa
+ endif else $
+ begin
+  ad.Nu=0.000
+  ad.Del=0.000
+ endelse
+
  close, 2
  oad->set_object, ad
  valid=1
@@ -498,7 +525,7 @@ pro capture_calibration, oad, wv
  WIDGET_CONTROL, WID_TEXT_81, GET_VALUE=ROTA
  WIDGET_CONTROL, WID_TEXT_80, GET_VALUE=TILT
 
- WIDGET_CONTROL, WID_TEXT_36c, GET_VALUE=alpha
+ ;WIDGET_CONTROL, WID_TEXT_36c, GET_VALUE=alpha
  ad.psizex=float(pixx)
  ad.psizey=float(pixy)
  ad.dist=float(dist)
@@ -506,7 +533,7 @@ pro capture_calibration, oad, wv
  ad.beamx=float(beamx)
  ad.beamy=float(beamy)
  ad.angle=float(twist)
- ad.alpha=float(alpha)
+; ad.alpha=float(alpha)
  ad.tiltom=float(rota)
  ad.tiltch=float(tilt)
  oad->set_object, ad
@@ -519,7 +546,7 @@ PRO print_calibration, oad, wv
  COMMON WID_MAR345_elements
  ad=oad->get_object()
  WIDGET_CONTROL, WID_TEXT_36, SET_VALUE=string(ad.psizex)
- WIDGET_CONTROL, WID_TEXT_36c, SET_VALUE=string(ad.alpha)
+ ;WIDGET_CONTROL, WID_TEXT_36c, SET_VALUE=string(ad.alpha)
  WIDGET_CONTROL, WID_TEXT_35, SET_VALUE=string(ad.psizey)
  WIDGET_CONTROL, WID_TEXT_33, SET_VALUE=string(ad.dist)
  WIDGET_CONTROL, WID_TEXT_32, SET_VALUE=string(wv)
@@ -528,6 +555,10 @@ PRO print_calibration, oad, wv
  WIDGET_CONTROL, WID_TEXT_82, SET_VALUE=string(ad.beamy)
  WIDGET_CONTROL, WID_TEXT_81, SET_VALUE=string(ad.tiltom)
  WIDGET_CONTROL, WID_TEXT_80, SET_VALUE=string(ad.tiltch)
+
+
+ WIDGET_CONTROL, WID_TEXT_36a, SET_VALUE=string(ad.nu)
+ WIDGET_CONTROL, WID_TEXT_36b, SET_VALUE=string(ad.del)
 
 end
 
@@ -1322,7 +1353,7 @@ if refine_twist() eq 0 then $
 'Dac absorption':$
 begin
        wset, wid_draw_6
-       a=generate_abs(-120, -60)
+       a=generate_abs(-35, 35)
        s=n_elements(a)/2
        device, decomposed=1
        n=n_elements(tab)
@@ -1346,7 +1377,13 @@ end
   begin
    save_last_directories
    widget_control, wid_text_28, set_value=dir
-   res=analyse_fname(fn, dir, 3)
+   extno=how_many_digits(fn)
+   res=analyse_fname(fn, dir, extno) ; -1 means that there is no sequence number
+   if extno ge 1 then $
+   begin
+
+   my_f=res.seq
+   res.extno=extno
    fileparms = strarr(4)
    fileparms(0) = fn
    fileparms(1) = dir
@@ -1359,17 +1396,19 @@ end
    ; open first settings file
 
        res.seq=f0
-       fn=generate_fname(res)
+       fn=generate_fname(res, extno)
        om=read_settings_file(fn+'.txt')
        if not(om[0] eq -100 and om[1] eq -100) then $
        begin
-          widget_control, wid_text_4, set_value=strcompress(string(read_om_rotation_dir()*(om[0]-gonio_zero_offset()), format='(F10.2)'),/remove_all)
-          widget_control, wid_text_5, set_value=strcompress(string(read_om_rotation_dir()*om[1], format='(F10.2)'),/remove_all)
+          widget_control, wid_text_4, set_value=strcompress(string(read_om_rotation_dir()*(om[0]-gonio_zero_offset()), format='(F12.2)'),/remove_all)
+          widget_control, wid_text_5, set_value=strcompress(string(read_om_rotation_dir()*om[1], format='(F12.2)'),/remove_all)
        endif else begin
        		wid_settings_gen_dlg,fileparms
        endelse
    ;--------------
    ; check for ub file and give option to open existing ub files
+   if assign_cal() then $
+   begin
    ubfile = res.base + '.ub'
    FExists = FILE_TEST(ubfile)
    if max(ub) gt 0 and  FExists ne 1 then begin
@@ -1381,23 +1420,30 @@ end
 	 		status = dialog_message (message_string, /Information)
 	 	endif
 	endif
+    endif
 
-
-
-   widget_control, wid_text_17, set_value=res.name0
-   widget_control, wid_text_9, set_value=res.name0
    widget_control, wid_text_12, set_value=string(f0, format='(I4)')
    widget_control, wid_text_11, set_value=string(f1, format='(I4)')
    widget_control, wid_text_6, set_value=string(f1-f0+1, format='(I4)')
    widget_control, wid_text_7, set_value=string(f0, format='(I4)')
-   print, f0, f1
+
+   res.seq=my_f
+   fn=generate_fname(res,extno)
+
+   endif
+
+   widget_control, wid_text_17, set_value=res.name0
+   widget_control, wid_text_9, set_value=res.name0
+
+
+
    oimage->load_image, fn, oadetector
-   ; check for existence of cal file
    detectFileSpecific = res.base+'.cal'
 
    if FILE_TEST(detectFileSpecific) then begin
    	load_cal,detectFileSpecific, oadetector, wv
-   endif else begin
+   endif else if assign_cal() then $
+   begin
    		ok = Dialog_Message (['No associated cal file found', $
                       'Do you want to associate current', $
                       'calibration to that series'], $
@@ -1412,7 +1458,7 @@ end
     			save_cal, outfileTmp, oadetector, wv
    		endif
 
-   	endelse
+   	endif
    	; then check for ub file
    	ubFileSpecific = res.base+'.ub'
    	if FILE_TEST(ubFileSpecific) then begin
@@ -1429,16 +1475,8 @@ end
 
    print_calibration, oadetector, wv
    device, decomposed=0
-   goto, ll
-       om=read_settings_file(dir+res.name0+'.txt')
-       if not(om[0] eq -100 and om[1] eq -100) then $
-       begin
-        widget_control, wid_text_16, set_value=string(om[0], format='(F6.1)')
-        widget_control, wid_text_20, set_value=string(om[1], format='(F6.1)')
-        widget_control, wid_text_21, set_value=string(om[2], format='(F6.1)')
-       endif
-       ll:
-       ; Dynamic mask
+
+          ; Dynamic mask
        if  dynamic_mask_on() then $
        begin
         t1=SYSTIME(/SECONDS )
@@ -1519,19 +1557,6 @@ end
   plot, x, c
 
 
-
-   goto, tt
-    om=read_settings_file(dir+res.name0+'.txt')
-    if not(om[0] eq -100 and om[1] eq -100) then $
-    begin
-     if om[0] ne -1000 then widget_control, wid_text_16, set_value=string(om[0], format='(F8.3)') else widget_control, wid_text_16, set_value=''
-     if om[1] ne -1000 then widget_control, wid_text_20, set_value=string(om[1], format='(F8.3)') else widget_control, wid_text_20, set_value=''
-     if om[2] ne -1000 then widget_control, wid_text_21, set_value=string(om[2], format='(F8.3)') else widget_control, wid_text_21, set_value=''
-     if om[2] ne -1000 then widget_control, wid_text_36a, set_value=string(om[2], format='(F8.3)') else widget_control, wid_text_36a, set_value=''
-     if om[3] ne -1000 then widget_control, wid_text_36b, set_value=string(-om[3], format='(F8.3)') else widget_control, wid_text_36b, set_value=''
-     if om[4] ne -1000 then widget_control, wid_text_23, set_value=string(om[4], format='(F8.3)') else widget_control, wid_text_23, set_value=''
-    endif
-    tt:
 
 
 
@@ -1704,7 +1729,7 @@ begin
    if test_write(dir) eq 1 then $
    begin
     lp=PS_Series()
-    if lp[0] ne 0 then merge_peak_tables_in_series
+    if lp[0] eq 0 then merge_peak_tables_in_series
    endif
  end
 
@@ -1962,7 +1987,6 @@ end
    fn=dialog_pickfile(/write, filter='*.cal', File=outfileTmp, DEFAULT_EXTENSION='.cal') ;, path=out_dir)
    if fn ne '' then $
    begin
-
     capture_calibration, oadetector, wv
     save_cal, fn, oadetector, wv
     save_cal, 'last_calibration.cal', oadetector, wv
@@ -3691,7 +3715,10 @@ end
 ;---------------
  'Compute profiles':$
 begin
- axis=3
+   if n_elements(res) gt 0 then $
+   begin
+
+   axis=3
    kt=read_kappa_and_ttheta()
    ty=omega_or_energy()
    pt=opt->get_object()
@@ -3722,7 +3749,11 @@ begin
 
   ;--- make array for profiles
    profiles=fltarr(pt.peakno, ni[0])
-   ;widget_control, wid_text_8, set_value=string(0, format='(I3)')+'/'+string(ni[0], format='(I3)')
+
+   cgProgressBar = Obj_New("CGPROGRESSBAR", /Cancel)
+   cgProgressBar -> Start
+
+
    for i=0, ni[0]-1 do $
    begin
 
@@ -3752,8 +3783,18 @@ begin
       pic=oimage->get_zoomin(pt.peaks[k].detXY, bs, maskarr)
       profiles[k,i]=total(pic)
     end
-    widget_control, wid_text_8, set_value=string(i+1, format='(I2)')+'/'+string(ni[0], format='(I2)')
+
+     IF cgProgressBar -> CheckCancel() THEN BEGIN
+        ok = Dialog_Message('Operation canceled')
+        cgProgressBar -> Destroy
+      RETURN
+      ENDIF
+      cgProgressBar -> Update, (float(i)/(ni[0]-1))*100.0
+
    endfor
+
+   cgProgressBar -> Destroy
+
    omega=fltarr(ni[0])
    ene=fltarr(ni[0])
    for i=0, ni[0]-1 do omega[i]=om0+i*omD
@@ -3763,7 +3804,8 @@ begin
      re=max(profiles[i,0:ni[0]-1],l)
      if ty eq 1 then $
      begin
-       pt.peaks[i].gonio[4]=kt[0]
+       pt.peaks[i].gonio[0]=kt[0] ; nu
+       pt.peaks[i].gonio[1]=kt[1] ; del
        pt.peaks[i].gonio[axis]=omega[l]
      endif else $
      begin
@@ -3774,7 +3816,7 @@ begin
 
    opt->set_object, pt
    capture_calibration, oadetector, wv
-   opt->calculate_all_xyz_from_pix, oadetector, wv
+  ; opt->calculate_all_xyz_from_pix, oadetector, wv
 
 
    if ty eq 1 then opt->calculate_all_xyz_from_pix, oadetector, wv else $
@@ -3782,7 +3824,7 @@ begin
    print_peak_list, opt, wid_list_3
    re=dialog_message('Profile computation successfully completed')
    stoper1:
-
+   endif
 end
 ;-------
 ;---------------
@@ -4075,6 +4117,8 @@ end
 
 'Merge step images':$
 begin
+    if n_elements(res) gt 0 then $
+    begin
     widget_control, wid_text_6, get_value=ni
     widget_control, wid_text_7, get_value=i0
     i0=reform(fix(i0))
@@ -4165,6 +4209,7 @@ begin
   endfor
  print, '------------------------- FINISHED ----------------------------'
  endelse
+ endif
 end
 ;-------end
  'Use exclusions':$
@@ -4640,6 +4685,15 @@ end
      print_peak_list, opt, wid_list_3
      endif
    end
+
+'Both PT':$
+begin
+  	 opt->unselect_all
+     plot_image, oimage
+     plot_peaks, draw0, opt, arr1, arr2
+  	 opt1->select_all
+     plot_peaks, draw0, opt1, arr1, arr2
+end
 ;-------
 
 'Show rings':$
@@ -4675,6 +4729,7 @@ begin
  if pn ge 0 and pn lt opt->peakno() then $
  begin
 
+
    pt=opt->get_object()
    widget_control, wid_text_37, SET_VALUE=strcompress(string(long(pt.peaks[pn].intssd[0])),/remove_all) ; display peak box size
    opt->unselect_all
@@ -4687,6 +4742,11 @@ begin
    pic9=one_peak_get_profile(pn)
 
    if n_elements(pic9) eq 1 then pic9=fltarr((bs+1)*2)
+
+   if min(pic9) eq 0 then $
+   begin
+     print, 'blind region'
+   end
 
    sz=sqrt(n_elements(pic9))
    szi=(sz-1)/2
@@ -4772,8 +4832,9 @@ begin
 
     if PE_open eq 1 then $ ;--- Peak Editor only
     begin
-       display_peak, pn, pt
-       plot_peak, pn, pt, oimage
+       ;display_peak, pn, pt
+       wid_peditor->fillup , pn, pt
+       ;plot_peak, pn, pt, oimage
     endif
 
   endif else $ ;- pn gt 0
@@ -5264,6 +5325,8 @@ selecting_status=0
  widget_control, wid_button_20aa3, set_button=1
  widget_control, WID_BUTTON_23c, set_button=1
 
+ widget_control, wid_button_20aa4, set_button=1
+ widget_control, wid_button_20aa5, set_button=1
 
  widget_control, wid_text_29, set_value=out_dir
  widget_control, wid_text_28, set_value=dir
@@ -5279,10 +5342,10 @@ selecting_status=0
  WID_MAR345_ext
 
 
- WIDGET_CONTROL, WID_TEXT_36c, SET_UVALUE=''
+ ;WIDGET_CONTROL, WID_TEXT_36c, SET_UVALUE=''
  ;WIDGET_CONTROL, WID_BUTTON_38v, SET_UVALUE='Verify omegas'
 
- WIDGET_CONTROL, WID_TEXT_36c, SET_VALUE='0.000'
+ ;WIDGET_CONTROL, WID_TEXT_36c, SET_VALUE='0.000'
  WIDGET_CONTROL, WID_TEXT_14_da1, SET_UVALUE='2.100'
  WIDGET_CONTROL, WID_TEXT_14_da2, SET_UVALUE='5.800'
  WIDGET_CONTROL, WID_TEXT_14_da3, SET_UVALUE='4.000'

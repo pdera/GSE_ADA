@@ -1,0 +1,53 @@
+HEADER
+; IDL Visual Widget Builder Resource file. Version 1
+; Generated on:	07/23/2015 20:13.49
+VERSION 1
+END
+
+WID_BASE_0 BASE 5 5 516 568
+TLB
+CAPTION "IDL"
+XPAD = 3
+YPAD = 3
+SPACE = 3
+BEGIN
+  WID_BASE_1 BASE 28 34 171 143
+  XPAD = 3
+  YPAD = 3
+  SPACE = 3
+  CAPTION "IDL"
+  BEGIN
+    WID_TEXT_0 TEXT 68 19 77 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_1 TEXT 68 44 77 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_2 TEXT 68 69 77 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_TEXT_3 TEXT 68 94 77 21
+    WIDTH = 20
+    HEIGHT = 1
+    END
+    WID_LABEL_0 LABEL 25 25 0 0
+    VALUE "Mu"
+    ALIGNLEFT
+    END
+    WID_LABEL_1 LABEL 25 50 0 0
+    VALUE "kEta"
+    ALIGNLEFT
+    END
+    WID_LABEL_2 LABEL 25 75 0 0
+    VALUE "kappa"
+    ALIGNLEFT
+    END
+    WID_LABEL_3 LABEL 25 100 0 0
+    VALUE "kPhi"
+    ALIGNLEFT
+    END
+  END
+END

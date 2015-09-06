@@ -274,9 +274,9 @@ common uc_selection, sel, li
     V=0.0
     L=''
 
-    read_cells_from_cellnow, lps, v, l
+    read_cells_from_cellnow, lps, v, l, fom
 
-    WID_cell_choices, lps, v, l
+    WID_cell_choices, lps, v, l, fom
 
     if sel eq -1 then re=dialog_message('You have to select one of the solutions') else $
     begin
@@ -310,17 +310,13 @@ common uc_selection, sel, li
      print_peak_list, opt, wid_list_3a
      update_peakno, opt->peakno()
 
+     dir=dir0
 
 ; check for ub file and give option to open existing ub files
    		; ask user if they wish to associate an existing UB file
    		status = dialog_message ("Associate this new UB matrix with the current image series?", /question)
    		if status eq 'Yes' then begin
-   			ubFileSpecific = Dialog_Pickfile (/read, Filter='*.ub', Title='Select associated .ub file')
-   		 	UB=open_UB(ubFileSpecific)
-     		lp=lp_from_ub(UB)
-     		Wid_Image_simulation->print_UB,UB
-     		Wid_Image_simulation->print_lp,lp
-	 		; then save to the associated file name
+   			ubFile = res.base+'.ub'
 	 		save_UB, UB, ubfile
 	 		message_string = 'Wrote UB File : '+ubfile
 	 		status = dialog_message (message_string, /Information)
@@ -328,7 +324,6 @@ common uc_selection, sel, li
 
 
 
-     dir=dir0
      return, 1
      endelse
      endif else return, -1; no cell_now

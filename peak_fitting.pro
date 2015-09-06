@@ -402,7 +402,9 @@ pro merge_peak_tables_in_series
 @COMMON_DATAS
 @COMMON_DATAS2
 @WID_GSE_ADA_COMMON
-
+   ex=res.extno
+   if n_elements(res) gt 0 then $
+   begin
    if res.name0 ne '' then $
    begin
    widget_control, wid_text_7, get_value=i0
@@ -411,16 +413,16 @@ pro merge_peak_tables_in_series
    i0=fix(i0)
 
     res.seq=i0[0]
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
+    fn=generate_fname(res,ex)
+    res=analyse_fname(fn, dir, ex)
     opt->read_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    for i=1, ni[0]-1 do $
    begin
     res.seq=i0[0]+i
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
+    fn=generate_fname(res,ex)
+    res=analyse_fname(fn, dir, ex)
     opt->APPEND_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
@@ -429,7 +431,7 @@ pro merge_peak_tables_in_series
    print_peak_list, opt, wid_list_3
    peaktable_file=out_dir+res.base0+'_merge.pks'
   endif
-
+  endif
 end
 
 

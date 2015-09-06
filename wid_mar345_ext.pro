@@ -11,6 +11,17 @@ pro WID_MAR345_ext_commons
 
 end
 
+function assign_cal
+COMMON WID_MAR345_elements
+ re0=widget_info(wid_button_20aa4, /button_set)
+ return, re0
+end
+
+function assign_ub
+COMMON WID_MAR345_elements
+ re0=widget_info(wid_button_20aa5, /button_set)
+ return, re0
+end
 
 function peak_filtering_settings
 COMMON WID_MAR345_elements
@@ -79,12 +90,12 @@ COMMON WID_MAR345_elements
 
    if read_om_rotation_dir() eq 1 then $
    begin
-    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string((nums[0]-gonio_zero_offset()), format='(F6.2)')
-    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
+    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string((nums[0]-gonio_zero_offset()), format='(F12.2)')
+    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F12.2)')
    end else $
    begin
-    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string( read_om_rotation_dir()*(nums[0]-gonio_zero_offset())-nums[1], format='(F6.2)')
-    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F6.2)')
+    WIDGET_CONTROL, WID_TEXT_30, SET_VALUE=string( read_om_rotation_dir()*(nums[0]-gonio_zero_offset())-nums[1], format='(F12.2)')
+    WIDGET_CONTROL, WID_TEXT_31, SET_VALUE=string(nums[1], format='(F12.2)')
    endelse
  end
 end
@@ -106,7 +117,7 @@ end
 
 pro update_progress, prog
 COMMON WID_MAR345_elements
- widget_control, wid_text_8, set_value=string(prog*100.0, format='(I4)')+'%'
+ ;widget_control, wid_text_8, set_value=string(prog*100.0, format='(I4)')+'%'
 end
 
 function read_kappa_and_ttheta
@@ -568,7 +579,7 @@ COMMON WID_MAR345_elements
     begin
      res.seq=i0[0]+i
      fn=generate_fname(res)
-     res=analyse_fname(fn, dir, 3)
+     res=analyse_fname(fn, dir, res.extno)
      widget_control, wid_text_9, set_value=res.name0
      oimage->load_image, fn, oadetector
      plot_image, oimage
@@ -667,7 +678,7 @@ goto, ror
       opt->write_object_to_file, fn+'_ic.pks'
     endelse
     return, [[lpo],[lpc]]
-    ror: return, [1,1]
+    ror: return, [0,0]
 end
 ;---------------------------
 

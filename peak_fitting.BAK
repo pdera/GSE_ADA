@@ -299,6 +299,7 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
 
        MaxI    		   = re[1]
        maxFWHM 		   = re[2]
+       minI			   = re[3]
        maxTotDiffRatio = re[4]
 
        pic2=pic-pic9
@@ -331,7 +332,7 @@ pro peak_intensity, pni, A, PCERROR, axis, pic, pic9
  			stf=100
  			tf=0
 		endelse
-       if tf eq 0 or abs(stp-stf)/stp gt maxTotDiffRatio or (a[2] gt maxFWHM) or (a[3] gt maxFWHM) or stf gt MaxI then $
+       if tf eq 0 or abs(stp-stf)/stp gt maxTotDiffRatio or (a[2] gt maxFWHM) or (a[3] gt maxFWHM) or stf gt MaxI or max((spic-median(pic9))/median(pic9)) lt minI then $
        begin
         print, '----- peak ', pni, ' removed'
         pt.peaks[pni].selected[0]=1
@@ -401,7 +402,8 @@ pro merge_peak_tables_in_series
 @COMMON_DATAS
 @COMMON_DATAS2
 @WID_GSE_ADA_COMMON
-
+   if n_elements(res) gt 0 then $
+   begin
    if res.name0 ne '' then $
    begin
    widget_control, wid_text_7, get_value=i0
@@ -410,16 +412,16 @@ pro merge_peak_tables_in_series
    i0=fix(i0)
 
     res.seq=i0[0]
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
+    fn=generate_fname(res,4)
+    res=analyse_fname(fn, dir, 4)
     opt->read_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
    for i=1, ni[0]-1 do $
    begin
     res.seq=i0[0]+i
-    fn=generate_fname(res)
-    res=analyse_fname(fn, dir, 3)
+    fn=generate_fname(res,4)
+    res=analyse_fname(fn, dir, 4)
     opt->APPEND_object_from_file, dir+res.name0+'.pks'
     update_peakno, opt->peakno()
     plot_peaks, draw0, opt, arr1, arr2
@@ -428,7 +430,7 @@ pro merge_peak_tables_in_series
    print_peak_list, opt, wid_list_3
    peaktable_file=out_dir+res.base0+'_merge.pks'
   endif
-
+  endif
 end
 
 

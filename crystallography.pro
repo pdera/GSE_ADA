@@ -1320,6 +1320,45 @@ function error_estimates_text,lp, ds,hkls, sym
  END;---------------------------------------------------------
 ;---- function minimized in B refinement from d
 
+
+
+Function MYFUNCT_two_Detectors, p, X=x, Y=y, ERR=err
+  @COMMON_DATAS
+  COMMON Nus, Nu1, Nu2, Del1, Del2
+ ; COMMON Opts, opt1, opt2
+  common refine, ds1, hkls1
+
+
+   NP1=opt1->peakno()
+   NP2=opt2->peakno()
+
+   ; X should be NP1+NP2
+   ; Does X do peak exclusions?
+
+   oadetector->change_twist, p[6] ; so far it is just twist and cell parameters
+
+   oadetector->change_NuDel, [Nu1, Del1]
+   opt1->calculate_all_xyz_from_pix, oadetector, wv
+
+   DD1=opt1->build_ds()
+   HKLs1=opt1->build_hkls()
+   Y1=DD1[0:NP1-1]
+
+   oadetector->change_NuDel, [Nu2, Del2]
+   opt2->calculate_all_xyz_from_pix, oadetector, wv
+   HKLs2=opt2->build_hkls()
+
+   DD2=opt2->build_ds()
+   Y1=[DD1,DD2[0:NP2-1]]
+
+   N=n_elements(X)
+   f=fltarr(N)
+   for i=0, N-1 do F[i]=d_from_lp_and_hkl(p[0:5],[hkls1,hkls1])
+   return, abs(Y1-F)/ERR
+ END;---------------------------------------------------------
+
+
+
 FUNCTION MYFUNCT_twist, p, X=x, Y=y, ERR=err
   @COMMON_DATAS
 
