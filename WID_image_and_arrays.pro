@@ -8,11 +8,12 @@ WID_BUTTON_1, $
 WID_BUTTON_1aa, $
 WID_BUTTON_1bb, $
 WID_BUTTON_2, $
-WID_BUTTON_3
+WID_BUTTON_3, $
+WID_BUTTON_1cc
 
   WID_Image_and_arrays = Widget_Base( GROUP_LEADER=wGroup,  $
       UNAME='WID_Image_and_arrays' ,XOFFSET=5 ,YOFFSET=5  $
-      ,SCR_XSIZE=401 ,SCR_YSIZE=221 ,TITLE='Image format and size' ,SPACE=3 ,XPAD=3  $
+      ,SCR_XSIZE=401 ,SCR_YSIZE=241 ,TITLE='Image format and size' ,SPACE=3 ,XPAD=3  $
       ,YPAD=3)
 
 
@@ -34,6 +35,9 @@ WID_BUTTON_3
 
   WID_BUTTON_1bb = Widget_Button(WID_BASE_1, UNAME='WID_BUTTON_1aa'  $
       ,YOFFSET=66 ,/ALIGN_LEFT ,VALUE='Pilatus Tiff 90 deg')
+
+  WID_BUTTON_1cc = Widget_Button(WID_BASE_1, UNAME='WID_BUTTON_1cc'  $
+      ,YOFFSET=88 ,/ALIGN_LEFT ,VALUE='HDF 5 (.h5)')
 
 ;  WID_BUTTON_2 = Widget_Button(WID_BASE_1, UNAME='WID_BUTTON_2'  $
 ;      ,YOFFSET=44 ,/ALIGN_LEFT ,VALUE='Bruker CCD')
@@ -77,6 +81,7 @@ a2=widget_info(wid_button_1, /button_set)
 a3=widget_info(wid_button_2, /button_set)
 a4=widget_info(wid_button_1aa, /button_set)
 a5=widget_info(wid_button_1bb, /button_set)
+a6=widget_info(wid_button_1cc, /button_set)
 widget_control, wid_text_0, get_value=xpn
 widget_control, wid_text_1, get_value=ypn
 xpn=long(xpn)
@@ -88,6 +93,7 @@ if a2 eq 1 then return, [4, xpn, ypn]
 if a3 eq 1 then return, [5, xpn, ypn]
 if a4 eq 1 then return, [4, xpn, ypn]
 if a5 eq 1 then return, [4, xpn, ypn]
+if a6 eq 1 then return, [6, xpn, ypn] ; hdf 5 type is '6'
 
 end
 ;-----------------------------------
@@ -129,6 +135,11 @@ end
   WIDGET_CONTROL, WID_TEXT_0, SET_VALUE='195'
   WIDGET_CONTROL, WID_TEXT_1, SET_VALUE='487'
 end
+'HDF 5':$
+ begin
+  WIDGET_CONTROL, WID_TEXT_0, SET_VALUE='2048'
+  WIDGET_CONTROL, WID_TEXT_1, SET_VALUE='2048'
+end
 else:
 endcase
 end
@@ -145,6 +156,7 @@ WIDGET_CONTROL, WID_BUTTON_1, SET_BUTTON=1
 WIDGET_CONTROL, WID_BUTTON_1, SET_UVALUE='Tiff'
 WIDGET_CONTROL, WID_BUTTON_1aa, SET_UVALUE='Pilatus 1M Tiff'
 WIDGET_CONTROL, WID_BUTTON_1bb, SET_UVALUE='Pilatus Tiff 90 deg'
+WIDGET_CONTROL, WID_BUTTON_1cc, SET_UVALUE='HDF 5'
 WIDGET_CONTROL, WID_BUTTON_2, SET_UVALUE='MAR230'
 WIDGET_CONTROL, WID_BUTTON_3, SET_UVALUE='Start'
 

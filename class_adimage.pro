@@ -356,6 +356,14 @@ pro adimage_CLASS::load_image, fname, oadetector, sett
        dettype=self.sts.det_format ; MarCCD
 
     case dettype of
+    6: begin ; HDF 5 (.h5)
+    	f = h5f_open(fname)
+    	g = h5g_open(f,'entry1/data')
+    	dset = h5d_open (g, 'data')
+    	image1 = h5d_read (dset)
+    	help,image1
+    	end
+
 
     5: begin ; MAR345
           READ_mar345,fname, image1, header

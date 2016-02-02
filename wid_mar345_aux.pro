@@ -1371,7 +1371,8 @@ end
  ;******************************** NEW CODE **********************
  'Open':$
  begin
-  fn=dialog_pickfile(/read, filter=['*.mar3450','*.mar2300', '*.tiff', '*.tif'], path=dir, get_path=dir)
+  fn=dialog_pickfile(/read, filter=['*.mar3450','*.mar2300',$
+  '*.tiff', '*.tif', '*.h5'], path=dir, get_path=dir)
   openimage:
   if fn ne '' then $
   begin
